@@ -124,13 +124,10 @@ const ChartContainer = styled.div`
 `
 
 const mockData = [
-  { name: 'Mon', frequency: 24 },
-  { name: 'Tue', frequency: 18 },
-  { name: 'Wed', frequency: 30 },
-  { name: 'Thu', frequency: 15 },
-  { name: 'Fri', frequency: 28 },
-  { name: 'Sat', frequency: 12 },
-  { name: 'Sun', frequency: 20 },
+  { date: '2024-01', risk: 0.45 },
+  { date: '2024-02', risk: 0.62 },
+  { date: '2024-03', risk: 0.58 },
+  { date: '2024-04', risk: 0.75 },
 ]
 
 const mockContacts = [
@@ -191,7 +188,7 @@ const Dashboard = () => {
       </Sidebar>
       <MainContent>
         <Content>
-          <h1>Message Frequency</h1>
+          <h1>Risk Analysis</h1>
           <ChartContainer ref={chartContainerRef}>
             <BarChart 
               width={chartWidth} 
@@ -200,10 +197,22 @@ const Dashboard = () => {
               margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="name" stroke="#64748b" />
-              <YAxis stroke="#64748b" />
-              <Tooltip />
-              <Bar dataKey="frequency" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+              <XAxis dataKey="date" stroke="#64748b" />
+              <YAxis 
+                stroke="#64748b" 
+                domain={[0, 1]} 
+                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+              />
+              <Tooltip 
+                formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, 'Risk Level']}
+                labelFormatter={(label) => `Date: ${label}`}
+              />
+              <Bar 
+                dataKey="risk" 
+                fill="#ef4444" 
+                radius={[4, 4, 0, 0]}
+                name="Risk Level"
+              />
             </BarChart>
           </ChartContainer>
           

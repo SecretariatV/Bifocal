@@ -145,10 +145,10 @@ const NavItem = styled.div<{ active?: boolean }>`
 `
 
 const mockTimelineData = [
-  { date: '2024-01', messages: 45, risk: 0.2 },
-  { date: '2024-02', messages: 62, risk: 0.3 },
-  { date: '2024-03', messages: 58, risk: 0.4 },
-  { date: '2024-04', messages: 75, risk: 0.6 },
+  { date: '2024-01', risk: 0.45 },
+  { date: '2024-02', risk: 0.62 },
+  { date: '2024-03', risk: 0.58 },
+  { date: '2024-04', risk: 0.75 },
 ]
 
 const mockMessages = [
@@ -223,18 +223,19 @@ const ContactAnalysis = () => {
               width={chartWidth} 
               height={400} 
               data={mockTimelineData}
-              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+              margin={{ top: 5, right: 20, bottom: 5, left: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
               <XAxis dataKey="date" stroke="#64748b" />
-              <YAxis stroke="#64748b" />
-              <Tooltip />
-              <Line 
-                type="monotone" 
-                dataKey="messages" 
-                stroke="#3b82f6" 
-                strokeWidth={2}
-                dot={{ fill: '#3b82f6', r: 4 }}
+              <YAxis 
+                stroke="#64748b"
+                domain={[0, 1]}
+                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+                label={{ value: 'Risk Level', angle: -90, position: 'insideLeft', offset: 0, fill: '#64748b' }}
+              />
+              <Tooltip 
+                formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, 'Risk Level']}
+                labelFormatter={(label) => `Date: ${label}`}
               />
               <Line 
                 type="monotone" 
@@ -242,6 +243,7 @@ const ContactAnalysis = () => {
                 stroke="#ef4444" 
                 strokeWidth={2}
                 dot={{ fill: '#ef4444', r: 4 }}
+                name="Risk Level"
               />
             </LineChart>
           </ChartContainer>
