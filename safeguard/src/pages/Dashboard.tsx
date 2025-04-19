@@ -1,7 +1,6 @@
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
-import { useRef, useState, useEffect } from 'react'
+import { useState } from 'react'
 
 const Container = styled.div`
   display: flex;
@@ -33,28 +32,104 @@ const MainContent = styled.main`
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
-  min-width: 0; /* This prevents flex items from overflowing */
+  min-width: 0;
 `
 
-const Content = styled.div`
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
+const PageTitle = styled.h1`
+  font-size: 36px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 32px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: 'Special Elite', cursive;
+`
+
+const ProfileSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+`
+
+const ProfileImageContainer = styled.div`
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 2px solid #e2e8f0;
   overflow: hidden;
+  margin-bottom: 16px;
+  cursor: pointer;
+  position: relative;
+  
+  &:hover {
+    .upload-overlay {
+      opacity: 1;
+    }
+  }
+`
 
-  h1 {
-    margin: 0 0 24px 0;
-    font-size: 32px;
-    font-weight: 600;
-    color: #1e293b;
+const ProfileImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+`
+
+const UploadOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  color: white;
+  font-size: 14px;
+`
+
+const ContactsSection = styled.div`
+  margin-top: 32px;
+`
+
+const ContactsTitle = styled.h2`
+  font-size: 24px;
+  font-weight: 500;
+  color: #1e293b;
+  margin-bottom: 16px;
+  font-family: 'Special Elite', cursive;
+`
+
+const ContactsTable = styled.div`
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+`
+
+const ContactRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
+  background: white;
+  
+  &:last-child {
+    border-bottom: none;
   }
 
-  h2 {
-    margin: 32px 0 16px 0;
-    font-size: 24px;
-    font-weight: 500;
-    color: #1e293b;
+  &:hover {
+    background-color: #f8fafc;
   }
+`
+
+const ContactName = styled.div`
+  font-size: 16px;
+  color: #1e293b;
+  font-family: 'Special Elite', cursive;
 `
 
 const NavItem = styled.div<{ active?: boolean }>`
@@ -63,6 +138,7 @@ const NavItem = styled.div<{ active?: boolean }>`
   cursor: pointer;
   border-radius: 8px;
   font-weight: 500;
+  font-family: 'Special Elite', cursive;
   color: ${props => props.active ? '#3b82f6' : '#64748b'};
   background-color: ${props => props.active ? '#f1f5f9' : 'transparent'};
   transition: all 0.2s ease;
@@ -73,28 +149,10 @@ const NavItem = styled.div<{ active?: boolean }>`
   }
 `
 
-const Contact = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  background-color: white;
-  border: 1px solid #e2e8f0;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: #cbd5e1;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
-`
-
 const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
-  width: 10px;
-  height: 10px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  margin-right: 12px;
   background-color: ${props => 
     props.risk === 'low' ? '#22c55e' : 
     props.risk === 'medium' ? '#eab308' : 
@@ -102,61 +160,29 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
   };
 `
 
-const ChartContainer = styled.div`
-  background-color: white;
-  border-radius: 12px;
-  padding: 24px;
-  border: 1px solid #e2e8f0;
-  width: 100%;
-  overflow: hidden;
-
-  /* Make the chart responsive */
-  .recharts-wrapper {
-    width: 100% !important;
-    height: auto !important;
-    min-height: 300px;
-    
-    .recharts-surface {
-      width: 100%;
-      height: 100%;
-    }
-  }
-`
-
-const mockData = [
-  { date: '2024-01', risk: 0.45 },
-  { date: '2024-02', risk: 0.62 },
-  { date: '2024-03', risk: 0.58 },
-  { date: '2024-04', risk: 0.75 },
-]
-
 const mockContacts = [
-  { id: 1, name: 'John Doe', risk: 'low' },
-  { id: 2, name: 'Jane Smith', risk: 'medium' },
-  { id: 3, name: 'Alice Johnson', risk: 'high' },
+  { id: 1, name: 'John', risk: 'high' },
+  { id: 2, name: 'Sally', risk: 'high' },
+  { id: 3, name: 'Matt', risk: 'low' },
+  { id: 4, name: 'Rob', risk: 'low' },
 ]
 
 const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const currentPath = location.pathname
+  const [profileImage, setProfileImage] = useState<string | null>(null)
 
-  // Calculate chart width based on container width
-  const chartContainerRef = useRef<HTMLDivElement>(null)
-  const [chartWidth, setChartWidth] = useState(800)
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (chartContainerRef.current) {
-        const width = chartContainerRef.current.clientWidth - 48 // subtract padding
-        setChartWidth(width)
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setProfileImage(reader.result as string)
       }
+      reader.readAsDataURL(file)
     }
-
-    updateWidth()
-    window.addEventListener('resize', updateWidth)
-    return () => window.removeEventListener('resize', updateWidth)
-  }, [])
+  }
 
   return (
     <Container>
@@ -187,46 +213,40 @@ const Dashboard = () => {
         </NavItem>
       </Sidebar>
       <MainContent>
-        <Content>
-          <h1>Risk Analysis</h1>
-          <ChartContainer ref={chartContainerRef}>
-            <BarChart 
-              width={chartWidth} 
-              height={300} 
-              data={mockData}
-              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="date" stroke="#64748b" />
-              <YAxis 
-                stroke="#64748b" 
-                domain={[0, 1]} 
-                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-              />
-              <Tooltip 
-                formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, 'Risk Level']}
-                labelFormatter={(label) => `Date: ${label}`}
-              />
-              <Bar 
-                dataKey="risk" 
-                fill="#ef4444" 
-                radius={[4, 4, 0, 0]}
-                name="Risk Level"
-              />
-            </BarChart>
-          </ChartContainer>
-          
-          <h2>Contacts</h2>
-          {mockContacts.map(contact => (
-            <Contact 
-              key={contact.id} 
-              onClick={() => navigate(`/contact/${contact.id}`)}
-            >
-              <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
-              {contact.name}
-            </Contact>
-          ))}
-        </Content>
+        <PageTitle>Dashboard</PageTitle>
+        
+        <ProfileSection>
+          <ProfileImageContainer>
+            <ProfileImage src={profileImage || '/default-avatar.png'} alt="Profile" />
+            <UploadOverlay className="upload-overlay">
+              <label htmlFor="profile-upload" style={{ cursor: 'pointer' }}>
+                Upload Photo
+                <input
+                  id="profile-upload"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: 'none' }}
+                />
+              </label>
+            </UploadOverlay>
+          </ProfileImageContainer>
+        </ProfileSection>
+
+        <ContactsSection>
+          <ContactsTitle>Accessed Contacts</ContactsTitle>
+          <ContactsTable>
+            {mockContacts.map(contact => (
+              <ContactRow 
+                key={contact.id}
+                onClick={() => navigate(`/contact/${contact.id}`)}
+              >
+                <ContactName>{contact.name}</ContactName>
+                <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+              </ContactRow>
+            ))}
+          </ContactsTable>
+        </ContactsSection>
       </MainContent>
     </Container>
   )
