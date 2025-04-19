@@ -1,40 +1,71 @@
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { useRef, useState, useEffect } from 'react'
 
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #ffffff;
+  background-color: #f8fafc;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
 `
 
 const Sidebar = styled.nav`
   width: 250px;
-  padding: 2rem;
+  min-width: 250px;
+  background-color: white;
   border-right: 1px solid #e2e8f0;
-  background-color: #ffffff;
+  padding: 24px 16px;
+  height: 100%;
+  overflow-y: auto;
 `
 
 const MainContent = styled.main`
   flex: 1;
-  padding: 2rem;
-  background-color: #ffffff;
+  background-color: white;
+  padding: 24px 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  min-width: 0; /* This prevents flex items from overflowing */
 `
 
 const Content = styled.div`
-  max-width: 1400px;
-  margin: 0 auto;
+  max-width: 1200px;
   width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+
+  h1 {
+    margin: 0 0 24px 0;
+    font-size: 32px;
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  h2 {
+    margin: 32px 0 16px 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #1e293b;
+  }
 `
 
 const NavItem = styled.div<{ active?: boolean }>`
-  padding: 0.75rem;
-  margin-bottom: 0.5rem;
+  padding: 12px 16px;
+  margin-bottom: 8px;
   cursor: pointer;
-  border-radius: 0.375rem;
+  border-radius: 8px;
+  font-weight: 500;
   color: ${props => props.active ? '#3b82f6' : '#64748b'};
   background-color: ${props => props.active ? '#f1f5f9' : 'transparent'};
+  transition: all 0.2s ease;
 
   &:hover {
     background-color: #f1f5f9;
@@ -45,24 +76,51 @@ const NavItem = styled.div<{ active?: boolean }>`
 const Contact = styled.div`
   display: flex;
   align-items: center;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  background-color: #ffffff;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  }
 `
 
 const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  margin-right: 1rem;
+  margin-right: 12px;
   background-color: ${props => 
     props.risk === 'low' ? '#22c55e' : 
     props.risk === 'medium' ? '#eab308' : 
     '#ef4444'
   };
+`
+
+const ChartContainer = styled.div`
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  overflow: hidden;
+
+  /* Make the chart responsive */
+  .recharts-wrapper {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 300px;
+    
+    .recharts-surface {
+      width: 100%;
+      height: 100%;
+    }
+  }
 `
 
 const mockData = [
@@ -86,34 +144,47 @@ const Dashboard = () => {
   const location = useLocation()
   const currentPath = location.pathname
 
-  const handleNavigation = (path: string) => {
-    navigate(path)
-  }
+  // Calculate chart width based on container width
+  const chartContainerRef = useRef<HTMLDivElement>(null)
+  const [chartWidth, setChartWidth] = useState(800)
+
+  useEffect(() => {
+    const updateWidth = () => {
+      if (chartContainerRef.current) {
+        const width = chartContainerRef.current.clientWidth - 48 // subtract padding
+        setChartWidth(width)
+      }
+    }
+
+    updateWidth()
+    window.addEventListener('resize', updateWidth)
+    return () => window.removeEventListener('resize', updateWidth)
+  }, [])
 
   return (
     <Container>
       <Sidebar>
         <NavItem 
           active={currentPath === '/dashboard'} 
-          onClick={() => handleNavigation('/dashboard')}
+          onClick={() => navigate('/dashboard')}
         >
           Dashboard
         </NavItem>
         <NavItem 
           active={currentPath === '/contacts'} 
-          onClick={() => handleNavigation('/contacts')}
+          onClick={() => navigate('/contacts')}
         >
           Contacts
         </NavItem>
         <NavItem 
           active={currentPath === '/analysis'} 
-          onClick={() => handleNavigation('/analysis')}
+          onClick={() => navigate('/analysis')}
         >
           Analysis
         </NavItem>
         <NavItem 
           active={currentPath === '/settings'} 
-          onClick={() => handleNavigation('/settings')}
+          onClick={() => navigate('/settings')}
         >
           Settings
         </NavItem>
@@ -121,26 +192,31 @@ const Dashboard = () => {
       <MainContent>
         <Content>
           <h1>Message Frequency</h1>
-          <BarChart width={1200} height={300} data={mockData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Bar dataKey="frequency" fill="#3b82f6" />
-          </BarChart>
+          <ChartContainer ref={chartContainerRef}>
+            <BarChart 
+              width={chartWidth} 
+              height={300} 
+              data={mockData}
+              margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis dataKey="name" stroke="#64748b" />
+              <YAxis stroke="#64748b" />
+              <Tooltip />
+              <Bar dataKey="frequency" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ChartContainer>
           
-          <div style={{ marginTop: '2rem' }}>
-            <h2>Contacts</h2>
-            {mockContacts.map(contact => (
-              <Contact 
-                key={contact.id} 
-                onClick={() => navigate(`/contact/${contact.id}`)}
-              >
-                <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
-                {contact.name}
-              </Contact>
-            ))}
-          </div>
+          <h2>Contacts</h2>
+          {mockContacts.map(contact => (
+            <Contact 
+              key={contact.id} 
+              onClick={() => navigate(`/contact/${contact.id}`)}
+            >
+              <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+              {contact.name}
+            </Contact>
+          ))}
         </Content>
       </MainContent>
     </Container>
