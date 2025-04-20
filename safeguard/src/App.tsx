@@ -13,6 +13,7 @@ import VictimLens from './pages/VictimLens'
 import EditProfile from './pages/EditProfile'
 import UploadAudio from './pages/UploadAudio'
 import ConversationExperience from './pages/ConversationExperience'
+import Justification from './pages/Justification'
 import BrowseSigns from './pages/BrowseSigns'
 import AudioUpload from './pages/AudioUpload'
 
@@ -42,6 +43,7 @@ function App() {
           <Route path="/victim-lens/:id" element={<VictimLens />} />
           <Route path="/upload" element={<UploadAudio />} />
           <Route path="/conversation" element={<ConversationExperience />} />
+          <Route path="/justification" element={<Justification />} />
           <Route path="/browse-signs" element={<BrowseSigns />} />
           <Route path="/audio-upload" element={<AudioUpload />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
