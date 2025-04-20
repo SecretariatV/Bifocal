@@ -2,7 +2,11 @@ import styled from '@emotion/styled'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { useRef, useState, useEffect } from 'react'
+<<<<<<< Updated upstream
 import { contacts, messages } from '../data/contacts'
+=======
+import { Global, css, keyframes } from '@emotion/react'
+>>>>>>> Stashed changes
 
 const Container = styled.div`
   display: flex;
@@ -212,6 +216,109 @@ const mockMessages = [
   { id: 3, type: 'received', text: 'I need to discuss something important.' },
 ]
 
+/**************************************************
+ * 1) ANIMATED BACKGROUND BLOBS → UNSHACKLE‑STYLE  *
+ **************************************************/
+const float1 = keyframes`
+  0%   { transform: translate(-15%, -10%) scale(1); }
+  50%  { transform: translate(20%,  15%) scale(1.15); }
+  100% { transform: translate(-15%, -10%) scale(1); }
+`
+const float2 = keyframes`
+  0%   { transform: translate(10%, 60%)  scale(1); }
+  50%  { transform: translate(-25%, 50%) scale(1.25); }
+  100% { transform: translate(10%, 60%)  scale(1); }
+`
+const float3 = keyframes`
+  0%   { transform: translate(70%, -30%) scale(1); }
+  50%  { transform: translate(50%, 10%)  scale(1.1); }
+  100% { transform: translate(70%, -30%) scale(1); }
+`
+
+const Blob = styled.div<{
+  size: number
+  gradient: string
+  animation: ReturnType<typeof keyframes>
+}>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: ${p => p.size}px;
+  height: ${p => p.size}px;
+  background: ${p => p.gradient};
+  opacity: 0.5;
+  filter: blur(120px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: ${p => p.animation} 30s ease-in-out infinite;
+`
+
+const beam1Animation = keyframes`
+  0% { transform: translate(-50%, -50%) rotate(45deg); opacity: 0; }
+  20% { opacity: 0.3; }
+  40% { opacity: 0; }
+  100% { transform: translate(50%, 50%) rotate(45deg); opacity: 0; }
+`
+
+const beam2Animation = keyframes`
+  0% { transform: translate(50%, -50%) rotate(-45deg); opacity: 0; }
+  20% { opacity: 0.25; }
+  40% { opacity: 0; }
+  100% { transform: translate(-50%, 50%) rotate(-45deg); opacity: 0; }
+`
+
+const Beam = styled.div<{ delay: string }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(115, 103, 240, 0.08), rgba(115, 103, 240, 0));
+    animation: ${beam1Animation} 20s infinite;
+    animation-delay: ${props => props.delay};
+    transform-origin: 0 0;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.08), rgba(34, 211, 238, 0));
+    animation: ${beam2Animation} 20s infinite;
+    animation-delay: ${props => props.delay};
+    transform-origin: 100% 0;
+  }
+`
+
+const GlobalStyles = () => (
+  <Global
+    styles={css`
+      html, body, #root {
+        height: 100%;
+        background-color: #14161f;
+        background-image: 
+          radial-gradient(circle at 0% 0%, rgba(115, 103, 240, 0.1) 0%, rgba(115, 103, 240, 0) 50%),
+          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 50%),
+          radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0) 50%);
+      }
+    `}
+  />
+)
+
 const ContactAnalysis = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -267,6 +374,7 @@ const ContactAnalysis = () => {
   }
 
   return (
+<<<<<<< Updated upstream
     <Container>
       <Sidebar>
         <NavItem 
@@ -292,63 +400,71 @@ const ContactAnalysis = () => {
               {contact.email && <p>{contact.email}</p>}
             </ContactInfo>
           </Header>
+=======
+    <>
+      <GlobalStyles />
+      <Beam delay="0s" />
+      <Beam delay="4s" />
+      {/* Blobs behind everything */}
+      <Blob
+        size={700}
+        gradient={
+          'radial-gradient(circle at 30% 30%, #7367f0 0%, rgba(115,103,240,0) 70%)'
+        }
+        animation={float1}
+        style={{ top: '-250px', left: '-200px' }}
+      />
+      <Blob
+        size={800}
+        gradient={
+          'radial-gradient(circle at 70% 30%, #f472b6 0%, rgba(244,114,182,0) 75%)'
+        }
+        animation={float2}
+        style={{ bottom: '-300px', left: '20%' }}
+      />
+      <Blob
+        size={650}
+        gradient={
+          'radial-gradient(circle at 50% 50%, #22d3ee 0%, rgba(34,211,238,0) 70%)'
+        }
+        animation={float3}
+        style={{ top: '-200px', right: '-200px' }}
+      />
+>>>>>>> Stashed changes
 
-          <ChartContainer ref={chartContainerRef}>
-            <LineChart 
-              width={chartWidth} 
-              height={400} 
-              data={mockTimelineData}
-              margin={{ top: 5, right: 20, bottom: 5, left: 10 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
-              <XAxis 
-                dataKey="date" 
-                stroke="rgba(255, 255, 255, 0.6)" 
-                tick={{ fill: '#FFFFFF' }}
-              />
-              <YAxis 
-                stroke="rgba(255, 255, 255, 0.6)"
-                domain={[0, 1]}
-                tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-                tick={{ fill: '#FFFFFF' }}
-                label={{ 
-                  value: 'Risk Level', 
-                  angle: -90, 
-                  position: 'insideLeft', 
-                  offset: 0, 
-                  fill: '#FFFFFF',
-                  style: { textAnchor: 'middle' }
-                }}
-              />
-              <Tooltip 
-                formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, 'Risk Level']}
-                labelFormatter={(label) => `Date: ${label}`}
-                contentStyle={{
-                  backgroundColor: 'rgba(20, 22, 31, 0.95)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  color: '#FFFFFF'
-                }}
-                itemStyle={{ color: '#FFFFFF' }}
-                labelStyle={{ color: '#FFFFFF' }}
-              />
-              <Line 
-                type="monotone" 
-                dataKey="risk" 
-                stroke="#ef4444" 
-                strokeWidth={2}
-                dot={{ fill: '#ef4444', r: 4 }}
-                name="Risk Level"
-              />
-            </LineChart>
-          </ChartContainer>
+      <Container>
+        <Sidebar>
+          <NavItem 
+            active={currentPath === '/dashboard'} 
+            onClick={() => navigate('/dashboard')}
+          >
+            Dashboard
+          </NavItem>
+          <NavItem 
+            active={currentPath === '/analysis'} 
+            onClick={() => navigate('/analysis')}
+          >
+            Analysis
+          </NavItem>
+        </Sidebar>
+        <MainContent>
+          <Content>
+            <Header>
+              <ContactPhoto />
+              <ContactInfo>
+                <h1>Contact Analysis</h1>
+                <p>ID: {id}</p>
+              </ContactInfo>
+            </Header>
 
-          <PatternSquaresContainer>
-            {patterns.map(pattern => (
-              <PatternSquare
-                key={pattern.id}
-                isExpanded={expandedPattern === pattern.id}
-                onClick={() => handlePatternClick(pattern.id)}
+            <ChartContainer ref={chartContainerRef}>
+              <LineChart 
+                width={chartWidth} 
+                height={400} 
+                data={mockTimelineData}
+                margin={{ top: 5, right: 20, bottom: 5, left: 10 }}
               >
+<<<<<<< Updated upstream
                 <PatternTitle>{pattern.title}</PatternTitle>
                 <PatternDescription>{pattern.description}</PatternDescription>
               </PatternSquare>
@@ -370,6 +486,66 @@ const ContactAnalysis = () => {
         </Content>
       </MainContent>
     </Container>
+=======
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="rgba(255, 255, 255, 0.6)" 
+                  tick={{ fill: '#FFFFFF' }}
+                />
+                <YAxis 
+                  stroke="rgba(255, 255, 255, 0.6)"
+                  domain={[0, 1]}
+                  tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
+                  tick={{ fill: '#FFFFFF' }}
+                  label={{ 
+                    value: 'Risk Level', 
+                    angle: -90, 
+                    position: 'insideLeft', 
+                    offset: 0, 
+                    fill: '#FFFFFF',
+                    style: { textAnchor: 'middle' }
+                  }}
+                />
+                <Tooltip 
+                  formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, 'Risk Level']}
+                  labelFormatter={(label) => `Date: ${label}`}
+                  contentStyle={{
+                    backgroundColor: 'rgba(20, 22, 31, 0.95)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#FFFFFF'
+                  }}
+                  itemStyle={{ color: '#FFFFFF' }}
+                  labelStyle={{ color: '#FFFFFF' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="risk" 
+                  stroke="#ef4444" 
+                  strokeWidth={2}
+                  dot={{ fill: '#ef4444', r: 4 }}
+                  name="Risk Level"
+                />
+              </LineChart>
+            </ChartContainer>
+
+            <PatternSquaresContainer>
+              {patterns.map(pattern => (
+                <PatternSquare
+                  key={pattern.id}
+                  isExpanded={expandedPattern === pattern.id}
+                  onClick={() => handlePatternClick(pattern.id)}
+                >
+                  <PatternTitle>{pattern.title}</PatternTitle>
+                  <PatternDescription>{pattern.description}</PatternDescription>
+                </PatternSquare>
+              ))}
+            </PatternSquaresContainer>
+          </Content>
+        </MainContent>
+      </Container>
+    </>
+>>>>>>> Stashed changes
   )
 }
 

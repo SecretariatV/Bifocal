@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { Global, css, keyframes } from '@emotion/react'
 
 const Container = styled.div`
   display: flex;
@@ -239,6 +240,109 @@ const severityLevels = [
   }
 ]
 
+/**************************************************
+ * 1) ANIMATED BACKGROUND BLOBS → UNSHACKLE‑STYLE  *
+ **************************************************/
+const float1 = keyframes`
+  0%   { transform: translate(-15%, -10%) scale(1); }
+  50%  { transform: translate(20%,  15%) scale(1.15); }
+  100% { transform: translate(-15%, -10%) scale(1); }
+`
+const float2 = keyframes`
+  0%   { transform: translate(10%, 60%)  scale(1); }
+  50%  { transform: translate(-25%, 50%) scale(1.25); }
+  100% { transform: translate(10%, 60%)  scale(1); }
+`
+const float3 = keyframes`
+  0%   { transform: translate(70%, -30%) scale(1); }
+  50%  { transform: translate(50%, 10%)  scale(1.1); }
+  100% { transform: translate(70%, -30%) scale(1); }
+`
+
+const Blob = styled.div<{
+  size: number
+  gradient: string
+  animation: ReturnType<typeof keyframes>
+}>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: ${p => p.size}px;
+  height: ${p => p.size}px;
+  background: ${p => p.gradient};
+  opacity: 0.5;
+  filter: blur(120px);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: ${p => p.animation} 30s ease-in-out infinite;
+`
+
+const beam1Animation = keyframes`
+  0% { transform: translate(-50%, -50%) rotate(45deg); opacity: 0; }
+  20% { opacity: 0.3; }
+  40% { opacity: 0; }
+  100% { transform: translate(50%, 50%) rotate(45deg); opacity: 0; }
+`
+
+const beam2Animation = keyframes`
+  0% { transform: translate(50%, -50%) rotate(-45deg); opacity: 0; }
+  20% { opacity: 0.25; }
+  40% { opacity: 0; }
+  100% { transform: translate(-50%, 50%) rotate(-45deg); opacity: 0; }
+`
+
+const Beam = styled.div<{ delay: string }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(115, 103, 240, 0.08), rgba(115, 103, 240, 0));
+    animation: ${beam1Animation} 20s infinite;
+    animation-delay: ${props => props.delay};
+    transform-origin: 0 0;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.08), rgba(34, 211, 238, 0));
+    animation: ${beam2Animation} 20s infinite;
+    animation-delay: ${props => props.delay};
+    transform-origin: 100% 0;
+  }
+`
+
+const GlobalStyles = () => (
+  <Global
+    styles={css`
+      html, body, #root {
+        height: 100%;
+        background-color: #14161f;
+        background-image: 
+          radial-gradient(circle at 0% 0%, rgba(115, 103, 240, 0.1) 0%, rgba(115, 103, 240, 0) 50%),
+          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 50%),
+          radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0) 50%);
+      }
+    `}
+  />
+)
+
 const Stalking = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -269,86 +373,117 @@ const Stalking = () => {
   }
 
   return (
-    <Container>
-      <Sidebar>
-        <NavItem 
-          active={currentPath === '/dashboard'} 
-          onClick={() => navigate('/dashboard')}
-        >
-          Dashboard
-        </NavItem>
-        <NavItem 
-          active={currentPath === '/analysis'} 
-          onClick={() => navigate('/analysis')}
-        >
-          Analysis
-        </NavItem>
-      </Sidebar>
-      <MainContent>
-        <Content>
-          <Title>Stalking Analysis for Contact #{id}</Title>
+    <>
+      <GlobalStyles />
+      <Beam delay="0s" />
+      <Beam delay="4s" />
+      {/* Blobs behind everything */}
+      <Blob
+        size={700}
+        gradient={
+          'radial-gradient(circle at 30% 30%, #7367f0 0%, rgba(115,103,240,0) 70%)'
+        }
+        animation={float1}
+        style={{ top: '-250px', left: '-200px' }}
+      />
+      <Blob
+        size={800}
+        gradient={
+          'radial-gradient(circle at 70% 30%, #f472b6 0%, rgba(244,114,182,0) 75%)'
+        }
+        animation={float2}
+        style={{ bottom: '-300px', left: '20%' }}
+      />
+      <Blob
+        size={650}
+        gradient={
+          'radial-gradient(circle at 50% 50%, #22d3ee 0%, rgba(34,211,238,0) 70%)'
+        }
+        animation={float3}
+        style={{ top: '-200px', right: '-200px' }}
+      />
 
-          <Section>
-            <SectionTitle>Key Statistics</SectionTitle>
-            <StatsContainer>
-              <StatCard>
-                <StatValue>{stats.totalIncidents}</StatValue>
-                <StatLabel>Total Incidents</StatLabel>
-              </StatCard>
-              <StatCard>
-                <StatValue>{stats.highSeverity}</StatValue>
-                <StatLabel>High Severity Incidents</StatLabel>
-              </StatCard>
-              <StatCard>
-                <StatValue>{stats.averageSeverity}</StatValue>
-                <StatLabel>Average Severity Score</StatLabel>
-              </StatCard>
-            </StatsContainer>
-          </Section>
+      <Container>
+        <Sidebar>
+          <NavItem 
+            active={currentPath === '/dashboard'} 
+            onClick={() => navigate('/dashboard')}
+          >
+            Dashboard
+          </NavItem>
+          <NavItem 
+            active={currentPath === '/analysis'} 
+            onClick={() => navigate('/analysis')}
+          >
+            Analysis
+          </NavItem>
+        </Sidebar>
+        <MainContent>
+          <Content>
+            <Title>Stalking Analysis for Contact #{id}</Title>
 
-          <Section>
-            <SectionTitle>Detected Stalking Messages</SectionTitle>
-            <MessageContainer>
-              {filteredMessages.map(message => (
-                <div key={message.id}>
-                  <SeverityLevel level={message.severity}>
-                    {message.severity.charAt(0).toUpperCase() + message.severity.slice(1)} Severity
-                  </SeverityLevel>
-                  <MessageBubble type={message.type as 'sent' | 'received'}>
-                    {message.text}
-                  </MessageBubble>
-                </div>
-              ))}
-            </MessageContainer>
-          </Section>
+            <Section>
+              <SectionTitle>Key Statistics</SectionTitle>
+              <StatsContainer>
+                <StatCard>
+                  <StatValue>{stats.totalIncidents}</StatValue>
+                  <StatLabel>Total Incidents</StatLabel>
+                </StatCard>
+                <StatCard>
+                  <StatValue>{stats.highSeverity}</StatValue>
+                  <StatLabel>High Severity Incidents</StatLabel>
+                </StatCard>
+                <StatCard>
+                  <StatValue>{stats.averageSeverity}</StatValue>
+                  <StatLabel>Average Severity Score</StatLabel>
+                </StatCard>
+              </StatsContainer>
+            </Section>
 
-          <Section>
-            <SectionTitle>Severity Levels</SectionTitle>
-            <SeverityContainer>
-              {severityLevels.map(level => (
-                <SeverityIndicator 
-                  key={level.level}
-                  active={selectedSeverity === level.level}
-                  onClick={() => setSelectedSeverity(
-                    selectedSeverity === level.level ? null : level.level
-                  )}
-                >
-                  <SeverityTitle>{level.title}</SeverityTitle>
-                  <SeverityDescription>{level.description}</SeverityDescription>
-                </SeverityIndicator>
-              ))}
-            </SeverityContainer>
-          </Section>
+            <Section>
+              <SectionTitle>Detected Stalking Messages</SectionTitle>
+              <MessageContainer>
+                {filteredMessages.map(message => (
+                  <div key={message.id}>
+                    <SeverityLevel level={message.severity}>
+                      {message.severity.charAt(0).toUpperCase() + message.severity.slice(1)} Severity
+                    </SeverityLevel>
+                    <MessageBubble type={message.type as 'sent' | 'received'}>
+                      {message.text}
+                    </MessageBubble>
+                  </div>
+                ))}
+              </MessageContainer>
+            </Section>
 
-          <Section>
-            <SectionTitle>What is Stalking?</SectionTitle>
-            <ExplanationText>
-              Stalking is a pattern of repeated and unwanted attention, harassment, contact, or any other behavior directed at a specific person that would cause a reasonable person to feel fear or substantial emotional distress. This can include physical following, monitoring online activity, unwanted communications, and threats.
-            </ExplanationText>
-          </Section>
-        </Content>
-      </MainContent>
-    </Container>
+            <Section>
+              <SectionTitle>Severity Levels</SectionTitle>
+              <SeverityContainer>
+                {severityLevels.map(level => (
+                  <SeverityIndicator 
+                    key={level.level}
+                    active={selectedSeverity === level.level}
+                    onClick={() => setSelectedSeverity(
+                      selectedSeverity === level.level ? null : level.level
+                    )}
+                  >
+                    <SeverityTitle>{level.title}</SeverityTitle>
+                    <SeverityDescription>{level.description}</SeverityDescription>
+                  </SeverityIndicator>
+                ))}
+              </SeverityContainer>
+            </Section>
+
+            <Section>
+              <SectionTitle>What is Stalking?</SectionTitle>
+              <ExplanationText>
+                Stalking is a pattern of repeated and unwanted attention, harassment, contact, or any other behavior directed at a specific person that would cause a reasonable person to feel fear or substantial emotional distress. This can include physical following, monitoring online activity, unwanted communications, and threats.
+              </ExplanationText>
+            </Section>
+          </Content>
+        </MainContent>
+      </Container>
+    </>
   )
 }
 
