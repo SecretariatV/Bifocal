@@ -255,22 +255,10 @@ const ContactAnalysis = () => {
           Dashboard
         </NavItem>
         <NavItem 
-          active={currentPath === '/contacts'} 
-          onClick={() => navigate('/contacts')}
-        >
-          Contacts
-        </NavItem>
-        <NavItem 
           active={currentPath === '/analysis'} 
           onClick={() => navigate('/analysis')}
         >
           Analysis
-        </NavItem>
-        <NavItem 
-          active={currentPath === '/settings'} 
-          onClick={() => navigate('/settings')}
-        >
-          Settings
         </NavItem>
       </Sidebar>
       <MainContent>
