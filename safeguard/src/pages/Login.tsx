@@ -55,12 +55,32 @@ const Button = styled.button`
   }
 `
 
+const SignUpText = styled.p`
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+`
+
+const SignUpLink = styled.span`
+  color: #3b82f6;
+  cursor: pointer;
+  margin-left: 0.5rem;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
 const Login = () => {
   const navigate = useNavigate()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     navigate('/dashboard')
+  }
+
+  const handleSignUpClick = () => {
+    navigate('/signup')
   }
 
   return (
@@ -72,6 +92,10 @@ const Login = () => {
         <Input type="password" placeholder="Password" required />
         <Button type="submit">Sign In</Button>
       </Form>
+      <SignUpText>
+        Don't have an account?
+        <SignUpLink onClick={handleSignUpClick}>Sign Up</SignUpLink>
+      </SignUpText>
     </Container>
   )
 }

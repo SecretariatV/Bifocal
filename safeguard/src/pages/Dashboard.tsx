@@ -173,13 +173,21 @@ const ContactsHeader = styled.div`
   padding: 16px 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
 `
 
 const ContactsTitle = styled.h2`
   font-size: 24px;
   font-weight: 600;
   color: #fff;
+`
+
+const RelationshipLabel = styled.div`
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  align-self: center;
 `
 
 const RiskLabel = styled.div`
@@ -191,12 +199,20 @@ const RiskLabel = styled.div`
 
 const ContactRow = styled.div`
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 16px;
   align-items: center;
   padding: 16px 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s;
+
   &:first-of-type {
     border-top: none;
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
   }
 `
 
@@ -204,6 +220,11 @@ const ContactName = styled.div`
   font-size: 16px;
   color: #fff;
   font-weight: 500;
+`
+
+const RelationshipText = styled.div`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
 `
 
 const NavItem = styled.div<{ active?: boolean }>`
@@ -235,10 +256,10 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
  * 3) MOCK DATA
  ******************************/
 const mockContacts = [
-  { id: 1, name: 'John', risk: 'high' },
-  { id: 2, name: 'Sally', risk: 'high' },
-  { id: 3, name: 'Matt', risk: 'low' },
-  { id: 4, name: 'Rob', risk: 'low' },
+  { id: 1, name: 'John', risk: 'high', relationship: 'Ex-partner' },
+  { id: 2, name: 'Sally', risk: 'high', relationship: 'Colleague' },
+  { id: 3, name: 'Matt', risk: 'low', relationship: 'Friend' },
+  { id: 4, name: 'Rob', risk: 'low', relationship: 'Acquaintance' },
 ]
 
 /******************************
@@ -286,6 +307,9 @@ const Dashboard = () => {
           <NavItem active={currentPath === '/dashboard'} onClick={() => navigate('/dashboard')}>
             Dashboard
           </NavItem>
+          <NavItem active={currentPath === '/profile'} onClick={() => navigate('/profile')}>
+            Profile
+          </NavItem>
           <NavItem active={currentPath === '/analysis'} onClick={() => navigate('/analysis')}>
             Analysis
           </NavItem>
@@ -293,16 +317,18 @@ const Dashboard = () => {
         <MainContent>
           <PageTitle>DASHBOARD</PageTitle>
           <ProfileSection>
-            <ProfileCircle>Profile</ProfileCircle>
+            <ProfileCircle onClick={() => navigate('/profile')}>Profile</ProfileCircle>
           </ProfileSection>
           <ContactsContainer>
             <ContactsHeader>
               <ContactsTitle>Accessed Contacts</ContactsTitle>
+              <RelationshipLabel>Relationship</RelationshipLabel>
               <RiskLabel>Risk</RiskLabel>
             </ContactsHeader>
             {mockContacts.map(contact => (
               <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
                 <ContactName>{contact.name}</ContactName>
+                <RelationshipText>{contact.relationship}</RelationshipText>
                 <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
               </ContactRow>
             ))}
