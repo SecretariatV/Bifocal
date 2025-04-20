@@ -285,6 +285,9 @@ const Dashboard = () => {
           <NavItem active={currentPath === '/profile'} onClick={() => navigate('/profile')}>
             Profile
           </NavItem>
+          <NavItem active={currentPath === '/profile'} onClick={() => navigate('/profile')}>
+            Profile
+          </NavItem>
           <NavItem active={currentPath === '/analysis'} onClick={() => navigate('/analysis')}>
             Analysis
           </NavItem>
