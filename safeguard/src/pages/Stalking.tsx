@@ -1,8 +1,8 @@
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import Navigation from '../components/Navigation'
 import {
   Container,
-  Sidebar,
   MainContent,
   Content,
   Title,
@@ -22,8 +22,6 @@ import {
   SeverityTitle,
   SeverityDescription,
   ExplanationText,
-  NavItem,
-  NavIcon,
   Divider
 } from '../styles/theme'
 
@@ -63,11 +61,10 @@ const severityLevels = [
 const Stalking = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const location = useLocation()
-  const currentPath = location.pathname
   const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null)
   const [userMessages, setUserMessages] = useState<any[]>([])
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (id && mockUserMessages[id as keyof typeof mockUserMessages]) {
@@ -94,36 +91,14 @@ const Stalking = () => {
     setSelectedMessageId(messageId === selectedMessageId ? null : messageId)
   }
 
-  const getNavIcon = (path: string) => {
-    switch (path) {
-      case '/dashboard':
-        return '🏠';
-      case '/contacts':
-        return '👥';
-      case '/analysis':
-        return '📊';
-      case '/settings':
-        return '⚙️';
-      default:
-        return '';
-    }
-  };
-
   return (
     <Container>
-      <Sidebar>
-        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
-          <NavItem 
-            key={path}
-            active={currentPath === path} 
-            onClick={() => navigate(path)}
-          >
-            <NavIcon>{getNavIcon(path)}</NavIcon>
-            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
-          </NavItem>
-        ))}
-      </Sidebar>
-      <MainContent>
+      <Navigation 
+        isSidebarOpen={isSidebarOpen}
+        onSidebarOpenChange={setIsSidebarOpen}
+      />
+
+      <MainContent sidebarOpen={isSidebarOpen}>
         <Content>
           <Title>Stalking Analysis for Contact #{id}</Title>
 
@@ -143,49 +118,6 @@ const Stalking = () => {
                 <StatLabel>Average Severity Score</StatLabel>
               </StatCard>
             </StatsContainer>
-          </Section>
-
-          <Section>
-            <SectionTitle>Detected Stalking Messages</SectionTitle>
-            <MessageContainer>
-              {filteredMessages.map(message => (
-                <MessageWrapper key={message.id} data-type={message.type}>
-                  <SeverityLevel level={message.severity}>
-                    {message.severity.charAt(0).toUpperCase() + message.severity.slice(1)} Severity
-                  </SeverityLevel>
-                  <MessageBubble 
-                    type={message.type as 'sent' | 'received'}
-                    isSelected={selectedMessageId === message.id}
-                    onClick={() => handleMessageClick(message.id)}
-                  >
-                    {message.text}
-                  </MessageBubble>
-                  <MessageTime>
-                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </MessageTime>
-                </MessageWrapper>
-              ))}
-            </MessageContainer>
-          </Section>
-
-          <Divider />
-
-          <Section>
-            <SectionTitle>Severity Levels</SectionTitle>
-            <SeverityContainer>
-              {severityLevels.map(level => (
-                <SeverityIndicator 
-                  key={level.level}
-                  active={selectedSeverity === level.level}
-                  onClick={() => setSelectedSeverity(
-                    selectedSeverity === level.level ? null : level.level
-                  )}
-                >
-                  <SeverityTitle>{level.title}</SeverityTitle>
-                  <SeverityDescription>{level.description}</SeverityDescription>
-                </SeverityIndicator>
-              ))}
-            </SeverityContainer>
           </Section>
 
           <Section>
