@@ -4,6 +4,9 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Navigation from '../components/Navigation'
 import { SafetyContext } from '../App'
+import { processedMessages } from '../data/messages'
+import type { Message } from '../data/messages'
+import { analyzeMessages, type IncidentAnalysis } from '../services/mlAnalysis'
 
 const Container = styled.div`
   display: flex;
@@ -15,177 +18,348 @@ const Container = styled.div`
 
 const MainContent = styled.main<{ sidebarOpen: boolean }>`
   flex: 1;
-  padding: 40px;
-  padding-left: ${props => props.sidebarOpen ? '290px' : '40px'};
-  background-color: #14161f;
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
-  min-width: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-left: ${props => props.sidebarOpen ? '420px' : '120px'};
+  padding-right: 120px;
   transition: padding-left 0.3s ease;
-`
-
-const Content = styled.div`
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
 `
 
 const Header = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 32px;
-  padding: 24px;
+  padding: 24px 0;
+  margin-top: 24px;
   background-color: rgba(20, 22, 31, 0.95);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 10;
 `
 
 const ContactPhoto = styled.div`
-  width: 64px;
-  height: 64px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.1);
-  margin-right: 24px;
+  background-color: #3b82f6;
+  margin-right: 16px;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: 600;
 `
 
 const ContactInfo = styled.div`
+  flex: 1;
   h1 {
-    margin: 0 0 8px 0;
-    font-size: 24px;
+    margin: 0;
+    font-size: 18px;
     font-weight: 600;
     color: #fff;
   }
 
   p {
-    margin: 0;
+    margin: 4px 0 0;
     color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
+    font-size: 13px;
   }
 `
 
 const TabContainer = styled.div`
   display: flex;
-  gap: 4px;
-  margin-bottom: 32px;
+  padding: 12px 0;
   background: rgba(20, 22, 31, 0.95);
-  padding: 8px;
-  border-radius: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 `
 
 const Tab = styled.button<{ active: boolean }>`
-  padding: 12px 24px;
+  padding: 8px 16px;
   background: ${props => props.active ? 'rgba(59, 130, 246, 0.1)' : 'transparent'};
-  border: none;
-  border-radius: 8px;
   color: ${props => props.active ? '#3b82f6' : 'rgba(255, 255, 255, 0.6)'};
-  font-size: 16px;
-  font-weight: 500;
+  border: none;
+  border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+  font-weight: 500;
+  font-size: 14px;
 
   &:hover {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
+    color: ${props => props.active ? '#3b82f6' : '#fff'};
+    background: ${props => props.active ? 'rgba(59, 130, 246, 0.1)' : 'rgba(255, 255, 255, 0.05)'};
   }
+
+  & + & {
+    margin-left: 8px;
+  }
+`
+
+const StatsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 16px 0;
+  background: rgba(20, 22, 31, 0.95);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+`
+
+const StatCard = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  height: 120px;
+
+  &:hover .tooltip {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`
+
+const StatTitle = styled.h3`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0 0 8px;
+`
+
+const StatValue = styled.div`
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+`
+
+const StatTooltip = styled.div`
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 12px;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: all 0.2s ease;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  class: tooltip;
+`
+
+const ContentContainer = styled.div`
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  padding: 24px 0;
+  gap: 48px;
+`
+
+const MessageContainer = styled.div`
+  width: 360px;
+  background: rgba(20, 22, 31, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 `
 
 const MessageList = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
-  background: rgba(20, 22, 31, 0.95);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-`
-
-const Message = styled.div<{ isSent: boolean }>`
-  max-width: 70%;
-  margin: ${props => props.isSent ? '10px 0 10px auto' : '10px auto 10px 0'};
-  padding: 12px 16px;
-  background: ${props => props.isSent ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'};
-  color: white;
-  border-radius: ${props => props.isSent ? '20px 20px 4px 20px' : '20px 20px 20px 4px'};
-`
-
-const Timestamp = styled.div<{ isSent: boolean }>`
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 12px;
-  margin: 4px ${props => props.isSent ? '0 0 auto' : 'auto 0 0'};
-  text-align: ${props => props.isSent ? 'right' : 'left'};
-`
-
-const AnalysisCard = styled.div`
-  background: rgba(20, 22, 31, 0.95);
-  border-radius: 12px;
   padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
 `
 
-const AnalysisTitle = styled.h3`
+const Message = styled.div<{ isSent: boolean; isHighlighted?: boolean }>`
+  max-width: 85%;
+  align-self: ${props => props.isSent ? 'flex-end' : 'flex-start'};
+  background: ${props => {
+    if (props.isHighlighted) return 'rgba(239, 68, 68, 0.2)';
+    return props.isSent ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)';
+  }};
   color: white;
-  font-size: 20px;
-  margin: 0 0 16px 0;
+  padding: 12px 16px;
+  border-radius: ${props => props.isSent ? '16px 16px 4px 16px' : '16px 16px 16px 4px'};
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 2px 0;
+  transition: background-color 0.2s ease;
+  border: ${props => props.isHighlighted ? '1px solid rgba(239, 68, 68, 0.4)' : 'none'};
 `
 
-const AnalysisText = styled.p`
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
-  line-height: 1.6;
+const MessageTime = styled.div`
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin: 16px 0 8px;
+`
+
+const AnalysisPanel = styled.div`
+  flex: 1;
+  background: rgba(20, 22, 31, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 32px;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+  }
+`
+
+const PatternItem = styled.div`
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`
+
+const PatternTitle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+`
+
+const PatternName = styled.h3`
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
   margin: 0;
 `
 
-interface Message {
-  id: number;
-  text: string;
-  timestamp: string;
-  isSent: boolean;
-}
+const ConfidenceScore = styled.span<{ score: number }>`
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: ${props => {
+    if (props.score >= 80) return 'rgba(239, 68, 68, 0.2)';
+    if (props.score >= 50) return 'rgba(234, 179, 8, 0.2)';
+    return 'rgba(34, 197, 94, 0.2)';
+  }};
+  color: ${props => {
+    if (props.score >= 80) return '#ef4444';
+    if (props.score >= 50) return '#eab308';
+    return '#22c55e';
+  }};
+  font-weight: 500;
+`
 
-const mockMessages: { [key: string]: Message[] } = {
-  mouni: [
-    { id: 1, text: "Hey! How's the ML model coming along?", isSent: false, timestamp: "Yesterday 3:45 PM" },
-    { id: 2, text: "Making progress! The accuracy is improving", isSent: true, timestamp: "Yesterday 3:47 PM" },
-    { id: 3, text: "That's great! Any challenges you're facing?", isSent: false, timestamp: "Yesterday 3:50 PM" },
-    { id: 4, text: "The data preprocessing is a bit tricky", isSent: true, timestamp: "Yesterday 3:52 PM" },
-    { id: 5, text: "Need any help with that?", isSent: false, timestamp: "Yesterday 3:55 PM" },
-    { id: 6, text: "Actually yes, could use your expertise!", isSent: true, timestamp: "Yesterday 3:56 PM" },
-    { id: 7, text: "Let's look at it together tomorrow?", isSent: false, timestamp: "Yesterday 4:00 PM" },
-    { id: 8, text: "Perfect! Thanks Mouni!", isSent: true, timestamp: "Yesterday 4:01 PM" }
-  ],
-  shreya: [
-    { id: 9, text: "Hey, how's the frontend looking?", isSent: false, timestamp: "Yesterday 2:15 PM" },
-    { id: 10, text: "Coming along nicely! Just finished the dashboard", isSent: true, timestamp: "Yesterday 2:20 PM" },
-    { id: 11, text: "Can I see the designs?", isSent: false, timestamp: "Yesterday 2:22 PM" },
-    { id: 12, text: "Sure, I'll share the Figma link", isSent: true, timestamp: "Yesterday 2:25 PM" },
-    { id: 13, text: "Love the color scheme!", isSent: false, timestamp: "Yesterday 2:40 PM" },
-    { id: 14, text: "Thanks! Wanted it to feel modern but calming", isSent: true, timestamp: "Yesterday 2:42 PM" },
-    { id: 15, text: "Mission accomplished 😊", isSent: false, timestamp: "Yesterday 2:45 PM" }
-  ],
-  sanya: [
-    { id: 16, text: "How's the backend integration going?", isSent: false, timestamp: "Yesterday 1:15 PM" },
-    { id: 17, text: "Just finished the authentication endpoints", isSent: true, timestamp: "Yesterday 1:20 PM" },
-    { id: 18, text: "Nice! Did you add rate limiting?", isSent: false, timestamp: "Yesterday 1:25 PM" },
-    { id: 19, text: "Yep, and added request validation too", isSent: true, timestamp: "Yesterday 1:30 PM" },
-    { id: 20, text: "Perfect! What about error handling?", isSent: false, timestamp: "Yesterday 1:35 PM" },
-    { id: 21, text: "All covered with proper status codes", isSent: true, timestamp: "Yesterday 1:40 PM" },
-    { id: 22, text: "You're on fire! 🔥", isSent: false, timestamp: "Yesterday 1:45 PM" }
-  ]
-}
+const PatternDescription = styled.p`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  margin: 0 0 12px;
+  line-height: 1.5;
+`
+
+const ExampleMessage = styled.div`
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(0, 0, 0, 0.2);
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin-top: 8px;
+  line-height: 1.4;
+`
+
+const EmotionalIndicators = styled.div`
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+`
+
+const EmotionalTag = styled.span`
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+`
+
+const SeverityIndicator = styled.div<{ score: number }>`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px;
+  border-radius: 6px;
+  background: ${props => {
+    if (props.score >= 4) return 'rgba(239, 68, 68, 0.1)';
+    if (props.score >= 3) return 'rgba(234, 179, 8, 0.1)';
+    return 'rgba(34, 197, 94, 0.1)';
+  }};
+`
+
+const SeverityBar = styled.div<{ score: number }>`
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: ${props => (props.score / 5) * 100}%;
+    background: ${props => {
+      if (props.score >= 4) return '#ef4444';
+      if (props.score >= 3) return '#eab308';
+      return '#22c55e';
+    }};
+    border-radius: 2px;
+  }
+`
+
+const SeverityLabel = styled.span<{ score: number }>`
+  font-size: 11px;
+  color: ${props => {
+    if (props.score >= 4) return '#ef4444';
+    if (props.score >= 3) return '#eab308';
+    return '#22c55e';
+  }};
+`
 
 const ContactAnalysis = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState('messages')
   const { isHidden } = useContext(SafetyContext)
 
   const getContactName = (id: string) => {
@@ -198,63 +372,8 @@ const ContactAnalysis = () => {
   }
 
   const contactName = getContactName(id || '')
-  const messages = id ? mockMessages[getContactName(id).toLowerCase()] || [] : []
-
-  const renderMessages = () => {
-    return messages.map((message: Message) => (
-      <div key={message.id}>
-        <Message isSent={message.isSent}>
-          {message.text}
-        </Message>
-        <Timestamp isSent={message.isSent}>
-          {message.timestamp}
-        </Timestamp>
-      </div>
-    ))
-  }
-
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'messages':
-        return (
-          <MessageList>
-            {renderMessages()}
-          </MessageList>
-        )
-      case 'obsession':
-        return (
-          <AnalysisCard>
-            <AnalysisTitle>Obsessive Behavior Analysis</AnalysisTitle>
-            <AnalysisText>
-              Our AI has analyzed the message patterns and detected potential signs of obsessive behavior.
-              The analysis includes frequency of messages, time patterns, and content analysis.
-            </AnalysisText>
-          </AnalysisCard>
-        )
-      case 'stalking':
-        return (
-          <AnalysisCard>
-            <AnalysisTitle>Stalking Behavior Analysis</AnalysisTitle>
-            <AnalysisText>
-              This analysis focuses on identifying patterns that might indicate stalking behavior,
-              including location tracking, surveillance, and persistent unwanted contact attempts.
-            </AnalysisText>
-          </AnalysisCard>
-        )
-      case 'gaslighting':
-        return (
-          <AnalysisCard>
-            <AnalysisTitle>Gaslighting Analysis</AnalysisTitle>
-            <AnalysisText>
-              We analyze communication patterns for signs of gaslighting and emotional manipulation,
-              including denial of events, minimizing feelings, and reality distortion.
-            </AnalysisText>
-          </AnalysisCard>
-        )
-      default:
-        return null
-    }
-  }
+  const messages = id ? processedMessages[getContactName(id).toLowerCase()] || [] : []
+  const patterns = analyzeMessages(messages)
 
   return (
     <Container>
@@ -265,44 +384,74 @@ const ContactAnalysis = () => {
         />
       )}
       <MainContent sidebarOpen={!isHidden && isSidebarOpen}>
-        <Content>
-          <Header>
-            <ContactPhoto>{contactName[0]}</ContactPhoto>
-            <ContactInfo>
-              <h1>{contactName}</h1>
-              <p>Online</p>
-            </ContactInfo>
-          </Header>
+        <Header>
+          <ContactPhoto>{contactName[0]}</ContactPhoto>
+          <ContactInfo>
+            <h1>{contactName}</h1>
+            <p>Online</p>
+          </ContactInfo>
+        </Header>
 
-          <TabContainer>
-            <Tab 
-              active={activeTab === 'messages'} 
-              onClick={() => setActiveTab('messages')}
-            >
-              Messages
-            </Tab>
-            <Tab 
-              active={activeTab === 'obsession'} 
-              onClick={() => setActiveTab('obsession')}
-            >
-              Obsession
-            </Tab>
-            <Tab 
-              active={activeTab === 'stalking'} 
-              onClick={() => setActiveTab('stalking')}
-            >
-              Stalking
-            </Tab>
-            <Tab 
-              active={activeTab === 'gaslighting'} 
-              onClick={() => setActiveTab('gaslighting')}
-            >
-              Gaslighting
-            </Tab>
-          </TabContainer>
+        <ContentContainer>
+          <MessageContainer>
+            <MessageList>
+              {messages.map((message, index) => {
+                const showTimestamp = index === 0 || 
+                  messages[index - 1].timestamp !== message.timestamp;
+                
+                return (
+                  <React.Fragment key={message.id}>
+                    {showTimestamp && (
+                      <MessageTime>{message.timestamp}</MessageTime>
+                    )}
+                    <Message isSent={message.type === 'sent'}>
+                      {message.text}
+                    </Message>
+                  </React.Fragment>
+                );
+              })}
+            </MessageList>
+          </MessageContainer>
 
-          {renderContent()}
-        </Content>
+          <AnalysisPanel>
+            <h2 style={{ 
+              color: '#fff', 
+              fontSize: '16px', 
+              fontWeight: '600',
+              margin: '0 0 20px' 
+            }}>
+              Behavioral Analysis
+            </h2>
+            {patterns.map((pattern, index) => (
+              <PatternItem key={index}>
+                <PatternTitle>
+                  <PatternName>{pattern.type}</PatternName>
+                  <ConfidenceScore score={pattern.confidence}>
+                    {pattern.confidence}%
+                  </ConfidenceScore>
+                </PatternTitle>
+                <PatternDescription>{pattern.description}</PatternDescription>
+                
+                <SeverityIndicator score={pattern.severity_score}>
+                  <SeverityLabel score={pattern.severity_score}>
+                    Severity Level {pattern.severity_score}/5
+                  </SeverityLabel>
+                  <SeverityBar score={pattern.severity_score} />
+                </SeverityIndicator>
+
+                {pattern.examples.map((example, i) => (
+                  <ExampleMessage key={i}>"{example}"</ExampleMessage>
+                ))}
+
+                <EmotionalIndicators>
+                  {pattern.emotional_indicators.map((indicator, i) => (
+                    <EmotionalTag key={i}>{indicator}</EmotionalTag>
+                  ))}
+                </EmotionalIndicators>
+              </PatternItem>
+            ))}
+          </AnalysisPanel>
+        </ContentContainer>
       </MainContent>
     </Container>
   )
