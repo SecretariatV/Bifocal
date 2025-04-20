@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Container = styled.div`
   min-height: 100vh;
@@ -113,6 +114,84 @@ const FeatureDescription = styled.p`
   line-height: 1.6;
 `;
 
+interface RiskIndicatorProps {
+  risk: 'high' | 'medium' | 'low';
+}
+
+const RiskIndicator = styled.div<RiskIndicatorProps>`
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: ${(props: RiskIndicatorProps) => {
+    switch (props.risk) {
+      case 'high':
+        return '#ef4444';  // red
+      case 'medium':
+        return '#f59e0b';  // yellow
+      case 'low':
+        return '#22c55e';  // green
+      default:
+        return '#71717a';  // gray
+    }
+  }};
+`;
+
+const ContactList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const ContactRow = styled(Link)`
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+  }
+`;
+
+const ContactInfo = styled.div`
+  flex: 1;
+`;
+
+const ContactName = styled.div`
+  font-size: 18px;
+  font-weight: 500;
+`;
+
+const ContactRelationship = styled.div`
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 4px;
+`;
+
+const contacts = [
+  {
+    id: 1,
+    name: 'Mouni',
+    relationship: 'mounikasaka7@gmail.com',
+    riskLevel: 'low' as const
+  },
+  {
+    id: 2,
+    name: 'Shreya',
+    relationship: '+14802078487',
+    riskLevel: 'medium' as const
+  },
+  {
+    id: 3,
+    name: 'Sanya',
+    relationship: 'sanyahegde7@gmail.com',
+    riskLevel: 'high' as const
+  }
+];
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
@@ -182,6 +261,21 @@ const Home: React.FC = () => {
               </FeatureDescription>
             </FeatureCard>
           </SectionContent>
+        </Section>
+
+        <Section>
+          <SectionTitle>Accessed Contacts</SectionTitle>
+          <ContactList>
+            {contacts.map(contact => (
+              <ContactRow key={contact.id} to={`/contact/${contact.id}`}>
+                <ContactInfo>
+                  <ContactName>{contact.name}</ContactName>
+                  <ContactRelationship>{contact.relationship}</ContactRelationship>
+                </ContactInfo>
+                <RiskIndicator risk={contact.riskLevel} />
+              </ContactRow>
+            ))}
+          </ContactList>
         </Section>
       </Content>
     </Container>
