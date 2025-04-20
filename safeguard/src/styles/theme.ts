@@ -338,3 +338,21 @@ export const StatLabel = styled.div`
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `
+
+// Explanation Text Component
+export const ExplanationText = styled.p`
+  font-size: 16px;
+  line-height: 1.6;
+  color: ${colors.text.secondary};
+  margin: 0;
+  padding: 16px 0;
+`
+
+// Divider Component
+export const Divider = styled.hr`
+  border: none;
+  height: 1px;
+  background: ${colors.border.primary};
+  margin: 32px 0;
+  opacity: 0.5;
+`
