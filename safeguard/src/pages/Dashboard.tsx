@@ -9,11 +9,14 @@ const Container = styled.div`
 `
 
 const Sidebar = styled.nav`
-  width: 250px;
-  min-width: 250px;
-  background-color: rgba(20, 22, 31, 0.95);
-  padding: 24px 16px;
-  height: 100vh;
+  width: 280px;
+  min-width: 280px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 32px 20px;
+  height: 100%;
+  overflow-y: auto;
 `
 
 const MainContent = styled.main`
@@ -96,12 +99,55 @@ const NavItem = styled.div<{ active?: boolean }>`
   padding: 12px 16px;
   margin-bottom: 8px;
   cursor: pointer;
+  border-radius: 8px;
   font-weight: 500;
-  color: ${props => props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)'};
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: ${props => props.active ? '#fff' : '#94a3b8'};
+  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
   transition: all 0.2s ease;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(to bottom, #3b82f6, #2563eb);
+    border-radius: 0 2px 2px 0;
+    transition: all 0.2s ease;
+    opacity: ${props => props.active ? 1 : 0};
+  }
 
   &:hover {
-    color: #7367f0;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    
+    &:before {
+      height: 70%;
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+`
+
+const NavIcon = styled.span`
+  font-size: 18px;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+  
+  ${NavItem}:hover & {
+    opacity: 1;
+    transform: scale(1.1);
   }
 `
 
@@ -160,21 +206,34 @@ const Dashboard = () => {
   const location = useLocation()
   const currentPath = location.pathname
 
+  const getNavIcon = (path: string) => {
+    switch (path) {
+      case '/dashboard':
+        return '🏠';
+      case '/contacts':
+        return '👥';
+      case '/analysis':
+        return '📊';
+      case '/settings':
+        return '⚙️';
+      default:
+        return '';
+    }
+  };
+
   return (
     <Container>
       <Sidebar>
-        <NavItem 
-          active={currentPath === '/dashboard'} 
-          onClick={() => navigate('/dashboard')}
-        >
-          Dashboard
-        </NavItem>
-        <NavItem 
-          active={currentPath === '/analysis'} 
-          onClick={() => navigate('/analysis')}
-        >
-          Analysis
-        </NavItem>
+        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
+          <NavItem 
+            key={path}
+            active={currentPath === path} 
+            onClick={() => navigate(path)}
+          >
+            <NavIcon>{getNavIcon(path)}</NavIcon>
+            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
+          </NavItem>
+        ))}
       </Sidebar>
       <MainContent>
         <PageTitle>DASHBOARD</PageTitle>

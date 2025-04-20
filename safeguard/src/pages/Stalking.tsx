@@ -1,210 +1,31 @@
-import styled from '@emotion/styled'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-
-const Container = styled.div`
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  background-color: #14161f;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-`
-
-const Sidebar = styled.nav`
-  width: 250px;
-  min-width: 250px;
-  background-color: rgba(20, 22, 31, 0.95);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px 16px;
-  height: 100%;
-  overflow-y: auto;
-`
-
-const MainContent = styled.main`
-  flex: 1;
-  background-color: #14161f;
-  padding: 24px 32px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
-  min-width: 0;
-`
-
-const Content = styled.div`
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  overflow: hidden;
-`
-
-const Title = styled.h1`
-  font-size: 36px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 32px;
-  text-align: center;
-`
-
-const Section = styled.div`
-  background-color: rgba(20, 22, 31, 0.95);
-  border-radius: 12px;
-  padding: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 32px;
-`
-
-const SectionTitle = styled.h2`
-  font-size: 24px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 24px;
-`
-
-const MessageContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 24px;
-`
-
-const MessageBubble = styled.div<{ type: 'sent' | 'received' }>`
-  padding: 16px 20px;
-  border-radius: 16px;
-  max-width: 70%;
-  font-size: 16px;
-  line-height: 1.5;
-  position: relative;
-  animation: fadeIn 0.5s ease-in-out;
-  
-  ${props => props.type === 'sent' ? `
-    background-color: #3b82f6;
-    color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 4px;
-  ` : `
-    background-color: #f1f5f9;
-    color: #1e293b;
-    border-bottom-left-radius: 4px;
-  `}
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`
-
-const SeverityLevel = styled.div<{ level: 'low' | 'medium' | 'high' }>`
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-  display: inline-block;
-  margin-bottom: 16px;
-  background-color: ${props => 
-    props.level === 'low' ? '#dcfce7' : 
-    props.level === 'medium' ? '#fef3c7' : 
-    '#fee2e2'
-  };
-  color: ${props => 
-    props.level === 'low' ? '#166534' : 
-    props.level === 'medium' ? '#92400e' : 
-    '#991b1b'
-  };
-`
-
-const SeverityContainer = styled.div`
-  display: flex;
-  gap: 16px;
-  margin-bottom: 24px;
-`
-
-const SeverityIndicator = styled.div<{ active?: boolean }>`
-  flex: 1;
-  padding: 16px;
-  border-radius: 12px;
-  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'rgba(20, 22, 31, 0.95)'};
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(115, 103, 240, 0.1);
-  }
-`
-
-const SeverityTitle = styled.h3`
-  font-size: 18px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 8px;
-`
-
-const SeverityDescription = styled.p`
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  line-height: 1.5;
-`
-
-const ExplanationText = styled.p`
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 16px;
-`
-
-const NavItem = styled.div<{ active?: boolean }>`
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: 500;
-  color: ${props => props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)'};
-  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'transparent'};
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(115, 103, 240, 0.1);
-    color: #7367f0;
-  }
-`
-
-const StatsContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-`
-
-const StatCard = styled.div`
-  background-color: rgba(20, 22, 31, 0.95);
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-`
-
-const StatValue = styled.div`
-  font-size: 24px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 8px;
-`
-
-const StatLabel = styled.div`
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-`
+import {
+  Container,
+  Sidebar,
+  MainContent,
+  Content,
+  Title,
+  Section,
+  SectionTitle,
+  MessageContainer,
+  MessageWrapper,
+  MessageBubble,
+  MessageTime,
+  SeverityLevel,
+  StatsContainer,
+  StatCard,
+  StatValue,
+  StatLabel,
+  SeverityContainer,
+  SeverityIndicator,
+  SeverityTitle,
+  SeverityDescription,
+  ExplanationText,
+  NavItem,
+  NavIcon,
+  Divider
+} from '../styles/theme'
 
 const mockUserMessages = {
   '1': [
@@ -246,6 +67,7 @@ const Stalking = () => {
   const currentPath = location.pathname
   const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null)
   const [userMessages, setUserMessages] = useState<any[]>([])
+  const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null)
 
   useEffect(() => {
     if (id && mockUserMessages[id as keyof typeof mockUserMessages]) {
@@ -268,21 +90,38 @@ const Stalking = () => {
       : '0'
   }
 
+  const handleMessageClick = (messageId: number) => {
+    setSelectedMessageId(messageId === selectedMessageId ? null : messageId)
+  }
+
+  const getNavIcon = (path: string) => {
+    switch (path) {
+      case '/dashboard':
+        return '🏠';
+      case '/contacts':
+        return '👥';
+      case '/analysis':
+        return '📊';
+      case '/settings':
+        return '⚙️';
+      default:
+        return '';
+    }
+  };
+
   return (
     <Container>
       <Sidebar>
-        <NavItem 
-          active={currentPath === '/dashboard'} 
-          onClick={() => navigate('/dashboard')}
-        >
-          Dashboard
-        </NavItem>
-        <NavItem 
-          active={currentPath === '/analysis'} 
-          onClick={() => navigate('/analysis')}
-        >
-          Analysis
-        </NavItem>
+        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
+          <NavItem 
+            key={path}
+            active={currentPath === path} 
+            onClick={() => navigate(path)}
+          >
+            <NavIcon>{getNavIcon(path)}</NavIcon>
+            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
+          </NavItem>
+        ))}
       </Sidebar>
       <MainContent>
         <Content>
@@ -310,17 +149,26 @@ const Stalking = () => {
             <SectionTitle>Detected Stalking Messages</SectionTitle>
             <MessageContainer>
               {filteredMessages.map(message => (
-                <div key={message.id}>
+                <MessageWrapper key={message.id} data-type={message.type}>
                   <SeverityLevel level={message.severity}>
                     {message.severity.charAt(0).toUpperCase() + message.severity.slice(1)} Severity
                   </SeverityLevel>
-                  <MessageBubble type={message.type as 'sent' | 'received'}>
+                  <MessageBubble 
+                    type={message.type as 'sent' | 'received'}
+                    isSelected={selectedMessageId === message.id}
+                    onClick={() => handleMessageClick(message.id)}
+                  >
                     {message.text}
                   </MessageBubble>
-                </div>
+                  <MessageTime>
+                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </MessageTime>
+                </MessageWrapper>
               ))}
             </MessageContainer>
           </Section>
+
+          <Divider />
 
           <Section>
             <SectionTitle>Severity Levels</SectionTitle>
