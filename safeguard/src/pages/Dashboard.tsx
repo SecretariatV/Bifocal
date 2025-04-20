@@ -98,6 +98,7 @@ const TopDeck = styled.div`
 const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
+  margin-left: 60px;
 `
 
 const EmpathyStatement = styled.div`
@@ -325,40 +326,40 @@ const Subtitle = styled.p`
 `
 
 const thoughtMessages = [
-  "You don't have to face this alone — we're here to help",
-  "Your voice matters. Let's listen together.",
-  "Sometimes all it takes is a closer look.",
-  "We're here to help you make sense of the patterns.",
-  "You're not alone. Let's take a closer look together.",
-  "We help connect the dots — safely and privately."
+  "Keeping you safe and informed",
+  "Monitoring your digital safety",
+  "Analyzing communication patterns",
+  "Tracking behavioral changes",
+  "Identifying concerning patterns",
+  "Protecting your digital space"
 ]
 
 const tiles = [
   {
     icon: '🔊',
     title: "Analyze a Voice Message",
-    description: "Share verbal interactions for our model to detect tone and trauma language using survivor-focused, DSM-aligned analysis.",
+    description: "Upload voice messages for our AI to analyze tone, patterns, and concerning language.",
     cta: "Upload Audio",
     path: '/audio-upload'
   },
   {
     icon: '💬',
     title: "Describe Your Experience",
-    description: "Share your story in your own words. Our system helps identify patterns of confusion, fear, and dissociation through a survivor-focused lens.",
+    description: "Share messages and conversations for our system to identify concerning patterns and behaviors.",
     cta: "Start Conversation",
     path: '/conversation'
   },
   {
     icon: '📍',
     title: "Find Local Resources",
-    description: "Connect with nearby support services and crisis centers. Get actionable help based on your specific situation and location.",
+    description: "Connect with nearby support services based on your situation.",
     cta: "Find Support",
     path: '/resources'
   },
   {
     icon: '📓',
     title: "Interactive Journal",
-    description: "Track changes in symptoms like hypervigilance or isolation over time. Helps identify patterns and document your journey.",
+    description: "Track and document changes in behavior and communication over time.",
     cta: "Start Writing",
     path: '/journal'
   }
