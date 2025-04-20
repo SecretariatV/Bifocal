@@ -13,30 +13,6 @@ body {
   overflow: hidden;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center, transparent, #14161f),
-              linear-gradient(45deg, transparent 45%, rgba(115, 103, 240, 0.1) 50%, transparent 55%),
-              linear-gradient(135deg, transparent 45%, rgba(115, 103, 240, 0.1) 50%, transparent 55%);
-  background-size: 100% 100%, 300% 300%, 300% 300%;
-  animation: gradientBeam 15s ease infinite;
-  z-index: 0;
-}
-
-@keyframes gradientBeam {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
 #root {
   min-height: 100vh;
   position: relative;
@@ -50,7 +26,7 @@ body::before {
 
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #14161f;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -94,7 +70,7 @@ button:focus-visible {
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #14161f;
   }
   a:hover {
     color: #747bff;

@@ -116,24 +116,24 @@ const Blob = styled.div<{
   width: ${p => p.size}px;
   height: ${p => p.size}px;
   background: ${p => p.gradient};
-  opacity: 0.5;
-  filter: blur(120px);
+  opacity: 0.35;
+  filter: blur(180px);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 0;
-  animation: ${p => p.animation} 30s ease-in-out infinite;
+  z-index: 0; /* stays behind actual UI */
+  animation: ${p => p.animation} 45s ease-in-out infinite;
 `
 
 const beam1Animation = keyframes`
   0% { transform: translate(-50%, -50%) rotate(45deg); opacity: 0; }
-  20% { opacity: 0.3; }
+  20% { opacity: 0.2; }
   40% { opacity: 0; }
   100% { transform: translate(50%, 50%) rotate(45deg); opacity: 0; }
 `
 
 const beam2Animation = keyframes`
   0% { transform: translate(50%, -50%) rotate(-45deg); opacity: 0; }
-  20% { opacity: 0.25; }
+  20% { opacity: 0.15; }
   40% { opacity: 0; }
   100% { transform: translate(-50%, 50%) rotate(-45deg); opacity: 0; }
 `
@@ -154,8 +154,8 @@ const Beam = styled.div<{ delay: string }>`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, rgba(115, 103, 240, 0.08), rgba(115, 103, 240, 0));
-    animation: ${beam1Animation} 20s infinite;
+    background: linear-gradient(45deg, rgba(115, 103, 240, 0.05), rgba(115, 103, 240, 0));
+    animation: ${beam1Animation} 30s infinite;
     animation-delay: ${props => props.delay};
     transform-origin: 0 0;
   }
@@ -167,8 +167,8 @@ const Beam = styled.div<{ delay: string }>`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.08), rgba(34, 211, 238, 0));
-    animation: ${beam2Animation} 20s infinite;
+    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.05), rgba(34, 211, 238, 0));
+    animation: ${beam2Animation} 30s infinite;
     animation-delay: ${props => props.delay};
     transform-origin: 100% 0;
   }

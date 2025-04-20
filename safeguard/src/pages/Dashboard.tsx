@@ -1,15 +1,6 @@
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { contacts } from '../data/contacts'
-import type { Contact } from '../data/contacts'
-=======
 import { Global, css, keyframes } from '@emotion/react'
->>>>>>> Stashed changes
-=======
-import { Global, css, keyframes } from '@emotion/react'
->>>>>>> Stashed changes
 
 /**************************************************
  * 1) ANIMATED BACKGROUND BLOBS → UNSHACKLE‑STYLE  *
@@ -259,50 +250,6 @@ const Dashboard = () => {
   const currentPath = location.pathname
 
   return (
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    <Container>
-      <Sidebar>
-        <NavItem 
-          active={currentPath === '/dashboard'} 
-          onClick={() => navigate('/dashboard')}
-        >
-          Dashboard
-        </NavItem>
-        <NavItem 
-          active={currentPath === '/analysis'} 
-          onClick={() => navigate('/analysis')}
-        >
-          Analysis
-        </NavItem>
-      </Sidebar>
-      <MainContent>
-        <PageTitle>DASHBOARD</PageTitle>
-        <ProfileSection>
-          <ProfileCircle>
-            Profile
-          </ProfileCircle>
-        </ProfileSection>
-        <ContactsContainer>
-          <ContactsHeader>
-            <ContactsTitle>Accessed Contacts</ContactsTitle>
-            <RiskLabel>Risk</RiskLabel>
-          </ContactsHeader>
-          {contacts.map((contact: Contact) => (
-            <ContactRow 
-              key={contact.id}
-              onClick={() => navigate(`/contact/${contact.id}`)}
-            >
-              <ContactName>{contact.name}</ContactName>
-              <RiskIndicator risk={contact.risk} />
-            </ContactRow>
-          ))}
-        </ContactsContainer>
-      </MainContent>
-    </Container>
-=======
-=======
->>>>>>> Stashed changes
     <>
       <GlobalStyles />
       <Beam delay="0s" />
@@ -363,10 +310,6 @@ const Dashboard = () => {
         </MainContent>
       </Container>
     </>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
   )
 }
 

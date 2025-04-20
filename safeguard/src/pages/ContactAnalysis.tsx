@@ -2,15 +2,7 @@ import styled from '@emotion/styled'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { useRef, useState, useEffect } from 'react'
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-import { contacts, messages } from '../data/contacts'
-=======
 import { Global, css, keyframes } from '@emotion/react'
->>>>>>> Stashed changes
-=======
-import { Global, css, keyframes } from '@emotion/react'
->>>>>>> Stashed changes
 
 const Container = styled.div`
   display: flex;
@@ -109,44 +101,32 @@ const ChartContainer = styled.div`
 `
 
 const MessagesContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 32px;
-  padding: 24px;
-  background-color: rgba(20, 22, 31, 0.95);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: white;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+  border: 1px solid #e2e8f0;
 `
 
 const MessageBubble = styled.div<{ type: 'sent' | 'received' }>`
   padding: 12px 16px;
   border-radius: 16px;
+  margin-bottom: 12px;
   max-width: 70%;
-  align-self: ${props => props.type === 'sent' ? 'flex-end' : 'flex-start'};
-  background-color: ${props => props.type === 'sent' ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'};
-  color: ${props => props.type === 'sent' ? 'white' : 'rgba(255, 255, 255, 0.9)'};
-  position: relative;
-
-  &:after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    ${props => props.type === 'sent' ? 'right: -8px' : 'left: -8px'};
-    width: 16px;
-    height: 16px;
-    background-color: ${props => props.type === 'sent' ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'};
-    clip-path: ${props => props.type === 'sent' 
-      ? 'polygon(0 0, 0 100%, 100% 100%)' 
-      : 'polygon(100% 0, 0 100%, 100% 100%)'};
-  }
-`
-
-const MessageTime = styled.div<{ messageType: 'sent' | 'received' }>`
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
-  margin-top: 4px;
-  ${props => props.messageType === 'sent' ? 'text-align: right;' : 'text-align: left;'}
+  font-size: 14px;
+  line-height: 1.5;
+  ${props => props.type === 'sent' ? `
+    background-color: #3b82f6;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+  ` : `
+    background-color: #f1f5f9;
+    color: #1e293b;
+    border-bottom-left-radius: 4px;
+  `}
 `
 
 const NavItem = styled.div<{ active?: boolean }>`
@@ -250,24 +230,24 @@ const Blob = styled.div<{
   width: ${p => p.size}px;
   height: ${p => p.size}px;
   background: ${p => p.gradient};
-  opacity: 0.5;
-  filter: blur(120px);
+  opacity: 0.35;
+  filter: blur(180px);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 0;
-  animation: ${p => p.animation} 30s ease-in-out infinite;
+  z-index: 0; /* stays behind actual UI */
+  animation: ${p => p.animation} 45s ease-in-out infinite;
 `
 
 const beam1Animation = keyframes`
   0% { transform: translate(-50%, -50%) rotate(45deg); opacity: 0; }
-  20% { opacity: 0.3; }
+  20% { opacity: 0.2; }
   40% { opacity: 0; }
   100% { transform: translate(50%, 50%) rotate(45deg); opacity: 0; }
 `
 
 const beam2Animation = keyframes`
   0% { transform: translate(50%, -50%) rotate(-45deg); opacity: 0; }
-  20% { opacity: 0.25; }
+  20% { opacity: 0.15; }
   40% { opacity: 0; }
   100% { transform: translate(-50%, 50%) rotate(-45deg); opacity: 0; }
 `
@@ -288,8 +268,8 @@ const Beam = styled.div<{ delay: string }>`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, rgba(115, 103, 240, 0.08), rgba(115, 103, 240, 0));
-    animation: ${beam1Animation} 20s infinite;
+    background: linear-gradient(45deg, rgba(115, 103, 240, 0.05), rgba(115, 103, 240, 0));
+    animation: ${beam1Animation} 30s infinite;
     animation-delay: ${props => props.delay};
     transform-origin: 0 0;
   }
@@ -301,8 +281,8 @@ const Beam = styled.div<{ delay: string }>`
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.08), rgba(34, 211, 238, 0));
-    animation: ${beam2Animation} 20s infinite;
+    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.05), rgba(34, 211, 238, 0));
+    animation: ${beam2Animation} 30s infinite;
     animation-delay: ${props => props.delay};
     transform-origin: 100% 0;
   }
@@ -369,45 +349,7 @@ const ContactAnalysis = () => {
     navigate(`/${patternId}/${id}`)
   }
 
-  const contactId = id ? parseInt(id) : 0
-  const contact = contacts.find(c => c.id === contactId)
-  const contactMessages = messages.filter(m => m.contactId === contact?.phone)
-
-  if (!contact) {
-    return <div>Contact not found</div>
-  }
-
   return (
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    <Container>
-      <Sidebar>
-        <NavItem 
-          active={currentPath === '/dashboard'} 
-          onClick={() => navigate('/dashboard')}
-        >
-          Dashboard
-        </NavItem>
-        <NavItem 
-          active={currentPath === '/analysis'} 
-          onClick={() => navigate('/analysis')}
-        >
-          Analysis
-        </NavItem>
-      </Sidebar>
-      <MainContent>
-        <Content>
-          <Header>
-            <ContactPhoto />
-            <ContactInfo>
-              <h1>{contact.name}</h1>
-              <p>{contact.phone}</p>
-              {contact.email && <p>{contact.email}</p>}
-            </ContactInfo>
-          </Header>
-=======
-=======
->>>>>>> Stashed changes
     <>
       <GlobalStyles />
       <Beam delay="0s" />
@@ -437,10 +379,6 @@ const ContactAnalysis = () => {
         animation={float3}
         style={{ top: '-200px', right: '-200px' }}
       />
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
       <Container>
         <Sidebar>
@@ -474,32 +412,6 @@ const ContactAnalysis = () => {
                 data={mockTimelineData}
                 margin={{ top: 5, right: 20, bottom: 5, left: 10 }}
               >
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-                <PatternTitle>{pattern.title}</PatternTitle>
-                <PatternDescription>{pattern.description}</PatternDescription>
-              </PatternSquare>
-            ))}
-          </PatternSquaresContainer>
-
-          <MessagesContainer>
-            {contactMessages.map(message => (
-              <div key={message.id}>
-                <MessageBubble type={message.type}>
-                  {message.text === '￼' ? '📎 Media attachment' : message.text}
-                </MessageBubble>
-                <MessageTime messageType={message.type}>
-                  {new Date(message.timestamp).toLocaleString()}
-                </MessageTime>
-              </div>
-            ))}
-          </MessagesContainer>
-        </Content>
-      </MainContent>
-    </Container>
-=======
-=======
->>>>>>> Stashed changes
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
                 <XAxis 
                   dataKey="date" 
@@ -558,10 +470,6 @@ const ContactAnalysis = () => {
         </MainContent>
       </Container>
     </>
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
   )
 }
 
