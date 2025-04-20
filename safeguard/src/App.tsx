@@ -25,7 +25,6 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contacts" element={<Dashboard />} />
           <Route path="/analysis" element={<Dashboard />} />
-          <Route path="/settings" element={<Dashboard />} />
           <Route path="/contact/:id" element={<ContactAnalysis />} />
           <Route path="/patterns/:id" element={<PatternDetection />} />
           <Route path="/gaslighting/:id" element={<Gaslighting />} />

@@ -149,12 +149,6 @@ const Dashboard = () => {
         >
           Analysis
         </NavItem>
-        <NavItem 
-          active={currentPath === '/settings'} 
-          onClick={() => navigate('/settings')}
-        >
-          Settings
-        </NavItem>
       </Sidebar>
       <MainContent>
         <PageTitle>DASHBOARD</PageTitle>

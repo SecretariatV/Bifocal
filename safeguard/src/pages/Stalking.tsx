@@ -288,12 +288,6 @@ const Stalking = () => {
         >
           Analysis
         </NavItem>
-        <NavItem 
-          active={currentPath === '/settings'} 
-          onClick={() => navigate('/settings')}
-        >
-          Settings
-        </NavItem>
       </Sidebar>
       <MainContent>
         <Content>
