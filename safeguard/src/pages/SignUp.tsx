@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate, Link } from 'react-router-dom'
 import { Global, css, keyframes } from '@emotion/react'
+import useUserStore from '../store/userStore'
+import Logo from '../components/Logo'
 
 const fadeInUp = keyframes`
   from {
@@ -34,24 +36,6 @@ const FormBox = styled.div`
   width: 100%;
   max-width: 400px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-`
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: -1px;
-  
-  &::after {
-    content: '.';
-    color: #60a5fa;
-    -webkit-text-fill-color: #60a5fa;
-  }
 `
 
 const Subtitle = styled.p`
@@ -176,25 +160,65 @@ const GlobalStyles = () => (
   />
 )
 
+const Checkbox = styled.input`
+  margin-right: 0.5rem;
+  cursor: pointer;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  &:hover {
+    color: rgba(255, 255, 255, 1);
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+`;
+
 const SignUp: React.FC = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { setUser, login } = useUserStore()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password !== confirmPassword) {
-      alert('Passwords do not match')
+    setError('')
+
+    if (!consent) {
+      setError('Please agree to the terms and conditions')
       return
     }
-    // Here you would typically handle the sign-up logic
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    
+    // Save user data to store
+    setUser(name, email, phone)
+    login()
+    
+    // Navigate to dashboard
     navigate('/dashboard')
   }
 
   return (
-    <>
+    <Container>
       <GlobalStyles />
       {/* Background blobs */}
       <Blob
@@ -218,7 +242,7 @@ const SignUp: React.FC = () => {
       
       <Container>
         <FormBox>
-          <Title>bifocal</Title>
+          <Logo />
           <Subtitle>begin your journey</Subtitle>
           <form onSubmit={handleSubmit}>
             <Input
@@ -236,6 +260,13 @@ const SignUp: React.FC = () => {
               required
             />
             <Input
+              type="tel"
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+            />
+            <Input
               type="password"
               placeholder="Password"
               value={password}
@@ -249,14 +280,27 @@ const SignUp: React.FC = () => {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
+            <CheckboxLabel>
+              <Checkbox
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+              />
+              I agree to allow BiFocal to access my contacts and analyze my messages for safety purposes
+            </CheckboxLabel>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
             <Button type="submit">Sign Up</Button>
           </form>
           <BottomLink>
-            Already have an account?<Link to="/signin">Sign in</Link>
+            Already have an account?<Link to="/login">Sign In</Link>
           </BottomLink>
         </FormBox>
       </Container>
-    </>
+
+      <Blob size={600} gradient="linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)" animation={float1} />
+      <Blob size={500} gradient="linear-gradient(135deg, #34d399 0%, #059669 100%)" animation={float2} />
+      <Blob size={550} gradient="linear-gradient(135deg, #f472b6 0%, #db2777 100%)" animation={float3} />
+    </Container>
   )
 }
 
