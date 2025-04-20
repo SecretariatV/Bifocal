@@ -1,35 +1,37 @@
 import styled from '@emotion/styled'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import { Global, css, keyframes } from '@emotion/react'
 
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #14161f;
+  background: linear-gradient(to bottom, #1a1f36, #121629);
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   overflow: hidden;
+  color: #f8fafc;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 `
 
 const Sidebar = styled.nav`
-  width: 250px;
-  min-width: 250px;
-  background-color: rgba(20, 22, 31, 0.95);
+  width: 280px;
+  min-width: 280px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px 16px;
+  padding: 32px 20px;
   height: 100%;
   overflow-y: auto;
 `
 
 const MainContent = styled.main`
   flex: 1;
-  background-color: #14161f;
-  padding: 24px 32px;
+  background: transparent;
+  padding: 32px;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
@@ -44,26 +46,96 @@ const Content = styled.div`
 `
 
 const Title = styled.h1`
-  font-size: 36px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 32px;
+  font-size: 42px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 40px;
   text-align: center;
+  letter-spacing: -0.02em;
 `
 
 const Section = styled.div`
-  background-color: rgba(20, 22, 31, 0.95);
-  border-radius: 12px;
-  padding: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  padding: 32px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 32px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+  }
 `
 
 const SectionTitle = styled.h2`
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 600;
   color: #fff;
   margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  &:before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: linear-gradient(to bottom, #3b82f6, #2563eb);
+    border-radius: 2px;
+    margin-right: 8px;
+  }
+`
+
+const Divider = styled.hr`
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+  margin: 32px 0;
+`
+
+const StatsContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 32px;
+`
+
+const StatCard = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+`
+
+const StatValue = styled.div`
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+`
+
+const StatLabel = styled.div`
+  font-size: 14px;
+  color: #94a3b8;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 `
 
 const MessageContainer = styled.div`
@@ -90,12 +162,11 @@ const MessageWrapper = styled.div`
 `
 
 const MessageBubble = styled.div<{ type: 'sent' | 'received'; isSelected?: boolean }>`
-  padding: 16px 20px;
-  border-radius: 20px;
+  padding: 20px 24px;
+  border-radius: 16px;
   font-size: 16px;
   line-height: 1.6;
   position: relative;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
   cursor: pointer;
   
@@ -104,6 +175,7 @@ const MessageBubble = styled.div<{ type: 'sent' | 'received'; isSelected?: boole
     color: white;
     border-bottom-right-radius: 4px;
     margin-left: auto;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     
     &:before {
       content: '';
@@ -114,12 +186,11 @@ const MessageBubble = styled.div<{ type: 'sent' | 'received'; isSelected?: boole
       height: 20px;
       background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
       clip-path: polygon(0 0, 0% 100%, 100% 100%);
-      transition: all 0.3s ease;
     }
 
     ${props.isSelected && `
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5), 0 8px 20px rgba(37, 99, 235, 0.4);
       transform: scale(1.02);
 
       &:before {
@@ -127,9 +198,10 @@ const MessageBubble = styled.div<{ type: 'sent' | 'received'; isSelected?: boole
       }
     `}
   ` : `
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    color: #1e293b;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    color: #fff;
     border-bottom-left-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     
     &:before {
       content: '';
@@ -138,131 +210,178 @@ const MessageBubble = styled.div<{ type: 'sent' | 'received'; isSelected?: boole
       left: -8px;
       width: 20px;
       height: 20px;
-      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
       clip-path: polygon(0 100%, 100% 100%, 100% 0);
-      transition: all 0.3s ease;
     }
 
     ${props.isSelected && `
-      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
-      box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.5);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2), 0 8px 20px rgba(0, 0, 0, 0.3);
       transform: scale(1.02);
 
       &:before {
-        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.1) 100%);
       }
     `}
   `}
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px) scale(1.01);
+    ${props => props.type === 'sent' 
+      ? 'box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);'
+      : 'box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);'
+    }
   }
 
   &:active {
     transform: scale(0.98);
   }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: -3px;
-    left: -3px;
-    right: -3px;
-    bottom: -3px;
-    border-radius: 22px;
-    background: ${props => props.type === 'sent' ? 
-      'linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)' : 
-      'linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%)'};
-    opacity: 0;
-    z-index: -1;
-    transition: all 0.3s ease;
-  }
-
-  ${props => props.isSelected && `
-    &::after {
-      opacity: 0.5;
-      animation: pulseHighlight 2s infinite;
-    }
-  `}
-
-  @keyframes pulseHighlight {
-    0% {
-      transform: scale(1);
-      opacity: 0.5;
-    }
-    50% {
-      transform: scale(1.05);
-      opacity: 0.3;
-    }
-    100% {
-      transform: scale(1);
-      opacity: 0.5;
-    }
-  }
 `
 
 const MessageTime = styled.div`
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+  color: #94a3b8;
   margin-top: 4px;
   padding: 0 8px;
+  text-align: right;
+  font-weight: 500;
 `
 
 const SeverityLevel = styled.div<{ level: 'low' | 'medium' | 'high' }>`
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 8px;
   transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.5;
+  }
   
   ${props => {
     switch (props.level) {
       case 'low':
         return `
-          background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-          color: #166534;
+          background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(34, 197, 94, 0.1) 100%);
+          color: #4ade80;
+          border: 1px solid rgba(34, 197, 94, 0.2);
+          box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
         `;
       case 'medium':
         return `
-          background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-          color: #92400e;
+          background: linear-gradient(135deg, rgba(255, 209, 102, 0.2) 0%, rgba(255, 209, 102, 0.1) 100%);
+          color: #ffd166;
+          border: 1px solid rgba(255, 209, 102, 0.2);
+          box-shadow: 0 2px 8px rgba(255, 209, 102, 0.1);
         `;
       case 'high':
         return `
-          background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-          color: #991b1b;
+          background: linear-gradient(135deg, rgba(239, 71, 111, 0.2) 0%, rgba(239, 71, 111, 0.1) 100%);
+          color: #ef476f;
+          border: 1px solid rgba(239, 71, 111, 0.2);
+          box-shadow: 0 2px 8px rgba(239, 71, 111, 0.1);
         `;
     }
   }}
   
   &:hover {
     transform: translateY(-1px);
-    filter: brightness(1.05);
+    filter: brightness(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+`
+
+const NavItem = styled.div<{ active?: boolean }>`
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: ${props => props.active ? '#fff' : '#94a3b8'};
+  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(to bottom, #3b82f6, #2563eb);
+    border-radius: 0 2px 2px 0;
+    transition: all 0.2s ease;
+    opacity: ${props => props.active ? 1 : 0};
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    
+    &:before {
+      height: 70%;
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+`
+
+const NavIcon = styled.span`
+  font-size: 18px;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+  
+  ${NavItem}:hover & {
+    opacity: 1;
+    transform: scale(1.1);
   }
 `
 
 const SeverityContainer = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 `
 
 const SeverityIndicator = styled.div<{ active?: boolean }>`
   flex: 1;
-  padding: 16px;
+  padding: 20px;
   border-radius: 12px;
-  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'rgba(20, 22, 31, 0.95)'};
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.05)'};
+  border: 1px solid ${props => props.active ? 'rgba(255, 255, 255, 0.2)' : 'rgba(255, 255, 255, 0.1)'};
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: rgba(115, 103, 240, 0.1);
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   }
 `
 
@@ -274,59 +393,16 @@ const SeverityTitle = styled.h3`
 `
 
 const SeverityDescription = styled.p`
-  color: rgba(255, 255, 255, 0.6);
+  color: #94a3b8;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
 `
 
 const ExplanationText = styled.p`
-  color: rgba(255, 255, 255, 0.6);
+  color: #94a3b8;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.8;
   margin-bottom: 16px;
-`
-
-const NavItem = styled.div<{ active?: boolean }>`
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: 500;
-  color: ${props => props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)'};
-  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'transparent'};
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(115, 103, 240, 0.1);
-    color: #7367f0;
-  }
-`
-
-const StatsContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
-`
-
-const StatCard = styled.div`
-  background-color: rgba(20, 22, 31, 0.95);
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-`
-
-const StatValue = styled.div`
-  font-size: 24px;
-  font-weight: 600;
-  color: #fff;
-  margin-bottom: 8px;
-`
-
-const StatLabel = styled.div`
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
 `
 
 const mockUserMessages = {
@@ -362,109 +438,6 @@ const severityLevels = [
   }
 ]
 
-/**************************************************
- * 1) ANIMATED BACKGROUND BLOBS → UNSHACKLE‑STYLE  *
- **************************************************/
-const float1 = keyframes`
-  0%   { transform: translate(-15%, -10%) scale(1); }
-  50%  { transform: translate(20%,  15%) scale(1.15); }
-  100% { transform: translate(-15%, -10%) scale(1); }
-`
-const float2 = keyframes`
-  0%   { transform: translate(10%, 60%)  scale(1); }
-  50%  { transform: translate(-25%, 50%) scale(1.25); }
-  100% { transform: translate(10%, 60%)  scale(1); }
-`
-const float3 = keyframes`
-  0%   { transform: translate(70%, -30%) scale(1); }
-  50%  { transform: translate(50%, 10%)  scale(1.1); }
-  100% { transform: translate(70%, -30%) scale(1); }
-`
-
-const Blob = styled.div<{
-  size: number
-  gradient: string
-  animation: ReturnType<typeof keyframes>
-}>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: ${p => p.size}px;
-  height: ${p => p.size}px;
-  background: ${p => p.gradient};
-  opacity: 0.35;
-  filter: blur(180px);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0; /* stays behind actual UI */
-  animation: ${p => p.animation} 45s ease-in-out infinite;
-`
-
-const beam1Animation = keyframes`
-  0% { transform: translate(-50%, -50%) rotate(45deg); opacity: 0; }
-  20% { opacity: 0.2; }
-  40% { opacity: 0; }
-  100% { transform: translate(50%, 50%) rotate(45deg); opacity: 0; }
-`
-
-const beam2Animation = keyframes`
-  0% { transform: translate(50%, -50%) rotate(-45deg); opacity: 0; }
-  20% { opacity: 0.15; }
-  40% { opacity: 0; }
-  100% { transform: translate(-50%, 50%) rotate(-45deg); opacity: 0; }
-`
-
-const Beam = styled.div<{ delay: string }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, rgba(115, 103, 240, 0.05), rgba(115, 103, 240, 0));
-    animation: ${beam1Animation} 30s infinite;
-    animation-delay: ${props => props.delay};
-    transform-origin: 0 0;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.05), rgba(34, 211, 238, 0));
-    animation: ${beam2Animation} 30s infinite;
-    animation-delay: ${props => props.delay};
-    transform-origin: 100% 0;
-  }
-`
-
-const GlobalStyles = () => (
-  <Global
-    styles={css`
-      html, body, #root {
-        height: 100%;
-        background-color: #14161f;
-        background-image: 
-          radial-gradient(circle at 0% 0%, rgba(115, 103, 240, 0.1) 0%, rgba(115, 103, 240, 0) 50%),
-          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 50%),
-          radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0) 50%);
-      }
-    `}
-  />
-)
-
 const Obsession = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -499,125 +472,122 @@ const Obsession = () => {
     setSelectedMessageId(messageId === selectedMessageId ? null : messageId)
   }
 
+  const getSeverityIcon = (level: string) => {
+    switch (level) {
+      case 'low':
+        return '🟢';
+      case 'medium':
+        return '⚠️';
+      case 'high':
+        return '🔥';
+      default:
+        return '';
+    }
+  };
+
+  const getNavIcon = (path: string) => {
+    switch (path) {
+      case '/dashboard':
+        return '🏠';
+      case '/contacts':
+        return '👥';
+      case '/analysis':
+        return '📊';
+      case '/settings':
+        return '⚙️';
+      default:
+        return '';
+    }
+  };
+
   return (
-    <>
-      <GlobalStyles />
-      <Beam delay="0s" />
-      <Beam delay="4s" />
-      {/* Blobs behind everything */}
-      <Blob
-        size={700}
-        gradient={
-          'radial-gradient(circle at 30% 30%, #7367f0 0%, rgba(115,103,240,0) 70%)'
-        }
-        animation={float1}
-        style={{ top: '-250px', left: '-200px' }}
-      />
-      <Blob
-        size={800}
-        gradient={
-          'radial-gradient(circle at 70% 30%, #f472b6 0%, rgba(244,114,182,0) 75%)'
-        }
-        animation={float2}
-        style={{ bottom: '-300px', left: '20%' }}
-      />
-      <Blob
-        size={650}
-        gradient={
-          'radial-gradient(circle at 50% 50%, #22d3ee 0%, rgba(34,211,238,0) 70%)'
-        }
-        animation={float3}
-        style={{ top: '-200px', right: '-200px' }}
-      />
-
-      <Container>
-        <Sidebar>
+    <Container>
+      <Sidebar>
+        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
           <NavItem 
-            active={currentPath === '/dashboard'} 
-            onClick={() => navigate('/dashboard')}
+            key={path}
+            active={currentPath === path} 
+            onClick={() => navigate(path)}
           >
-            Dashboard
+            <NavIcon>{getNavIcon(path)}</NavIcon>
+            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
           </NavItem>
-          <NavItem 
-            active={currentPath === '/analysis'} 
-            onClick={() => navigate('/analysis')}
-          >
-            Analysis
-          </NavItem>
-        </Sidebar>
-        <MainContent>
-          <Content>
-            <Title>Obsession Analysis for Contact #{id}</Title>
+        ))}
+      </Sidebar>
+      <MainContent>
+        <Content>
+          <Title>Obsession Analysis for Contact #{id}</Title>
 
-            <Section>
-              <SectionTitle>Key Statistics</SectionTitle>
-              <StatsContainer>
-                <StatCard>
-                  <StatValue>{stats.totalIncidents}</StatValue>
-                  <StatLabel>Total Incidents</StatLabel>
-                </StatCard>
-                <StatCard>
-                  <StatValue>{stats.highSeverity}</StatValue>
-                  <StatLabel>High Severity Incidents</StatLabel>
-                </StatCard>
-                <StatCard>
-                  <StatValue>{stats.averageSeverity}</StatValue>
-                  <StatLabel>Average Severity Score</StatLabel>
-                </StatCard>
-              </StatsContainer>
-            </Section>
+          <Section>
+            <SectionTitle>Key Statistics</SectionTitle>
+            <StatsContainer>
+              <StatCard>
+                <StatValue>{stats.totalIncidents}</StatValue>
+                <StatLabel>Total Incidents</StatLabel>
+              </StatCard>
+              <StatCard>
+                <StatValue>{stats.highSeverity}</StatValue>
+                <StatLabel>High Severity Incidents</StatLabel>
+              </StatCard>
+              <StatCard>
+                <StatValue>{stats.averageSeverity}</StatValue>
+                <StatLabel>Average Severity Score</StatLabel>
+              </StatCard>
+            </StatsContainer>
+          </Section>
 
-            <Section>
-              <SectionTitle>Detected Obsessive Messages</SectionTitle>
-              <MessageContainer>
-                {filteredMessages.map(message => (
-                  <MessageWrapper key={message.id} data-type={message.type}>
-                    <SeverityLevel level={message.severity}>
-                      {message.severity.charAt(0).toUpperCase() + message.severity.slice(1)} Severity
-                    </SeverityLevel>
-                    <MessageBubble 
-                      type={message.type as 'sent' | 'received'}
-                      isSelected={selectedMessageId === message.id}
-                      onClick={() => handleMessageClick(message.id)}
-                    >
-                      {message.text}
-                    </MessageBubble>
-                    <MessageTime>
-                      {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </MessageTime>
-                  </MessageWrapper>
-                ))}
-              </MessageContainer>
-            </Section>
-
-            <Section>
-              <SectionTitle>Severity Levels</SectionTitle>
-              <SeverityContainer>
-                {severityLevels.map(level => (
-                  <SeverityIndicator 
-                    key={level.level}
-                    active={selectedSeverity === level.level}
-                    onClick={() => setSelectedSeverity(
-                      selectedSeverity === level.level ? null : level.level
-                    )}
+          <Section>
+            <SectionTitle>Detected Obsessive Messages</SectionTitle>
+            <MessageContainer>
+              {filteredMessages.map(message => (
+                <MessageWrapper key={message.id} data-type={message.type}>
+                  <SeverityLevel level={message.severity}>
+                    {message.severity.charAt(0).toUpperCase() + message.severity.slice(1)} Severity
+                  </SeverityLevel>
+                  <MessageBubble 
+                    type={message.type as 'sent' | 'received'}
+                    isSelected={selectedMessageId === message.id}
+                    onClick={() => handleMessageClick(message.id)}
                   >
-                    <SeverityTitle>{level.title}</SeverityTitle>
-                    <SeverityDescription>{level.description}</SeverityDescription>
-                  </SeverityIndicator>
-                ))}
-              </SeverityContainer>
-            </Section>
+                    {message.text}
+                  </MessageBubble>
+                  <MessageTime>
+                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </MessageTime>
+                </MessageWrapper>
+              ))}
+            </MessageContainer>
+          </Section>
 
-            <Section>
-              <SectionTitle>What is Obsessive Behavior?</SectionTitle>
-              <ExplanationText>
-                Obsessive behavior in relationships manifests as an intense preoccupation with another person, characterized by persistent thoughts, excessive attention, and a strong desire for contact or control. This can include constant messaging, emotional dependency, and difficulty accepting boundaries or rejection.
-              </ExplanationText>
-            </Section>
-          </Content>
-        </MainContent>
-      </Container>
-    </>
+          <Divider />
+
+          <Section>
+            <SectionTitle>Severity Levels</SectionTitle>
+            <SeverityContainer>
+              {severityLevels.map(level => (
+                <SeverityIndicator 
+                  key={level.level}
+                  active={selectedSeverity === level.level}
+                  onClick={() => setSelectedSeverity(
+                    selectedSeverity === level.level ? null : level.level
+                  )}
+                >
+                  <SeverityTitle>{level.title}</SeverityTitle>
+                  <SeverityDescription>{level.description}</SeverityDescription>
+                </SeverityIndicator>
+              ))}
+            </SeverityContainer>
+          </Section>
+
+          <Section>
+            <SectionTitle>What is Obsessive Behavior?</SectionTitle>
+            <ExplanationText>
+              Obsessive behavior in relationships manifests as an intense preoccupation with another person, characterized by persistent thoughts, excessive attention, and a strong desire for contact or control. This can include constant messaging, emotional dependency, and difficulty accepting boundaries or rejection.
+            </ExplanationText>
+          </Section>
+        </Content>
+      </MainContent>
+    </Container>
   )
 }
 

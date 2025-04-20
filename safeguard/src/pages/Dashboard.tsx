@@ -1,139 +1,28 @@
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Global, css, keyframes } from '@emotion/react'
 
-/**************************************************
- * 1) ANIMATED BACKGROUND BLOBS → UNSHACKLE‑STYLE  *
- **************************************************/
-const float1 = keyframes`
-  0%   { transform: translate(-15%, -10%) scale(1); }
-  50%  { transform: translate(20%,  15%) scale(1.15); }
-  100% { transform: translate(-15%, -10%) scale(1); }
-`
-const float2 = keyframes`
-  0%   { transform: translate(10%, 60%)  scale(1); }
-  50%  { transform: translate(-25%, 50%) scale(1.25); }
-  100% { transform: translate(10%, 60%)  scale(1); }
-`
-const float3 = keyframes`
-  0%   { transform: translate(70%, -30%) scale(1); }
-  50%  { transform: translate(50%, 10%)  scale(1.1); }
-  100% { transform: translate(70%, -30%) scale(1); }
-`
-
-const Blob = styled.div<{
-  size: number
-  gradient: string
-  animation: ReturnType<typeof keyframes>
-}>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: ${p => p.size}px;
-  height: ${p => p.size}px;
-  background: ${p => p.gradient};
-  opacity: 0.35;
-  filter: blur(180px);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0; /* stays behind actual UI */
-  animation: ${p => p.animation} 45s ease-in-out infinite;
-`
-
-const beam1Animation = keyframes`
-  0% { transform: translate(-50%, -50%) rotate(45deg); opacity: 0; }
-  20% { opacity: 0.2; }
-  40% { opacity: 0; }
-  100% { transform: translate(50%, 50%) rotate(45deg); opacity: 0; }
-`
-
-const beam2Animation = keyframes`
-  0% { transform: translate(50%, -50%) rotate(-45deg); opacity: 0; }
-  20% { opacity: 0.15; }
-  40% { opacity: 0; }
-  100% { transform: translate(-50%, 50%) rotate(-45deg); opacity: 0; }
-`
-
-const Beam = styled.div<{ delay: string }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 0;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, rgba(115, 103, 240, 0.05), rgba(115, 103, 240, 0));
-    animation: ${beam1Animation} 30s infinite;
-    animation-delay: ${props => props.delay};
-    transform-origin: 0 0;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(-45deg, rgba(34, 211, 238, 0.05), rgba(34, 211, 238, 0));
-    animation: ${beam2Animation} 30s infinite;
-    animation-delay: ${props => props.delay};
-    transform-origin: 100% 0;
-  }
-`
-
-const GlobalStyles = () => (
-  <Global
-    styles={css`
-      html, body, #root {
-        height: 100%;
-        background-color: #14161f;
-        background-image: 
-          radial-gradient(circle at 0% 0%, rgba(115, 103, 240, 0.1) 0%, rgba(115, 103, 240, 0) 50%),
-          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 50%),
-          radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0) 50%);
-      }
-    `}
-  />
-)
-
-/******************************
- * 2) EXISTING DASHBOARD STYLES
- ******************************/
 const Container = styled.div`
-  position: relative;
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: transparent;
-  backdrop-filter: blur(100px);
-  z-index: 1;
+  background-color: #14161f;
 `
 
 const Sidebar = styled.nav`
-  width: 250px;
-  min-width: 250px;
-  background-color: rgba(20, 22, 31, 0.95);
-  padding: 24px 16px;
-  height: 100vh;
-  z-index: 2;
+  width: 280px;
+  min-width: 280px;
+  background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 32px 20px;
+  height: 100%;
+  overflow-y: auto;
 `
 
 const MainContent = styled.main`
   flex: 1;
   padding: 40px;
-  background-color: transparent; /* let background show through */
-  z-index: 2;
+  background-color: #14161f;
 `
 
 const PageTitle = styled.h1`
@@ -210,12 +99,55 @@ const NavItem = styled.div<{ active?: boolean }>`
   padding: 12px 16px;
   margin-bottom: 8px;
   cursor: pointer;
+  border-radius: 8px;
   font-weight: 500;
-  color: ${props => (props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)')};
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: ${props => props.active ? '#fff' : '#94a3b8'};
+  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
   transition: all 0.2s ease;
+  position: relative;
+
+  &:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: linear-gradient(to bottom, #3b82f6, #2563eb);
+    border-radius: 0 2px 2px 0;
+    transition: all 0.2s ease;
+    opacity: ${props => props.active ? 1 : 0};
+  }
 
   &:hover {
-    color: #7367f0;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    
+    &:before {
+      height: 70%;
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+`
+
+const NavIcon = styled.span`
+  font-size: 18px;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+  
+  ${NavItem}:hover & {
+    opacity: 1;
+    transform: scale(1.1);
   }
 `
 
@@ -223,17 +155,45 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background-color: ${props =>
-    props.risk === 'low'
-      ? '#22c55e'
-      : props.risk === 'medium'
-      ? '#eab308'
-      : '#ef4444'};
+  background-color: ${props => 
+    props.risk === 'low' ? '#22c55e' : 
+    props.risk === 'medium' ? '#eab308' : 
+    '#ef4444'
+  };
 `
 
-/******************************
- * 3) MOCK DATA
- ******************************/
+const Contact = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`
+
+const ContactActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+`
+
+const ActionButton = styled.button`
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: #3b82f6;
+  color: white;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+`
+
 const mockContacts = [
   { id: 1, name: 'John', risk: 'high' },
   { id: 2, name: 'Sally', risk: 'high' },
@@ -241,76 +201,65 @@ const mockContacts = [
   { id: 4, name: 'Rob', risk: 'low' },
 ]
 
-/******************************
- * 4) MAIN COMPONENT
- ******************************/
 const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const currentPath = location.pathname
 
-  return (
-    <>
-      <GlobalStyles />
-      <Beam delay="0s" />
-      <Beam delay="4s" />
-      {/* Blobs behind everything */}
-      <Blob
-        size={700}
-        gradient={
-          'radial-gradient(circle at 30% 30%, #7367f0 0%, rgba(115,103,240,0) 70%)'
-        }
-        animation={float1}
-        style={{ top: '-250px', left: '-200px' }}
-      />
-      <Blob
-        size={800}
-        gradient={
-          'radial-gradient(circle at 70% 30%, #f472b6 0%, rgba(244,114,182,0) 75%)'
-        }
-        animation={float2}
-        style={{ bottom: '-300px', left: '20%' }}
-      />
-      <Blob
-        size={650}
-        gradient={
-          'radial-gradient(circle at 50% 50%, #22d3ee 0%, rgba(34,211,238,0) 70%)'
-        }
-        animation={float3}
-        style={{ top: '-200px', right: '-200px' }}
-      />
+  const getNavIcon = (path: string) => {
+    switch (path) {
+      case '/dashboard':
+        return '🏠';
+      case '/contacts':
+        return '👥';
+      case '/analysis':
+        return '📊';
+      case '/settings':
+        return '⚙️';
+      default:
+        return '';
+    }
+  };
 
-      {/* FOREGROUND UI */}
-      <Container>
-        <Sidebar>
-          <NavItem active={currentPath === '/dashboard'} onClick={() => navigate('/dashboard')}>
-            Dashboard
+  return (
+    <Container>
+      <Sidebar>
+        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
+          <NavItem 
+            key={path}
+            active={currentPath === path} 
+            onClick={() => navigate(path)}
+          >
+            <NavIcon>{getNavIcon(path)}</NavIcon>
+            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
           </NavItem>
-          <NavItem active={currentPath === '/analysis'} onClick={() => navigate('/analysis')}>
-            Analysis
-          </NavItem>
-        </Sidebar>
-        <MainContent>
-          <PageTitle>DASHBOARD</PageTitle>
-          <ProfileSection>
-            <ProfileCircle>Profile</ProfileCircle>
-          </ProfileSection>
-          <ContactsContainer>
-            <ContactsHeader>
-              <ContactsTitle>Accessed Contacts</ContactsTitle>
-              <RiskLabel>Risk</RiskLabel>
-            </ContactsHeader>
-            {mockContacts.map(contact => (
-              <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
-                <ContactName>{contact.name}</ContactName>
-                <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
-              </ContactRow>
-            ))}
-          </ContactsContainer>
-        </MainContent>
-      </Container>
-    </>
+        ))}
+      </Sidebar>
+      <MainContent>
+        <PageTitle>DASHBOARD</PageTitle>
+        <ProfileSection>
+          <ProfileCircle>
+            Profile
+          </ProfileCircle>
+        </ProfileSection>
+        <ContactsContainer>
+          <ContactsHeader>
+            <ContactsTitle>Accessed Contacts</ContactsTitle>
+            <RiskLabel>Risk</RiskLabel>
+          </ContactsHeader>
+          {mockContacts.map(contact => (
+            <ContactRow 
+              key={contact.id}
+              onClick={() => navigate(`/contact/${contact.id}`)}
+            >
+              <ContactName>{contact.name}</ContactName>
+              <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+            </ContactRow>
+          ))}
+        </ContactsContainer>
+      </MainContent>
+    </Container>
   )
 }
 
-export default Dashboard;
+export default Dashboard 
