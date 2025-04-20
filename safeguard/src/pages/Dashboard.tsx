@@ -254,67 +254,35 @@ const Dashboard = () => {
             <NavIcon>{getNavIcon(path)}</NavIcon>
             {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
           </NavItem>
-<<<<<<< Updated upstream
         ))}
+        <NavItem active={currentPath === '/profile'} onClick={() => navigate('/profile')}>
+          Profile
+        </NavItem>
+        <NavItem active={currentPath === '/analysis'} onClick={() => navigate('/analysis')}>
+          Analysis
+        </NavItem>
       </Sidebar>
       <MainContent>
         <PageTitle>DASHBOARD</PageTitle>
         <ProfileSection>
-          <ProfileCircle>
-            Profile
-          </ProfileCircle>
+          <ProfileCircle onClick={() => navigate('/profile')}>Profile</ProfileCircle>
         </ProfileSection>
         <ContactsContainer>
           <ContactsHeader>
             <ContactsTitle>Accessed Contacts</ContactsTitle>
+            <RelationshipLabel>Relationship</RelationshipLabel>
             <RiskLabel>Risk</RiskLabel>
           </ContactsHeader>
           {mockContacts.map(contact => (
-            <ContactRow 
-              key={contact.id}
-              onClick={() => navigate(`/contact/${contact.id}`)}
-            >
+            <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
               <ContactName>{contact.name}</ContactName>
+              <RelationshipText>{contact.relationship}</RelationshipText>
               <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
             </ContactRow>
           ))}
         </ContactsContainer>
       </MainContent>
     </Container>
-=======
-          <NavItem active={currentPath === '/profile'} onClick={() => navigate('/profile')}>
-            Profile
-          </NavItem>
-          <NavItem active={currentPath === '/profile'} onClick={() => navigate('/profile')}>
-            Profile
-          </NavItem>
-          <NavItem active={currentPath === '/analysis'} onClick={() => navigate('/analysis')}>
-            Analysis
-          </NavItem>
-        </Sidebar>
-        <MainContent>
-          <PageTitle>DASHBOARD</PageTitle>
-          <ProfileSection>
-            <ProfileCircle onClick={() => navigate('/profile')}>Profile</ProfileCircle>
-          </ProfileSection>
-          <ContactsContainer>
-            <ContactsHeader>
-              <ContactsTitle>Accessed Contacts</ContactsTitle>
-              <RelationshipLabel>Relationship</RelationshipLabel>
-              <RiskLabel>Risk</RiskLabel>
-            </ContactsHeader>
-            {mockContacts.map(contact => (
-              <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
-                <ContactName>{contact.name}</ContactName>
-                <RelationshipText>{contact.relationship}</RelationshipText>
-                <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
-              </ContactRow>
-            ))}
-          </ContactsContainer>
-        </MainContent>
-      </Container>
-    </>
->>>>>>> Stashed changes
   )
 }
 
