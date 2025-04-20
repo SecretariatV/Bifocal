@@ -1,8 +1,12 @@
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { contacts } from '../data/contacts'
 import type { Contact } from '../data/contacts'
+=======
+import { Global, css, keyframes } from '@emotion/react'
+>>>>>>> Stashed changes
 =======
 import { Global, css, keyframes } from '@emotion/react'
 >>>>>>> Stashed changes
@@ -256,6 +260,7 @@ const Dashboard = () => {
 
   return (
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <Container>
       <Sidebar>
         <NavItem 
@@ -296,6 +301,8 @@ const Dashboard = () => {
       </MainContent>
     </Container>
 =======
+=======
+>>>>>>> Stashed changes
     <>
       <GlobalStyles />
       <Beam delay="0s" />
@@ -356,6 +363,9 @@ const Dashboard = () => {
         </MainContent>
       </Container>
     </>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   )
 }

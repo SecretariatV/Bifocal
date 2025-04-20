@@ -3,7 +3,11 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { useRef, useState, useEffect } from 'react'
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 import { contacts, messages } from '../data/contacts'
+=======
+import { Global, css, keyframes } from '@emotion/react'
+>>>>>>> Stashed changes
 =======
 import { Global, css, keyframes } from '@emotion/react'
 >>>>>>> Stashed changes
@@ -375,6 +379,7 @@ const ContactAnalysis = () => {
 
   return (
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <Container>
       <Sidebar>
         <NavItem 
@@ -401,6 +406,8 @@ const ContactAnalysis = () => {
             </ContactInfo>
           </Header>
 =======
+=======
+>>>>>>> Stashed changes
     <>
       <GlobalStyles />
       <Beam delay="0s" />
@@ -430,6 +437,9 @@ const ContactAnalysis = () => {
         animation={float3}
         style={{ top: '-200px', right: '-200px' }}
       />
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
       <Container>
@@ -465,6 +475,7 @@ const ContactAnalysis = () => {
                 margin={{ top: 5, right: 20, bottom: 5, left: 10 }}
               >
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                 <PatternTitle>{pattern.title}</PatternTitle>
                 <PatternDescription>{pattern.description}</PatternDescription>
               </PatternSquare>
@@ -487,6 +498,8 @@ const ContactAnalysis = () => {
       </MainContent>
     </Container>
 =======
+=======
+>>>>>>> Stashed changes
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
                 <XAxis 
                   dataKey="date" 
@@ -545,6 +558,9 @@ const ContactAnalysis = () => {
         </MainContent>
       </Container>
     </>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   )
 }

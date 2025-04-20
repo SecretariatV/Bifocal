@@ -606,6 +606,7 @@ const Obsession = () => {
 
   return (
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     <Container>
       <Sidebar>
         {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
@@ -623,6 +624,8 @@ const Obsession = () => {
         <Content>
           <Title>Obsession Analysis for Contact #{id}</Title>
 =======
+=======
+>>>>>>> Stashed changes
     <>
       <GlobalStyles />
       <Beam delay="0s" />
@@ -652,6 +655,9 @@ const Obsession = () => {
         animation={float3}
         style={{ top: '-200px', right: '-200px' }}
       />
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
       <Container>
@@ -731,6 +737,7 @@ const Obsession = () => {
                 ))}
               </SeverityContainer>
             </Section>
+<<<<<<< Updated upstream
 
 <<<<<<< Updated upstream
           <Divider />
@@ -763,6 +770,9 @@ const Obsession = () => {
       </MainContent>
     </Container>
 =======
+=======
+
+>>>>>>> Stashed changes
             <Section>
               <SectionTitle>What is Obsessive Behavior?</SectionTitle>
               <ExplanationText>
@@ -773,6 +783,9 @@ const Obsession = () => {
         </MainContent>
       </Container>
     </>
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
   )
 }
