@@ -144,6 +144,48 @@ const NavItem = styled.div<{ active?: boolean }>`
   }
 `
 
+const PatternSquaresContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 32px;
+`
+
+const PatternSquare = styled.div<{ isExpanded?: boolean }>`
+  background-color: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: ${props => props.isExpanded ? 'calc(100vh - 200px)' : '200px'};
+  width: ${props => props.isExpanded ? '100%' : 'auto'};
+  grid-column: ${props => props.isExpanded ? '1 / -1' : 'auto'};
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+`
+
+const PatternTitle = styled.h2`
+  font-size: 24px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 16px;
+`
+
+const PatternDescription = styled.p`
+  color: #64748b;
+  font-size: 16px;
+  text-align: center;
+  max-width: 600px;
+`
+
 const mockTimelineData = [
   { date: '2024-01', risk: 0.45 },
   { date: '2024-02', risk: 0.62 },
@@ -162,6 +204,7 @@ const ContactAnalysis = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const currentPath = location.pathname
+  const [expandedPattern, setExpandedPattern] = useState<string | null>(null)
 
   // Calculate chart width based on container width
   const chartContainerRef = useRef<HTMLDivElement>(null)
@@ -170,7 +213,7 @@ const ContactAnalysis = () => {
   useEffect(() => {
     const updateWidth = () => {
       if (chartContainerRef.current) {
-        const width = chartContainerRef.current.clientWidth - 48 // subtract padding
+        const width = chartContainerRef.current.clientWidth - 48
         setChartWidth(width)
       }
     }
@@ -179,6 +222,28 @@ const ContactAnalysis = () => {
     window.addEventListener('resize', updateWidth)
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
+
+  const patterns = [
+    {
+      id: 'obsession',
+      title: 'Obsession',
+      description: 'Analyze patterns of obsessive behavior and excessive attention.'
+    },
+    {
+      id: 'stalking',
+      title: 'Stalking',
+      description: 'Identify potential stalking behavior and monitoring patterns.'
+    },
+    {
+      id: 'gaslighting',
+      title: 'Gaslighting',
+      description: 'Detect manipulative behavior and psychological manipulation attempts.'
+    }
+  ]
+
+  const handlePatternClick = (patternId: string) => {
+    navigate(`/${patternId}/${id}`)
+  }
 
   return (
     <Container>
@@ -248,13 +313,18 @@ const ContactAnalysis = () => {
             </LineChart>
           </ChartContainer>
 
-          <MessagesContainer>
-            {mockMessages.map(message => (
-              <MessageBubble key={message.id} type={message.type as 'sent' | 'received'}>
-                {message.text}
-              </MessageBubble>
+          <PatternSquaresContainer>
+            {patterns.map(pattern => (
+              <PatternSquare
+                key={pattern.id}
+                isExpanded={expandedPattern === pattern.id}
+                onClick={() => handlePatternClick(pattern.id)}
+              >
+                <PatternTitle>{pattern.title}</PatternTitle>
+                <PatternDescription>{pattern.description}</PatternDescription>
+              </PatternSquare>
             ))}
-          </MessagesContainer>
+          </PatternSquaresContainer>
         </Content>
       </MainContent>
     </Container>

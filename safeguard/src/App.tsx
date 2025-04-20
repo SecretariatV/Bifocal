@@ -5,6 +5,9 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import ContactAnalysis from './pages/ContactAnalysis'
 import PatternDetection from './pages/PatternDetection'
+import Gaslighting from './pages/Gaslighting'
+import Stalking from './pages/Stalking'
+import Obsession from './pages/Obsession'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -25,6 +28,9 @@ function App() {
           <Route path="/settings" element={<Dashboard />} />
           <Route path="/contact/:id" element={<ContactAnalysis />} />
           <Route path="/patterns/:id" element={<PatternDetection />} />
+          <Route path="/gaslighting/:id" element={<Gaslighting />} />
+          <Route path="/stalking/:id" element={<Stalking />} />
+          <Route path="/obsession/:id" element={<Obsession />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AppContainer>
