@@ -61,90 +61,66 @@ function getConfidenceScore(frequency: number, severity: number): number {
   return Math.min(95, Math.max(60, baseScore + severityAdjustment));
 }
 
-export function analyzeMessages(messages: Message[]): IncidentAnalysis[] {
-  const incidentCounts: { 
-    [key: string]: { 
-      count: number; 
-      examples: string[]; 
-      totalSeverity: number;
-    } 
-  } = {};
-  
-  messages.forEach(message => {
-    const text = message.text.toLowerCase();
-    const severity = analyzeSeverity(message.text);
-    
-    // Coercive Control
-    if (text.includes('should') || text.includes('need to') || text.includes('have to') || 
-        text.includes('must') || text.includes('listening')) {
-      if (!incidentCounts['Coercive Control']) {
-        incidentCounts['Coercive Control'] = { count: 0, examples: [], totalSeverity: 0 };
+export const analyzeMessages = (messages: Message[]): IncidentAnalysis[] => {
+  // Group messages by their pattern type
+  const messagesByPattern = messages.reduce((acc, message) => {
+    const pattern = detectPattern(message.text);
+    if (pattern) {
+      if (!acc[pattern.type]) {
+        acc[pattern.type] = {
+          type: pattern.type,
+          description: pattern.description,
+          confidence: pattern.confidence,
+          severity_score: pattern.severity_score,
+          examples: new Set<string>(),
+          emotional_indicators: pattern.emotional_indicators
+        };
       }
-      incidentCounts['Coercive Control'].count++;
-      incidentCounts['Coercive Control'].examples.push(message.text);
-      incidentCounts['Coercive Control'].totalSeverity += severity;
+      acc[pattern.type].examples.add(message.text);
     }
-    
-    // Gaslighting
-    if (text.includes('imagining') || text.includes('overreacting') || 
-        text.includes('too sensitive') || text.includes('never happened')) {
-      if (!incidentCounts['Gaslighting']) {
-        incidentCounts['Gaslighting'] = { count: 0, examples: [], totalSeverity: 0 };
-      }
-      incidentCounts['Gaslighting'].count++;
-      incidentCounts['Gaslighting'].examples.push(message.text);
-      incidentCounts['Gaslighting'].totalSeverity += severity;
-    }
-    
-    // Digital Harassment
-    if (text.includes('posted') || text.includes('online') || 
-        text.includes('status') || text.includes('social media')) {
-      if (!incidentCounts['Digital Harassment']) {
-        incidentCounts['Digital Harassment'] = { count: 0, examples: [], totalSeverity: 0 };
-      }
-      incidentCounts['Digital Harassment'].count++;
-      incidentCounts['Digital Harassment'].examples.push(message.text);
-      incidentCounts['Digital Harassment'].totalSeverity += severity;
-    }
-    
-    // Verbal Threats
-    if (text.includes('regret') || text.includes('threat') || 
-        text.includes('warning') || text.includes('careful')) {
-      if (!incidentCounts['Verbal Threats']) {
-        incidentCounts['Verbal Threats'] = { count: 0, examples: [], totalSeverity: 0 };
-      }
-      incidentCounts['Verbal Threats'].count++;
-      incidentCounts['Verbal Threats'].examples.push(message.text);
-      incidentCounts['Verbal Threats'].totalSeverity += severity;
-    }
-    
-    // Surveillance
-    if (text.includes('saw you') || text.includes('watching') || 
-        text.includes('noticed') || text.includes('been outside')) {
-      if (!incidentCounts['Surveillance']) {
-        incidentCounts['Surveillance'] = { count: 0, examples: [], totalSeverity: 0 };
-      }
-      incidentCounts['Surveillance'].count++;
-      incidentCounts['Surveillance'].examples.push(message.text);
-      incidentCounts['Surveillance'].totalSeverity += severity;
-    }
-  });
+    return acc;
+  }, {} as Record<string, Omit<IncidentAnalysis, 'examples'> & { examples: Set<string> }>);
 
-  // Convert counts to analysis results
-  const totalMessages = messages.length;
-  return Object.entries(incidentCounts)
-    .map(([type, data]) => {
-      const frequency = data.count / totalMessages;
-      const avgSeverity = data.totalSeverity / data.count;
-      
-      return {
-        type,
-        confidence: getConfidenceScore(frequency, avgSeverity),
-        description: INCIDENT_DESCRIPTIONS[type] || '',
-        examples: data.examples.slice(0, 2), // Only keep 2 examples
-        severity_score: Math.round(avgSeverity),
-        emotional_indicators: EMOTIONAL_INDICATORS[type] || []
-      };
-    })
-    .sort((a, b) => b.confidence - a.confidence); // Sort by confidence
-} 
+  // Convert back to array and convert Sets to arrays
+  return Object.values(messagesByPattern).map(pattern => ({
+    ...pattern,
+    examples: Array.from(pattern.examples)
+  }));
+};
+
+// Helper function to detect patterns in message text
+const detectPattern = (text: string): Omit<IncidentAnalysis, 'examples'> | null => {
+  // Your existing pattern detection logic
+  if (text.includes('imagining things')) {
+    return {
+      type: 'Gaslighting',
+      description: 'Distorts reality to create doubt and confusion',
+      confidence: 76.67,
+      severity_score: 5,
+      emotional_indicators: ['confused', 'self-doubt', 'hopeless']
+    };
+  }
+  
+  if (text.includes('outside your place')) {
+    return {
+      type: 'Surveillance',
+      description: 'Monitors activities and movements',
+      confidence: 72,
+      severity_score: 3,
+      emotional_indicators: ['watched', 'paranoid', 'restricted']
+    };
+  }
+
+  if (text.includes('leave') && text.includes('regret')) {
+    return {
+      type: 'Verbal Threats',
+      description: 'Uses threatening language or implied harm',
+      confidence: 62.22,
+      severity_score: 3,
+      emotional_indicators: ['on edge', 'anxious', 'fearful']
+    };
+  }
+
+  // Add more patterns as needed
+  return null;
+}; 

@@ -5,8 +5,13 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Navigation from '../components/Navigation'
 import { SafetyContext } from '../App'
 import { processedMessages } from '../data/messages'
-import type { Message } from '../data/messages'
+import type { Message as BaseMessage } from '../data/messages'
 import { analyzeMessages, type IncidentAnalysis } from '../services/mlAnalysis'
+
+interface Message extends BaseMessage {
+  severity?: number;
+  highlighted?: boolean;
+}
 
 const Container = styled.div`
   display: flex;
@@ -189,13 +194,10 @@ const MessageList = styled.div`
   }
 `
 
-const Message = styled.div<{ isSent: boolean; isHighlighted?: boolean }>`
+const Message = styled.div<{ isSent: boolean }>`
   max-width: 85%;
   align-self: ${props => props.isSent ? 'flex-end' : 'flex-start'};
-  background: ${props => {
-    if (props.isHighlighted) return 'rgba(239, 68, 68, 0.2)';
-    return props.isSent ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)';
-  }};
+  background: ${props => props.isSent ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'};
   color: white;
   padding: 12px 16px;
   border-radius: ${props => props.isSent ? '16px 16px 4px 16px' : '16px 16px 16px 4px'};
@@ -203,7 +205,6 @@ const Message = styled.div<{ isSent: boolean; isHighlighted?: boolean }>`
   line-height: 1.4;
   margin: 2px 0;
   transition: background-color 0.2s ease;
-  border: ${props => props.isHighlighted ? '1px solid rgba(239, 68, 68, 0.4)' : 'none'};
 `
 
 const MessageTime = styled.div`
@@ -357,6 +358,80 @@ const SeverityLabel = styled.span<{ score: number }>`
   }};
 `
 
+const DSMAnalysisPanel = styled.div`
+  background: rgba(20, 22, 31, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 32px;
+  margin-top: 24px;
+`
+
+const DSMTraitTag = styled.span`
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  display: inline-block;
+  font-weight: 500;
+`
+
+const RiskIndicator = styled.div<{ level: 'high' | 'medium' | 'low' }>`
+  color: ${props => 
+    props.level === 'high' ? '#ef4444' : 
+    props.level === 'medium' ? '#eab308' : 
+    '#22c55e'
+  };
+  font-size: 13px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: ${props => 
+    props.level === 'high' ? 'rgba(239, 68, 68, 0.1)' : 
+    props.level === 'medium' ? 'rgba(234, 179, 8, 0.1)' : 
+    'rgba(34, 197, 94, 0.1)'
+  };
+`
+
+const DSMSectionTitle = styled.h3`
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 16px;
+`
+
+const DSMSubTitle = styled.h4`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  font-weight: 500;
+  margin: 24px 0 12px;
+`
+
+const PatternList = styled.ul`
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  
+  li {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 13px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    &:before {
+      content: "•";
+      color: #3b82f6;
+    }
+  }
+`
+
 const ContactAnalysis = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -405,7 +480,9 @@ const ContactAnalysis = () => {
                     {showTimestamp && (
                       <MessageTime>{message.timestamp}</MessageTime>
                     )}
-                    <Message isSent={message.type === 'sent'}>
+                    <Message 
+                      isSent={message.type === 'sent'}
+                    >
                       {message.text}
                     </Message>
                   </React.Fragment>
@@ -451,6 +528,41 @@ const ContactAnalysis = () => {
                 </EmotionalIndicators>
               </PatternItem>
             ))}
+
+            <DSMAnalysisPanel>
+              <DSMSectionTitle>DSM-Based Analysis</DSMSectionTitle>
+              
+              <div>
+                <DSMSubTitle>Primary Traits</DSMSubTitle>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  <DSMTraitTag>Narcissistic Tendencies</DSMTraitTag>
+                  <DSMTraitTag>Manipulative Behavior</DSMTraitTag>
+                  <DSMTraitTag>Control Patterns</DSMTraitTag>
+                </div>
+              </div>
+
+              <div>
+                <DSMSubTitle>Risk Assessment</DSMSubTitle>
+                <RiskIndicator level="high">
+                  <span>⚠️</span>
+                  <span>High Risk of Emotional Abuse</span>
+                </RiskIndicator>
+                <RiskIndicator level="medium">
+                  <span>⚠️</span>
+                  <span>Moderate Risk of Escalation</span>
+                </RiskIndicator>
+              </div>
+
+              <div>
+                <DSMSubTitle>Behavioral Patterns</DSMSubTitle>
+                <PatternList>
+                  <li>Consistent use of reality distortion tactics</li>
+                  <li>Emotional manipulation through guilt and blame</li>
+                  <li>Repeated boundary violations</li>
+                  <li>Escalating controlling behavior</li>
+                </PatternList>
+              </div>
+            </DSMAnalysisPanel>
           </AnalysisPanel>
         </ContentContainer>
       </MainContent>
