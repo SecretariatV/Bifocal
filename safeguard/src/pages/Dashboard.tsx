@@ -1,33 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import Navigation from '../components/Navigation'
 
 const Container = styled.div`
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
   background-color: #14161f;
+  position: relative;
 `
 
-const Sidebar = styled.nav`
-  width: 280px;
-  min-width: 280px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 32px 20px;
-  height: 100%;
-  overflow-y: auto;
-`
-
-const MainContent = styled.main`
+const MainContent = styled.main<{ sidebarOpen: boolean }>`
   flex: 1;
   padding: 40px;
+  padding-left: ${props => props.sidebarOpen ? '290px' : '40px'};
   background-color: #14161f;
   overflow-y: auto;
+  overflow-x: hidden;
+  height: 100%;
+  min-width: 0;
+  transition: padding-left 0.3s ease;
 `
 
-const PageTitle = styled.h1`
+const Content = styled.div`
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+`
+
+const Title = styled.h1`
   font-size: 42px;
   font-weight: 700;
   color: #fff;
@@ -175,56 +177,6 @@ const RelationshipText = styled.div`
   font-size: 14px;
 `
 
-const NavItem = styled.div<{ active?: boolean }>`
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: ${props => props.active ? '#fff' : '#94a3b8'};
-  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
-  transition: all 0.2s ease;
-  position: relative;
-
-  &:before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0;
-    background: linear-gradient(to bottom, #3b82f6, #2563eb);
-    border-radius: 0 2px 2px 0;
-    transition: all 0.2s ease;
-    opacity: ${props => props.active ? 1 : 0};
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    
-    &:before {
-      height: 70%;
-      opacity: 1;
-    }
-  }
-`
-
-const NavIcon = styled.span`
-  font-size: 18px;
-  opacity: 0.8;
-  transition: all 0.2s ease;
-  
-  ${NavItem}:hover & {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-`
-
 const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
   width: 12px;
   height: 12px;
@@ -267,81 +219,60 @@ const mockContacts = [
   { id: 4, name: 'Rob', risk: 'low', relationship: 'Acquaintance' },
 ]
 
-const Dashboard: React.FC = () => {
+const Dashboard = () => {
   const navigate = useNavigate()
-  const location = useLocation()
-  const currentPath = location.pathname
-
-  const getNavIcon = (path: string) => {
-    switch (path) {
-      case '/dashboard':
-        return '🏠';
-      case '/contacts':
-        return '👥';
-      case '/analysis':
-        return '📊';
-      case '/settings':
-        return '⚙️';
-      default:
-        return '';
-    }
-  };
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
     <Container>
-      <Sidebar>
-        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
-          <NavItem 
-            key={path}
-            active={currentPath === path} 
-            onClick={() => navigate(path)}
-          >
-            <NavIcon>{getNavIcon(path)}</NavIcon>
-            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
-          </NavItem>
-        ))}
-      </Sidebar>
-      <MainContent>
-        <PageTitle>DASHBOARD</PageTitle>
-        <ProfileSection>
-          <ProfileCircle onClick={() => navigate('/profile')}>Profile</ProfileCircle>
-        </ProfileSection>
+      <Navigation 
+        isSidebarOpen={isSidebarOpen}
+        onSidebarOpenChange={setIsSidebarOpen}
+      />
 
-        <TileGrid>
-          {tiles.map((tile, index) => (
-            <Tile 
-              key={index}
-              onClick={() => navigate(tile.path)}
-              role="button"
-              tabIndex={0}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  navigate(tile.path);
-                }
-              }}
-            >
-              <TileIcon>{tile.icon}</TileIcon>
-              <TileTitle>{tile.title}</TileTitle>
-              <TileDescription>{tile.description}</TileDescription>
-              <TileButton>{tile.cta}</TileButton>
-            </Tile>
-          ))}
-        </TileGrid>
+      <MainContent sidebarOpen={isSidebarOpen}>
+        <Content>
+          <Title>DASHBOARD</Title>
+          <ProfileSection>
+            <ProfileCircle onClick={() => navigate('/profile')}>Profile</ProfileCircle>
+          </ProfileSection>
 
-        <ContactsContainer>
-          <ContactsHeader>
-            <ContactsTitle>Accessed Contacts</ContactsTitle>
-            <RelationshipLabel>Relationship</RelationshipLabel>
-            <RiskLabel>Risk</RiskLabel>
-          </ContactsHeader>
-          {mockContacts.map(contact => (
-            <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
-              <ContactName>{contact.name}</ContactName>
-              <RelationshipText>{contact.relationship}</RelationshipText>
-              <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
-            </ContactRow>
-          ))}
-        </ContactsContainer>
+          <TileGrid>
+            {tiles.map((tile, index) => (
+              <Tile 
+                key={index}
+                onClick={() => navigate(tile.path)}
+                role="button"
+                tabIndex={0}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    navigate(tile.path);
+                  }
+                }}
+              >
+                <TileIcon>{tile.icon}</TileIcon>
+                <TileTitle>{tile.title}</TileTitle>
+                <TileDescription>{tile.description}</TileDescription>
+                <TileButton>{tile.cta}</TileButton>
+              </Tile>
+            ))}
+          </TileGrid>
+
+          <ContactsContainer>
+            <ContactsHeader>
+              <ContactsTitle>Accessed Contacts</ContactsTitle>
+              <RelationshipLabel>Relationship</RelationshipLabel>
+              <RiskLabel>Risk</RiskLabel>
+            </ContactsHeader>
+            {mockContacts.map(contact => (
+              <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
+                <ContactName>{contact.name}</ContactName>
+                <RelationshipText>{contact.relationship}</RelationshipText>
+                <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+              </ContactRow>
+            ))}
+          </ContactsContainer>
+        </Content>
       </MainContent>
     </Container>
   )

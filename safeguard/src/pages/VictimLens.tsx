@@ -1,38 +1,25 @@
 import styled from '@emotion/styled'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import Navigation from '../components/Navigation'
 
 const Container = styled.div`
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
   background-color: #14161f;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
+  position: relative;
 `
 
-const Sidebar = styled.nav`
-  width: 250px;
-  min-width: 250px;
-  background-color: rgba(20, 22, 31, 0.95);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px 16px;
-  height: 100%;
-  overflow-y: auto;
-`
-
-const MainContent = styled.main`
+const MainContent = styled.main<{ sidebarOpen: boolean }>`
   flex: 1;
+  padding: 40px;
+  padding-left: ${props => props.sidebarOpen ? '290px' : '40px'};
   background-color: #14161f;
-  padding: 24px 32px;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
   min-width: 0;
+  transition: padding-left 0.3s ease;
 `
 
 const Content = styled.div`
@@ -43,19 +30,20 @@ const Content = styled.div`
 `
 
 const Title = styled.h1`
-  font-size: 36px;
-  font-weight: 600;
+  font-size: 42px;
+  font-weight: 700;
   color: #fff;
-  margin-bottom: 32px;
-  text-align: center;
+  margin-bottom: 40px;
+  letter-spacing: 0.05em;
 `
 
 const Section = styled.div`
   background-color: rgba(20, 22, 31, 0.95);
-  border-radius: 12px;
-  padding: 24px;
+  border-radius: 8px;
+  padding: 32px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 32px;
+  backdrop-filter: blur(10px);
 `
 
 const SectionTitle = styled.h2`
@@ -75,7 +63,7 @@ const MessageContainer = styled.div`
 const MessageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   max-width: 70%;
   
   &[data-type="received"] {
@@ -96,14 +84,16 @@ const MessageBubble = styled.div<{ type: 'sent' | 'received' }>`
   animation: fadeIn 0.5s ease-in-out;
   
   ${props => props.type === 'sent' ? `
-    background-color: #3b82f6;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     margin-left: auto;
     border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
   ` : `
-    background-color: #f1f5f9;
-    color: #1e293b;
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
     border-bottom-left-radius: 4px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
   `}
 
   @keyframes fadeIn {
@@ -145,15 +135,17 @@ const ResponseContainer = styled.div`
 
 const ResponseIndicator = styled.div<{ active?: boolean }>`
   flex: 1;
-  padding: 16px;
+  padding: 20px;
   border-radius: 12px;
   background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'rgba(20, 22, 31, 0.95)'};
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
 
   &:hover {
     background-color: rgba(115, 103, 240, 0.1);
+    transform: translateY(-2px);
   }
 `
 
@@ -170,22 +162,6 @@ const ResponseDescription = styled.p`
   line-height: 1.5;
 `
 
-const NavItem = styled.div<{ active?: boolean }>`
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: 500;
-  color: ${props => props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)'};
-  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'transparent'};
-  transition: all 0.2s ease;
-
-  &:hover {
-    background-color: rgba(115, 103, 240, 0.1);
-    color: #7367f0;
-  }
-`
-
 const EmotionalResponseSelector = styled.div`
   display: flex;
   gap: 8px;
@@ -193,35 +169,37 @@ const EmotionalResponseSelector = styled.div`
 `
 
 const ResponseButton = styled.button<{ selected?: boolean; intensity: 'low' | 'medium' | 'high' }>`
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   border: none;
-  background-color: ${props => 
-    props.selected ? 
-      props.intensity === 'low' ? 'rgba(34, 197, 94, 0.2)' : 
-      props.intensity === 'medium' ? 'rgba(234, 179, 8, 0.2)' : 
-      'rgba(239, 68, 68, 0.2)' : 
-    'transparent'
+  background: ${props => props.selected ? 
+    props.intensity === 'low' ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' :
+    props.intensity === 'medium' ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' :
+    'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' :
+    'rgba(255, 255, 255, 0.05)'
   };
-  color: ${props => 
-    props.intensity === 'low' ? '#22c55e' : 
-    props.intensity === 'medium' ? '#eab308' : 
+  color: ${props => props.selected ? '#fff' : 
+    props.intensity === 'low' ? '#22c55e' :
+    props.intensity === 'medium' ? '#eab308' :
     '#ef4444'
   };
-  border: 1px solid ${props => 
-    props.intensity === 'low' ? '#22c55e' : 
-    props.intensity === 'medium' ? '#eab308' : 
-    '#ef4444'
+  border: 1px solid ${props =>
+    props.intensity === 'low' ? 'rgba(34, 197, 94, 0.2)' :
+    props.intensity === 'medium' ? 'rgba(234, 179, 8, 0.2)' :
+    'rgba(239, 68, 68, 0.2)'
   };
+  transition: all 0.2s ease;
 
   &:hover {
-    background-color: ${props => 
-      props.intensity === 'low' ? 'rgba(34, 197, 94, 0.1)' : 
-      props.intensity === 'medium' ? 'rgba(234, 179, 8, 0.1)' : 
-      'rgba(239, 68, 68, 0.1)'
+    transform: translateY(-1px);
+    background: ${props => props.selected ?
+      props.intensity === 'low' ? 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)' :
+      props.intensity === 'medium' ? 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' :
+      'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)' :
+      'rgba(255, 255, 255, 0.1)'
     };
   }
 `
@@ -233,17 +211,22 @@ const ResponseTypeSelector = styled.div`
 `
 
 const TypeButton = styled.button<{ selected?: boolean }>`
-  padding: 6px 12px;
+  padding: 8px 16px;
   border-radius: 16px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid #3b82f6;
-  background-color: ${props => props.selected ? 'rgba(59, 130, 246, 0.2)' : 'transparent'};
-  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: ${props => props.selected ? 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 'rgba(255, 255, 255, 0.05)'};
+  color: ${props => props.selected ? '#fff' : '#3b82f6'};
+  transition: all 0.2s ease;
 
   &:hover {
-    background-color: rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+    background: ${props => props.selected ? 
+      'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' : 
+      'rgba(255, 255, 255, 0.1)'
+    };
   }
 `
 
@@ -285,12 +268,10 @@ const emotionalTypes = [
 ]
 
 const VictimLens = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const currentPath = location.pathname
   const [selectedResponse, setSelectedResponse] = useState<string | null>(null)
   const [userMessages, setUserMessages] = useState<any[]>([])
   const [messageResponses, setMessageResponses] = useState<Record<number, { intensity: string; type: string }>>({})
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     const allMessages = Object.values(mockUserMessages).flat()
@@ -310,21 +291,12 @@ const VictimLens = () => {
 
   return (
     <Container>
-      <Sidebar>
-        <NavItem 
-          active={currentPath === '/dashboard'} 
-          onClick={() => navigate('/dashboard')}
-        >
-          Dashboard
-        </NavItem>
-        <NavItem 
-          active={currentPath === '/analysis'} 
-          onClick={() => navigate('/analysis')}
-        >
-          Analysis
-        </NavItem>
-      </Sidebar>
-      <MainContent>
+      <Navigation 
+        isSidebarOpen={isSidebarOpen}
+        onSidebarOpenChange={setIsSidebarOpen}
+      />
+
+      <MainContent sidebarOpen={isSidebarOpen}>
         <Content>
           <Title>Your Emotional Patterns</Title>
 

@@ -1,47 +1,33 @@
 import styled from '@emotion/styled'
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
-import { useRef, useState, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
+import Navigation from '../components/Navigation'
 
 const Container = styled.div`
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
   background-color: #14161f;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
+  position: relative;
 `
 
-const Sidebar = styled.nav`
-  width: 280px;
-  min-width: 280px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 32px 20px;
-  height: 100%;
-  overflow-y: auto;
-`
-
-const MainContent = styled.main`
+const MainContent = styled.main<{ sidebarOpen: boolean }>`
   flex: 1;
+  padding: 40px;
+  padding-left: ${props => props.sidebarOpen ? '290px' : '40px'};
   background-color: #14161f;
-  padding: 24px 32px;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
-  min-width: 0; /* This prevents flex items from overflowing */
+  min-width: 0;
+  transition: padding-left 0.3s ease;
 `
 
 const Content = styled.div`
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  overflow: hidden;
 `
 
 const Header = styled.div`
@@ -58,7 +44,7 @@ const ContactPhoto = styled.div`
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background-color: #e2e8f0;
+  background-color: rgba(255, 255, 255, 0.1);
   margin-right: 24px;
   flex-shrink: 0;
 `
@@ -100,116 +86,25 @@ const ChartContainer = styled.div`
   }
 `
 
-const MessagesContainer = styled.div`
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 12px;
-  padding: 24px;
-  border: 1px solid #e2e8f0;
-`
-
-const MessageBubble = styled.div<{ type: 'sent' | 'received' }>`
-  padding: 12px 16px;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  max-width: 70%;
-  font-size: 14px;
-  line-height: 1.5;
-  ${props => props.type === 'sent' ? `
-    background-color: #3b82f6;
-    color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 4px;
-  ` : `
-    background-color: #f1f5f9;
-    color: #1e293b;
-    border-bottom-left-radius: 4px;
-  `}
-`
-
-const NavItem = styled.div<{ active?: boolean }>`
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: ${props => props.active ? '#fff' : '#94a3b8'};
-  background: ${props => props.active ? 'rgba(255, 255, 255, 0.1)' : 'transparent'};
-  transition: all 0.2s ease;
-  position: relative;
-
-  &:before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0;
-    background: linear-gradient(to bottom, #3b82f6, #2563eb);
-    border-radius: 0 2px 2px 0;
-    transition: all 0.2s ease;
-    opacity: ${props => props.active ? 1 : 0};
-  }
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: #fff;
-    
-    &:before {
-      height: 70%;
-      opacity: 1;
-    }
-  }
-
-  @media (max-width: 768px) {
-    gap: 8px;
-    padding: 10px 12px;
-    font-size: 14px;
-  }
-`
-
-const NavIcon = styled.span`
-  font-size: 18px;
-  opacity: 0.8;
-  transition: all 0.2s ease;
-  
-  ${NavItem}:hover & {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-`
-
-const PatternSquaresContainer = styled.div`
+const PatternGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px;
   margin-top: 32px;
 `
 
-const PatternSquare = styled.div<{ isExpanded?: boolean }>`
+const PatternCard = styled.div`
   background-color: rgba(20, 22, 31, 0.95);
   border-radius: 12px;
   padding: 24px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: ${props => props.isExpanded ? 'calc(100vh - 200px)' : '200px'};
-  width: ${props => props.isExpanded ? '100%' : 'auto'};
-  grid-column: ${props => props.isExpanded ? '1 / -1' : 'auto'};
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    background-color: rgba(30, 32, 41, 0.95);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 `
 
@@ -223,8 +118,7 @@ const PatternTitle = styled.h2`
 const PatternDescription = styled.p`
   color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
-  text-align: center;
-  max-width: 600px;
+  line-height: 1.6;
 `
 
 const mockTimelineData = [
@@ -234,18 +128,28 @@ const mockTimelineData = [
   { date: '2024-04', risk: 0.75 },
 ]
 
-const mockMessages = [
-  { id: 1, type: 'received', text: 'Hey, can we talk?' },
-  { id: 2, type: 'sent', text: 'Sure, what\'s up?' },
-  { id: 3, type: 'received', text: 'I need to discuss something important.' },
+const patterns = [
+  {
+    id: 'obsession',
+    title: 'Obsession',
+    description: 'Analyze patterns of obsessive behavior and excessive attention.'
+  },
+  {
+    id: 'stalking',
+    title: 'Stalking',
+    description: 'Identify potential stalking behavior and monitoring patterns.'
+  },
+  {
+    id: 'gaslighting',
+    title: 'Gaslighting',
+    description: 'Detect manipulative behavior and psychological manipulation attempts.'
+  }
 ]
 
 const ContactAnalysis = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const location = useLocation()
-  const currentPath = location.pathname
-  const [expandedPattern, setExpandedPattern] = useState<string | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   // Calculate chart width based on container width
   const chartContainerRef = useRef<HTMLDivElement>(null)
@@ -264,58 +168,18 @@ const ContactAnalysis = () => {
     return () => window.removeEventListener('resize', updateWidth)
   }, [])
 
-  const patterns = [
-    {
-      id: 'obsession',
-      title: 'Obsession',
-      description: 'Analyze patterns of obsessive behavior and excessive attention.'
-    },
-    {
-      id: 'stalking',
-      title: 'Stalking',
-      description: 'Identify potential stalking behavior and monitoring patterns.'
-    },
-    {
-      id: 'gaslighting',
-      title: 'Gaslighting',
-      description: 'Detect manipulative behavior and psychological manipulation attempts.'
-    }
-  ]
-
   const handlePatternClick = (patternId: string) => {
     navigate(`/${patternId}/${id}`)
   }
 
-  const getNavIcon = (path: string) => {
-    switch (path) {
-      case '/dashboard':
-        return '🏠';
-      case '/contacts':
-        return '👥';
-      case '/analysis':
-        return '📊';
-      case '/settings':
-        return '⚙️';
-      default:
-        return '';
-    }
-  };
-
   return (
     <Container>
-      <Sidebar>
-        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
-          <NavItem 
-            key={path}
-            active={currentPath === path} 
-            onClick={() => navigate(path)}
-          >
-            <NavIcon>{getNavIcon(path)}</NavIcon>
-            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
-          </NavItem>
-        ))}
-      </Sidebar>
-      <MainContent>
+      <Navigation 
+        isSidebarOpen={isSidebarOpen}
+        onSidebarOpenChange={setIsSidebarOpen}
+      />
+
+      <MainContent sidebarOpen={isSidebarOpen}>
         <Content>
           <Header>
             <ContactPhoto />
@@ -374,18 +238,17 @@ const ContactAnalysis = () => {
             </LineChart>
           </ChartContainer>
 
-          <PatternSquaresContainer>
+          <PatternGrid>
             {patterns.map(pattern => (
-              <PatternSquare
+              <PatternCard 
                 key={pattern.id}
-                isExpanded={expandedPattern === pattern.id}
                 onClick={() => handlePatternClick(pattern.id)}
               >
                 <PatternTitle>{pattern.title}</PatternTitle>
                 <PatternDescription>{pattern.description}</PatternDescription>
-              </PatternSquare>
+              </PatternCard>
             ))}
-          </PatternSquaresContainer>
+          </PatternGrid>
         </Content>
       </MainContent>
     </Container>
