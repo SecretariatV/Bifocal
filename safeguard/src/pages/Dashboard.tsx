@@ -211,7 +211,7 @@ const Tile = styled.div<{ index: number }>`
     opacity: 0;
     transition: opacity 0.4s ease;
   }
-  
+
   &:hover {
     transform: translateY(-8px);
     border-color: rgba(96, 165, 250, 0.3);
@@ -452,7 +452,7 @@ const Dashboard = () => {
   const [randomMessage] = useState(() => 
     thoughtMessages[Math.floor(Math.random() * thoughtMessages.length)]
   );
-  
+
   return (
     <Container>
       <Navigation 

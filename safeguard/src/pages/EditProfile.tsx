@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
 import { Global, css, keyframes } from '@emotion/react'
+import useContactsStore from '../store/contactsStore'
 
 // Add these interfaces before the styled components
 interface Contact {
@@ -271,45 +272,18 @@ const CustomRelationshipInput = styled(Input)`
   margin-top: 8px;
 `
 
-// Mock contacts data (in a real app, this would come from your backend)
-const mockContacts = [
-  { id: 1, name: 'John', currentRelationship: '' },
-  { id: 2, name: 'Sally', currentRelationship: '' },
-  { id: 3, name: 'Matt', currentRelationship: '' },
-  { id: 4, name: 'Rob', currentRelationship: '' },
-]
-
-const relationshipOptions = [
-  'Select relationship',
-  'Family',
-  'Friend',
-  'Colleague',
-  'Acquaintance',
-  'Ex-partner',
-  'Other'
-]
-
 const EditProfile = () => {
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
     phone: '',
-    bio: '',
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: ''
+    bio: ''
   })
 
-  const [contactRelationships, setContactRelationships] = useState<ContactRelationships>(
-    mockContacts.reduce((acc, contact) => ({
-      ...acc,
-      [contact.id]: {
-        relationship: '',
-        customRelationship: ''
-      }
-    }), {})
-  )
+  const contacts = useContactsStore(state => state.contacts)
+  const updateContactRelationship = useContactsStore(state => state.updateContactRelationship)
+  const updateCustomRelationship = useContactsStore(state => state.updateCustomRelationship)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -320,179 +294,125 @@ const EditProfile = () => {
   }
 
   const handleRelationshipChange = (contactId: number, value: string) => {
-    setContactRelationships(prev => ({
-      ...prev,
-      [contactId]: {
-        ...prev[contactId],
-        relationship: value,
-        customRelationship: value === 'Other' ? prev[contactId].customRelationship : ''
-      }
-    }))
+    updateContactRelationship(contactId, value)
   }
 
   const handleCustomRelationshipChange = (contactId: number, value: string) => {
-    setContactRelationships(prev => ({
-      ...prev,
-      [contactId]: {
-        ...prev[contactId],
-        customRelationship: value
-      }
-    }))
+    updateCustomRelationship(contactId, value)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Here you would typically handle the profile update logic
-    console.log('Profile update:', {
-      ...formData,
-      contactRelationships
-    })
+    // Handle form submission
+    console.log('Form submitted:', formData)
     navigate('/dashboard')
   }
 
   return (
-    <>
+    <Container>
       <GlobalStyles />
-      {/* Background blobs */}
-      <Blob
-        size={700}
-        gradient="radial-gradient(circle at 30% 30%, #7367f0 0%, rgba(115,103,240,0) 70%)"
-        animation={float1}
-        style={{ top: '-250px', left: '-200px' }}
-      />
-      <Blob
-        size={800}
-        gradient="radial-gradient(circle at 70% 30%, #f472b6 0%, rgba(244,114,182,0) 75%)"
-        animation={float2}
-        style={{ bottom: '-300px', left: '20%' }}
-      />
-      <Blob
-        size={650}
-        gradient="radial-gradient(circle at 50% 50%, #22d3ee 0%, rgba(34,211,238,0) 70%)"
-        animation={float3}
-        style={{ top: '-200px', right: '-200px' }}
-      />
-      
-      <Container>
-        <Sidebar>
-          <NavItem onClick={() => navigate('/dashboard')}>Dashboard</NavItem>
-          <NavItem active onClick={() => navigate('/profile')}>Profile</NavItem>
-          <NavItem onClick={() => navigate('/analysis')}>Analysis</NavItem>
-        </Sidebar>
-        <MainContent>
-          <PageTitle>Edit Profile</PageTitle>
-          <ProfileForm onSubmit={handleSubmit}>
-            <FormSection>
-              <SectionTitle>Personal Information</SectionTitle>
-              <InputGroup>
-                <Label>Full Name</Label>
-                <Input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleChange}
-                  placeholder="Enter your full name"
-                />
-              </InputGroup>
-              <InputGroup>
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Enter your email"
-                />
-              </InputGroup>
-              <InputGroup>
-                <Label>Phone Number</Label>
-                <Input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  placeholder="Enter your phone number"
-                />
-              </InputGroup>
-              <InputGroup>
-                <Label>Bio</Label>
-                <TextArea
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleChange}
-                  placeholder="Tell us about yourself"
-                />
-              </InputGroup>
-            </FormSection>
+      <Sidebar>
+        <NavItem onClick={() => navigate('/dashboard')}>Dashboard</NavItem>
+        <NavItem onClick={() => navigate('/contacts')}>Contacts</NavItem>
+        <NavItem active>Profile</NavItem>
+      </Sidebar>
 
-            <ContactRelationshipsSection>
-              <SectionTitle>Contact Relationships</SectionTitle>
-              {mockContacts.map(contact => (
-                <ContactCard key={contact.id}>
-                  <ContactHeader>
-                    <ContactName>{contact.name}</ContactName>
-                  </ContactHeader>
-                  <RelationshipSelect
-                    value={contactRelationships[contact.id]?.relationship || ''}
-                    onChange={(e) => handleRelationshipChange(contact.id, e.target.value)}
-                  >
-                    {relationshipOptions.map(option => (
-                      <option key={option} value={option === 'Select relationship' ? '' : option}>
-                        {option}
-                      </option>
-                    ))}
-                  </RelationshipSelect>
-                  {contactRelationships[contact.id]?.relationship === 'Other' && (
-                    <CustomRelationshipInput
-                      type="text"
-                      placeholder="Specify relationship"
-                      value={contactRelationships[contact.id]?.customRelationship || ''}
-                      onChange={(e) => handleCustomRelationshipChange(contact.id, e.target.value)}
-                    />
-                  )}
-                </ContactCard>
-              ))}
-            </ContactRelationshipsSection>
+      <MainContent>
+        <PageTitle>Edit Profile</PageTitle>
+        <ProfileForm onSubmit={handleSubmit}>
+          <FormSection>
+            <SectionTitle>Personal Information</SectionTitle>
+            <InputGroup>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Your name"
+              />
+            </InputGroup>
+            <InputGroup>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Your email"
+              />
+            </InputGroup>
+            <InputGroup>
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Your phone number"
+              />
+            </InputGroup>
+            <InputGroup>
+              <Label htmlFor="bio">Bio</Label>
+              <TextArea
+                id="bio"
+                name="bio"
+                value={formData.bio}
+                onChange={handleChange}
+                placeholder="Tell us about yourself"
+              />
+            </InputGroup>
+          </FormSection>
 
-            <FormSection>
-              <SectionTitle>Change Password</SectionTitle>
-              <InputGroup>
-                <Label>Current Password</Label>
-                <Input
-                  type="password"
-                  name="currentPassword"
-                  value={formData.currentPassword}
-                  onChange={handleChange}
-                  placeholder="Enter current password"
-                />
+          <FormSection>
+            <SectionTitle>Contact Relationships</SectionTitle>
+            {contacts.map(contact => (
+              <InputGroup key={contact.id}>
+                <Label>{contact.name}</Label>
+                <select
+                  value={contact.relationship || ''}
+                  onChange={(e) => handleRelationshipChange(contact.id, e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '8px',
+                    color: 'white',
+                    fontSize: '16px',
+                    marginBottom: '8px'
+                  }}
+                >
+                  <option value="">Select relationship</option>
+                  <option value="family">Family</option>
+                  <option value="friend">Friend</option>
+                  <option value="colleague">Colleague</option>
+                  <option value="acquaintance">Acquaintance</option>
+                  <option value="other">Other</option>
+                </select>
+                {contact.relationship === 'other' && (
+                  <Input
+                    type="text"
+                    value={contact.customRelationship || ''}
+                    onChange={(e) => handleCustomRelationshipChange(contact.id, e.target.value)}
+                    placeholder="Specify relationship"
+                  />
+                )}
               </InputGroup>
-              <InputGroup>
-                <Label>New Password</Label>
-                <Input
-                  type="password"
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  placeholder="Enter new password"
-                />
-              </InputGroup>
-              <InputGroup>
-                <Label>Confirm New Password</Label>
-                <Input
-                  type="password"
-                  name="confirmNewPassword"
-                  value={formData.confirmNewPassword}
-                  onChange={handleChange}
-                  placeholder="Confirm new password"
-                />
-              </InputGroup>
-            </FormSection>
+            ))}
+          </FormSection>
 
-            <Button type="submit">Save Changes</Button>
-          </ProfileForm>
-        </MainContent>
-      </Container>
-    </>
+          <Button type="submit">Save Changes</Button>
+        </ProfileForm>
+      </MainContent>
+
+      <Blob size={600} gradient="linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)" animation={float1} />
+      <Blob size={500} gradient="linear-gradient(135deg, #34d399 0%, #059669 100%)" animation={float2} />
+      <Blob size={550} gradient="linear-gradient(135deg, #f472b6 0%, #db2777 100%)" animation={float3} />
+    </Container>
   )
 }
 

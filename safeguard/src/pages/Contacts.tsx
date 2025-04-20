@@ -2,7 +2,7 @@ import styled from '@emotion/styled'
 import { useState } from 'react'
 import Navigation from '../components/Navigation'
 import { useNavigate } from 'react-router-dom'
-import { contacts } from '../data/contacts'
+import useContactsStore from '../store/contactsStore'
 
 const Container = styled.div`
   display: flex;
@@ -159,6 +159,7 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
 const Contacts = () => {
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const contacts = useContactsStore(state => state.contacts)
 
   return (
     <Container>
@@ -182,7 +183,9 @@ const Contacts = () => {
             {contacts.map(contact => (
               <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
                 <ContactName>{contact.name}</ContactName>
-                <RelationshipText>{contact.email || contact.phone}</RelationshipText>
+                <RelationshipText>
+                  {contact.relationship || contact.customRelationship || (contact.email || contact.phone)}
+                </RelationshipText>
                 <RiskIndicatorContainer data-risk={`${contact.risk.charAt(0).toUpperCase() + contact.risk.slice(1)} Risk`}>
                   <RiskIndicator risk={contact.risk} />
                 </RiskIndicatorContainer>
