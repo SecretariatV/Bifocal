@@ -1,196 +1,129 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { keyframes } from '@emotion/react';
+
+const fadeInUp = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
 
 const Container = styled.div`
   min-height: 100vh;
   width: 100%;
-  background: linear-gradient(135deg, #1a1f36 0%, #121629 100%);
+  background: radial-gradient(circle at 50% 50%, #141b3b 0%, #0a0f2c 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.5rem;
   color: #f8fafc;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(96, 165, 250, 0.1),
+      transparent
+    );
+  }
 `;
 
 const Content = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  min-height: 100vh;
-`;
-
-const HeroSection = styled.section`
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
   text-align: center;
-  padding: 2rem;
-  position: relative;
+  max-width: 1200px;
+  width: 100%;
 `;
 
 const Title = styled.h1`
-  font-size: 4rem;
+  font-size: 12rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -5px;
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(97, 153, 255, 0.2);
+  opacity: 0;
+  animation: ${fadeInUp} 0.8s ease-out forwards;
+  
+  &::after {
+    content: '.';
+    color: #60a5fa;
+    -webkit-text-fill-color: #60a5fa;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 8rem;
+    letter-spacing: -3px;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 6rem;
+    letter-spacing: -2px;
+  }
 `;
 
 const Subtitle = styled.p`
-  font-size: 1.5rem;
-  color: #94a3b8;
-  margin-bottom: 2rem;
-  max-width: 600px;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 4rem;
+  font-weight: 300;
+  letter-spacing: 4px;
+  opacity: 0;
+  animation: ${fadeInUp} 0.8s ease-out 0.2s forwards;
+  text-transform: lowercase;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    letter-spacing: 3px;
+    margin-bottom: 3rem;
+  }
+`;
+
+const ButtonContainer = styled.div`
+  opacity: 0;
+  animation: ${fadeInUp} 0.8s ease-out 0.4s forwards;
 `;
 
 const Button = styled.button`
+  padding: 1.25rem 4rem;
+  border-radius: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
   background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 0.5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
   
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+    background: linear-gradient(135deg, #4e8eff 0%, #2563eb 100%);
+    box-shadow: 0 4px 15px -3px rgba(96, 165, 250, 0.4),
+                0 0 20px rgba(96, 165, 250, 0.2);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 `;
-
-const Section = styled.section`
-  padding: 4rem 2rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 1rem;
-  margin: 2rem 0;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-`;
-
-const SectionTitle = styled.h2`
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-`;
-
-const SectionContent = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-`;
-
-const FeatureCard = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2rem;
-  border-radius: 0.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.2s ease;
-  cursor: pointer;
-  
-  &:hover {
-    transform: translateY(-2px);
-    background: rgba(255, 255, 255, 0.1);
-  }
-`;
-
-const FeatureTitle = styled.h3`
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #f8fafc;
-`;
-
-const FeatureDescription = styled.p`
-  color: #94a3b8;
-  line-height: 1.6;
-`;
-
-interface RiskIndicatorProps {
-  risk: 'high' | 'medium' | 'low';
-}
-
-const RiskIndicator = styled.div<RiskIndicatorProps>`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: ${(props: RiskIndicatorProps) => {
-    switch (props.risk) {
-      case 'high':
-        return '#ef4444';  // red
-      case 'medium':
-        return '#f59e0b';  // yellow
-      case 'low':
-        return '#22c55e';  // green
-      default:
-        return '#71717a';  // gray
-    }
-  }};
-`;
-
-const ContactList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const ContactRow = styled(Link)`
-  display: flex;
-  align-items: center;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  text-decoration: none;
-  color: white;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.15);
-  }
-`;
-
-const ContactInfo = styled.div`
-  flex: 1;
-`;
-
-const ContactName = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-`;
-
-const ContactRelationship = styled.div`
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 4px;
-`;
-
-const contacts = [
-  {
-    id: 1,
-    name: 'Mouni',
-    relationship: 'mounikasaka7@gmail.com',
-    riskLevel: 'low' as const
-  },
-  {
-    id: 2,
-    name: 'Shreya',
-    relationship: '+14802078487',
-    riskLevel: 'medium' as const
-  },
-  {
-    id: 3,
-    name: 'Sanya',
-    relationship: 'sanyahegde7@gmail.com',
-    riskLevel: 'high' as const
-  }
-];
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -198,85 +131,13 @@ const Home: React.FC = () => {
   return (
     <Container>
       <Content>
-        <HeroSection>
-          <Title>Welcome to Safeguard</Title>
-          <Subtitle>
-            Your personal safety companion. We help you identify and understand
-            patterns in your relationships to keep you safe and informed.
-          </Subtitle>
-          <Button onClick={() => navigate('/dashboard')}>
+        <Title>bifocal</Title>
+        <Subtitle>clarity, through dual lens</Subtitle>
+        <ButtonContainer>
+          <Button onClick={() => navigate('/signup')}>
             Get Started
           </Button>
-        </HeroSection>
-
-        <Section>
-          <SectionTitle>Features</SectionTitle>
-          <SectionContent>
-            <FeatureCard onClick={() => navigate('/upload')}>
-              <FeatureTitle>Pattern Detection</FeatureTitle>
-              <FeatureDescription>
-                Identify and understand patterns in your relationships through
-                advanced analysis of your conversations.
-              </FeatureDescription>
-            </FeatureCard>
-            <FeatureCard onClick={() => navigate('/conversation')}>
-              <FeatureTitle>Safety Tools</FeatureTitle>
-              <FeatureDescription>
-                Access a range of tools designed to help you stay safe and
-                maintain healthy boundaries in your relationships.
-              </FeatureDescription>
-            </FeatureCard>
-            <FeatureCard onClick={() => navigate('/browse-signs')}>
-              <FeatureTitle>Support Resources</FeatureTitle>
-              <FeatureDescription>
-                Connect with resources and support networks to help you navigate
-                challenging situations.
-              </FeatureDescription>
-            </FeatureCard>
-          </SectionContent>
-        </Section>
-
-        <Section>
-          <SectionTitle>How It Works</SectionTitle>
-          <SectionContent>
-            <FeatureCard>
-              <FeatureTitle>1. Upload Conversations</FeatureTitle>
-              <FeatureDescription>
-                Share your experiences through audio uploads or text messages.
-                Your privacy is our top priority.
-              </FeatureDescription>
-            </FeatureCard>
-            <FeatureCard>
-              <FeatureTitle>2. Analysis</FeatureTitle>
-              <FeatureDescription>
-                Our system analyzes patterns and behaviors to identify potential
-                concerns in your relationships.
-              </FeatureDescription>
-            </FeatureCard>
-            <FeatureCard>
-              <FeatureTitle>3. Insights</FeatureTitle>
-              <FeatureDescription>
-                Receive personalized insights and recommendations to help you
-                make informed decisions about your relationships.
-              </FeatureDescription>
-            </FeatureCard>
-          </SectionContent>
-        </Section>
-
-        <Section>
-          <SectionTitle>Accessed Contacts</SectionTitle>
-          <ContactList>
-            {contacts.map(contact => (
-              <ContactRow key={contact.id} to={`/contact/${contact.id}`}>
-                <ContactInfo>
-                  <ContactName>{contact.name}</ContactName>
-                  <ContactRelationship>{contact.relationship}</ContactRelationship>
-                </ContactInfo>
-                <RiskIndicator risk={contact.riskLevel} />
-              </ContactRow>
-            ))}
-          </ContactList>
-        </Section>
+        </ButtonContainer>
       </Content>
     </Container>
   );

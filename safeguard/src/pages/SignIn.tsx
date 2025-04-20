@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import styled from '@emotion/styled'
-import { useNavigate, Link } from 'react-router-dom'
-import { Global, css, keyframes } from '@emotion/react'
+import React, { useState } from 'react';
+import styled from '@emotion/styled';
+import { useNavigate, Link } from 'react-router-dom';
+import { keyframes } from '@emotion/react';
 
 const fadeInUp = keyframes`
   from {
@@ -12,7 +12,7 @@ const fadeInUp = keyframes`
     opacity: 1;
     transform: translateY(0);
   }
-`
+`;
 
 const Container = styled.div`
   min-height: 100vh;
@@ -24,7 +24,7 @@ const Container = styled.div`
   justify-content: center;
   padding: 2rem;
   color: #f8fafc;
-`
+`;
 
 const FormBox = styled.div`
   background: rgba(255, 255, 255, 0.03);
@@ -34,7 +34,7 @@ const FormBox = styled.div`
   width: 100%;
   max-width: 400px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-`
+`;
 
 const Title = styled.h1`
   font-size: 2.5rem;
@@ -52,7 +52,7 @@ const Title = styled.h1`
     color: #60a5fa;
     -webkit-text-fill-color: #60a5fa;
   }
-`
+`;
 
 const Subtitle = styled.p`
   color: rgba(255, 255, 255, 0.6);
@@ -61,7 +61,7 @@ const Subtitle = styled.p`
   font-size: 0.875rem;
   font-weight: 300;
   letter-spacing: 1px;
-`
+`;
 
 const Input = styled.input`
   width: 100%;
@@ -82,7 +82,7 @@ const Input = styled.input`
   &::placeholder {
     color: rgba(255, 255, 255, 0.4);
   }
-`
+`;
 
 const Button = styled.button`
   width: 100%;
@@ -105,7 +105,7 @@ const Button = styled.button`
   &:active {
     transform: translateY(0);
   }
-`
+`;
 
 const BottomLink = styled.div`
   text-align: center;
@@ -123,31 +123,31 @@ const BottomLink = styled.div`
       text-decoration: underline;
     }
   }
-`
+`;
 
 // Animation keyframes
 const float1 = keyframes`
   0%   { transform: translate(-15%, -10%) scale(1); }
   50%  { transform: translate(20%,  15%) scale(1.15); }
   100% { transform: translate(-15%, -10%) scale(1); }
-`
+`;
 
 const float2 = keyframes`
   0%   { transform: translate(10%, 60%)  scale(1); }
   50%  { transform: translate(-25%, 50%) scale(1.25); }
   100% { transform: translate(10%, 60%)  scale(1); }
-`
+`;
 
 const float3 = keyframes`
   0%   { transform: translate(70%, -30%) scale(1); }
   50%  { transform: translate(50%, 10%)  scale(1.1); }
   100% { transform: translate(70%, -30%) scale(1); }
-`
+`;
 
 const Blob = styled.div<{
-  size: number
-  gradient: string
-  animation: ReturnType<typeof keyframes>
+  size: number;
+  gradient: string;
+  animation: ReturnType<typeof keyframes>;
 }>`
   position: fixed;
   width: ${p => p.size}px;
@@ -159,43 +159,21 @@ const Blob = styled.div<{
   pointer-events: none;
   z-index: 0;
   animation: ${p => p.animation} 45s ease-in-out infinite;
-`
+`;
 
-const GlobalStyles = () => (
-  <Global
-    styles={css`
-      html, body, #root {
-        height: 100%;
-        background-color: #14161f;
-        background-image: 
-          radial-gradient(circle at 0% 0%, rgba(115, 103, 240, 0.1) 0%, rgba(115, 103, 240, 0) 50%),
-          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 50%),
-          radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0) 50%);
-      }
-    `}
-  />
-)
-
-const SignUp: React.FC = () => {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const navigate = useNavigate()
+const SignIn: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (password !== confirmPassword) {
-      alert('Passwords do not match')
-      return
-    }
-    // Here you would typically handle the sign-up logic
-    navigate('/dashboard')
-  }
+    e.preventDefault();
+    // TODO: Add actual sign in logic here
+    navigate('/dashboard');
+  };
 
   return (
     <>
-      <GlobalStyles />
       {/* Background blobs */}
       <Blob
         size={700}
@@ -222,13 +200,6 @@ const SignUp: React.FC = () => {
           <Subtitle>begin your journey</Subtitle>
           <form onSubmit={handleSubmit}>
             <Input
-              type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-            <Input
               type="email"
               placeholder="Email"
               value={email}
@@ -242,22 +213,15 @@ const SignUp: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <Input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            <Button type="submit">Sign Up</Button>
+            <Button type="submit">Sign In</Button>
           </form>
           <BottomLink>
-            Already have an account?<Link to="/signin">Sign in</Link>
+            New to bifocal?<Link to="/signup">Sign up</Link>
           </BottomLink>
         </FormBox>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default SignUp 
+export default SignIn; 
