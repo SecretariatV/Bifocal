@@ -14,6 +14,7 @@ import EditProfile from './pages/EditProfile'
 import UploadAudio from './pages/UploadAudio'
 import ConversationExperience from './pages/ConversationExperience'
 import BrowseSigns from './pages/BrowseSigns'
+import AudioUpload from './pages/AudioUpload'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -42,6 +43,7 @@ function App() {
           <Route path="/upload" element={<UploadAudio />} />
           <Route path="/conversation" element={<ConversationExperience />} />
           <Route path="/browse-signs" element={<BrowseSigns />} />
+          <Route path="/audio-upload" element={<AudioUpload />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AppContainer>

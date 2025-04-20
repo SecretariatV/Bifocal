@@ -196,7 +196,7 @@ const tiles = [
     title: "Let's analyze what was said",
     description: "Upload a voice recording or voicemail. We'll transcribe and analyze it for behavioral patterns like manipulation, gaslighting, or obsessive speech.",
     cta: "Upload Audio",
-    path: '/upload'
+    path: '/audio-upload'
   },
   {
     icon: '💬',
@@ -210,7 +210,7 @@ const tiles = [
     title: "Understand the patterns",
     description: "Learn about signs of emotional abuse, obsessive messaging, and how our AI classifies severity levels using clinical indicators.",
     cta: "Browse Signs",
-    path: '/learn'
+    path: '/browse-signs'
   }
 ];
 
