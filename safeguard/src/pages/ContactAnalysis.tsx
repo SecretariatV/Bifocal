@@ -19,6 +19,7 @@ const Container = styled.div`
 const MainContent = styled.main<{ sidebarOpen: boolean }>`
   flex: 1;
   height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding-left: ${props => props.sidebarOpen ? '420px' : '120px'};
