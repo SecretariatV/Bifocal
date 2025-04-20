@@ -7,7 +7,7 @@ const Container = styled.div`
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #f8fafc;
+  background-color: #14161f;
   position: fixed;
   top: 0;
   left: 0;
@@ -19,8 +19,8 @@ const Container = styled.div`
 const Sidebar = styled.nav`
   width: 250px;
   min-width: 250px;
-  background-color: white;
-  border-right: 1px solid #e2e8f0;
+  background-color: rgba(20, 22, 31, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   padding: 24px 16px;
   height: 100%;
   overflow-y: auto;
@@ -28,7 +28,7 @@ const Sidebar = styled.nav`
 
 const MainContent = styled.main`
   flex: 1;
-  background-color: white;
+  background-color: #14161f;
   padding: 24px 32px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -48,9 +48,9 @@ const Header = styled.div`
   align-items: center;
   margin-bottom: 32px;
   padding: 24px;
-  background-color: white;
+  background-color: rgba(20, 22, 31, 0.95);
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `
 
 const ContactPhoto = styled.div`
@@ -67,21 +67,21 @@ const ContactInfo = styled.div`
     margin: 0 0 8px 0;
     font-size: 24px;
     font-weight: 600;
-    color: #1e293b;
+    color: #fff;
   }
 
   p {
     margin: 0;
-    color: #64748b;
+    color: rgba(255, 255, 255, 0.6);
     font-size: 14px;
   }
 `
 
 const ChartContainer = styled.div`
-  background-color: white;
+  background-color: rgba(20, 22, 31, 0.95);
   border-radius: 12px;
   padding: 24px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   width: 100%;
   margin-bottom: 32px;
   overflow: hidden;
@@ -134,13 +134,13 @@ const NavItem = styled.div<{ active?: boolean }>`
   cursor: pointer;
   border-radius: 8px;
   font-weight: 500;
-  color: ${props => props.active ? '#3b82f6' : '#64748b'};
-  background-color: ${props => props.active ? '#f1f5f9' : 'transparent'};
+  color: ${props => props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)'};
+  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'transparent'};
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #f1f5f9;
-    color: #3b82f6;
+    background-color: rgba(115, 103, 240, 0.1);
+    color: #7367f0;
   }
 `
 
@@ -152,10 +152,10 @@ const PatternSquaresContainer = styled.div`
 `
 
 const PatternSquare = styled.div<{ isExpanded?: boolean }>`
-  background-color: white;
+  background-color: rgba(20, 22, 31, 0.95);
   border-radius: 12px;
   padding: 24px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.3s ease;
   display: flex;
@@ -168,19 +168,19 @@ const PatternSquare = styled.div<{ isExpanded?: boolean }>`
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   }
 `
 
 const PatternTitle = styled.h2`
   font-size: 24px;
   font-weight: 600;
-  color: #1e293b;
+  color: #fff;
   margin-bottom: 16px;
 `
 
 const PatternDescription = styled.p`
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
   text-align: center;
   max-width: 600px;

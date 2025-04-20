@@ -12,7 +12,7 @@ import Obsession from './pages/Obsession'
 const AppContainer = styled.div`
   min-height: 100vh;
   width: 100%;
-  background-color: white;
+  background-color: #14161f;
   color: #1a202c;
 `
 

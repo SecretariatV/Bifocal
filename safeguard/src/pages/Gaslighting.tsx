@@ -6,7 +6,7 @@ const Container = styled.div`
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #f8fafc;
+  background-color: #14161f;
   position: fixed;
   top: 0;
   left: 0;
@@ -18,8 +18,8 @@ const Container = styled.div`
 const Sidebar = styled.nav`
   width: 250px;
   min-width: 250px;
-  background-color: white;
-  border-right: 1px solid #e2e8f0;
+  background-color: rgba(20, 22, 31, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
   padding: 24px 16px;
   height: 100%;
   overflow-y: auto;
@@ -27,7 +27,7 @@ const Sidebar = styled.nav`
 
 const MainContent = styled.main`
   flex: 1;
-  background-color: white;
+  background-color: #14161f;
   padding: 24px 32px;
   overflow-y: auto;
   overflow-x: hidden;
@@ -45,23 +45,23 @@ const Content = styled.div`
 const Title = styled.h1`
   font-size: 36px;
   font-weight: 600;
-  color: #1e293b;
+  color: #fff;
   margin-bottom: 32px;
   text-align: center;
 `
 
 const Section = styled.div`
-  background-color: white;
+  background-color: rgba(20, 22, 31, 0.95);
   border-radius: 12px;
   padding: 24px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 32px;
 `
 
 const SectionTitle = styled.h2`
   font-size: 24px;
   font-weight: 600;
-  color: #1e293b;
+  color: #fff;
   margin-bottom: 24px;
 `
 
@@ -105,17 +105,18 @@ const MessageBubble = styled.div<{ type: 'sent' | 'received' }>`
 `
 
 const ExplanationText = styled.p`
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 16px;
   line-height: 1.6;
   margin-bottom: 16px;
 `
 
 const DSMContainer = styled.div`
-  background-color: #f8fafc;
+  background-color: rgba(20, 22, 31, 0.95);
   border-radius: 8px;
   padding: 20px;
   margin-top: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `
 
 const DSMItem = styled.div`
@@ -137,13 +138,13 @@ const NavItem = styled.div<{ active?: boolean }>`
   cursor: pointer;
   border-radius: 8px;
   font-weight: 500;
-  color: ${props => props.active ? '#3b82f6' : '#64748b'};
-  background-color: ${props => props.active ? '#f1f5f9' : 'transparent'};
+  color: ${props => props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)'};
+  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'transparent'};
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #f1f5f9;
-    color: #3b82f6;
+    background-color: rgba(115, 103, 240, 0.1);
+    color: #7367f0;
   }
 `
 
@@ -176,25 +177,25 @@ const SeverityIndicator = styled.div<{ active?: boolean }>`
   flex: 1;
   padding: 16px;
   border-radius: 12px;
-  background-color: ${props => props.active ? '#f1f5f9' : 'white'};
-  border: 1px solid #e2e8f0;
+  background-color: ${props => props.active ? 'rgba(115, 103, 240, 0.1)' : 'rgba(20, 22, 31, 0.95)'};
+  border: 1px solid rgba(255, 255, 255, 0.1);
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #f1f5f9;
+    background-color: rgba(115, 103, 240, 0.1);
   }
 `
 
 const SeverityTitle = styled.h3`
   font-size: 18px;
   font-weight: 600;
-  color: #1e293b;
+  color: #fff;
   margin-bottom: 8px;
 `
 
 const SeverityDescription = styled.p`
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   line-height: 1.5;
 `

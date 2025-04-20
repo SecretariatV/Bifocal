@@ -5,7 +5,7 @@ const Container = styled.div`
   width: 100%;
   min-height: 100vh;
   display: flex;
-  background-color: #ffffff;
+  background-color: #14161f;
 `
 
 const Content = styled.div`
@@ -18,9 +18,15 @@ const Content = styled.div`
 const Panel = styled.div`
   flex: 1;
   padding: 2rem;
-  background-color: #ffffff;
+  background-color: rgba(20, 22, 31, 0.95);
+  color: #fff;
   &:first-of-type {
-    border-right: 1px solid #e2e8f0;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  h2 {
+    color: #fff;
+    margin-bottom: 1.5rem;
   }
 `
 
@@ -28,16 +34,32 @@ const Message = styled.div<{ highlighted?: boolean }>`
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 0.5rem;
-  background-color: ${(props: { highlighted?: boolean }) => props.highlighted ? '#fef3c7' : '#f8fafc'};
-  border: 1px solid ${(props: { highlighted?: boolean }) => props.highlighted ? '#fbbf24' : '#e2e8f0'};
+  background-color: ${(props: { highlighted?: boolean }) => props.highlighted ? 'rgba(115, 103, 240, 0.1)' : 'rgba(20, 22, 31, 0.95)'};
+  border: 1px solid ${(props: { highlighted?: boolean }) => props.highlighted ? '#7367f0' : 'rgba(255, 255, 255, 0.1)'};
+  color: #fff;
 `
 
 const Pattern = styled.div`
   padding: 1rem;
   margin-bottom: 1rem;
   border-radius: 0.5rem;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background-color: rgba(20, 22, 31, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+
+  h3 {
+    color: #fff;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 0.5rem;
+  }
+
+  div {
+    color: rgba(255, 255, 255, 0.6);
+  }
 `
 
 const RiskMeter = styled.div`

@@ -9,7 +9,7 @@ const Container = styled.div`
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background-color: white;
+  background-color: #14161f;
 `
 
 const Logo = styled.div`
