@@ -33,19 +33,43 @@ const Container = styled.div`
   overflow: hidden;
 `
 
-const Sidebar = styled.nav`
-  width: 250px;
-  min-width: 250px;
-  background-color: rgba(20, 22, 31, 0.95);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px 16px;
-  height: 100%;
-  overflow-y: auto;
+const BackButton = styled.button`
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+  z-index: 100;
+  outline: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0px);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `
 
 const MainContent = styled.main`
   flex: 1;
   padding: 40px;
+  padding-top: 100px;
   background-color: transparent;
   overflow-y: auto;
   z-index: 2;
@@ -57,6 +81,7 @@ const PageTitle = styled.h1`
   color: #fff;
   margin-bottom: 40px;
   letter-spacing: 0.05em;
+  text-align: center;
 `
 
 const ProfileForm = styled.form`
@@ -311,11 +336,12 @@ const EditProfile = () => {
   return (
     <Container>
       <GlobalStyles />
-      <Sidebar>
-        <NavItem onClick={() => navigate('/dashboard')}>Dashboard</NavItem>
-        <NavItem onClick={() => navigate('/contacts')}>Contacts</NavItem>
-        <NavItem active>Profile</NavItem>
-      </Sidebar>
+      <BackButton onClick={() => navigate('/dashboard')}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+        Back to Dashboard
+      </BackButton>
 
       <MainContent>
         <PageTitle>Edit Profile</PageTitle>
