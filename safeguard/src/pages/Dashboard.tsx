@@ -95,15 +95,36 @@ const TopDeck = styled.div`
   z-index: 100;
 `
 
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+const BinocularsIcon = styled.svg`
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: #60a5fa;
+  stroke-width: 1.5;
+  opacity: 0.9;
+  animation: ${fadeInSlowly} 1s ease-out forwards;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+`
+
 const EmpathyStatement = styled.div`
   color: #94a3b8;
   font-size: 1.1rem;
   font-style: italic;
-  margin-left: 2rem;
   opacity: 0;
   animation: ${fadeInSlowly} 2s ease-out forwards;
   animation-delay: 1s;
   font-family: 'Inter', sans-serif;
+  margin-left: 0.5rem;
   
   span {
     color: #60a5fa;
@@ -293,92 +314,6 @@ const TileButton = styled.button`
   }
 `
 
-const Footer = styled.footer`
-  text-align: center;
-  padding: 3rem 2rem;
-  max-width: 800px;
-  margin: 3rem auto 2rem;
-  position: relative;
-  animation: ${fadeIn} 1s ease-out;
-`;
-
-const FooterContent = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-bottom: 2rem;
-  text-align: left;
-`;
-
-const FooterSection = styled.div`
-  h4 {
-    color: #60a5fa;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  li {
-    margin-bottom: 0.5rem;
-  }
-
-  a {
-    color: #94a3b8;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    font-size: 0.95rem;
-
-    &:hover {
-      color: #60a5fa;
-    }
-  }
-`;
-
-const CreatorMessage = styled.div`
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  position: relative;
-  transition: all 0.2s ease;
-  margin-top: 3rem;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.05);
-  }
-`;
-
-const FromCreators = styled.div`
-  position: absolute;
-  top: -0.8rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #14161f;
-  padding: 0 1rem;
-  color: #60a5fa;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-weight: 600;
-`;
-
-const Message = styled.p`
-  font-style: italic;
-  color: #94a3b8;
-  line-height: 1.8;
-  font-size: 1rem;
-  opacity: 0.9;
-  margin: 0;
-`;
-
 const MainTitle = styled.div`
   text-align: left;
   margin-top: 7rem;
@@ -461,7 +396,15 @@ const Dashboard = () => {
       />
 
       <TopDeck>
-        <EmpathyStatement>{randomMessage}</EmpathyStatement>
+        <HeaderLeft>
+          <BinocularsIcon viewBox="0 0 24 24">
+            <path d="M5 3h1v7H5zM18 3h1v7h-1z" />
+            <circle cx="7.5" cy="14" r="3" />
+            <circle cx="16.5" cy="14" r="3" />
+            <path d="M10.5 14h3" strokeLinecap="round" />
+          </BinocularsIcon>
+          <EmpathyStatement>{randomMessage}</EmpathyStatement>
+        </HeaderLeft>
         <ProfileButton onClick={() => navigate('/profile')}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -498,41 +441,6 @@ const Dashboard = () => {
               </Tile>
             ))}
           </TileGrid>
-
-          <Footer>
-            <FooterContent>
-              <FooterSection>
-                <h4>Quick Links</h4>
-                <ul>
-                  <li><a href="/about">About Us</a></li>
-                  <li><a href="/resources">Resources</a></li>
-                  <li><a href="/faq">FAQ</a></li>
-                </ul>
-              </FooterSection>
-              <FooterSection>
-                <h4>Support</h4>
-                <ul>
-                  <li><a href="/contact">Contact</a></li>
-                  <li><a href="/privacy">Privacy Policy</a></li>
-                  <li><a href="/terms">Terms of Use</a></li>
-                </ul>
-              </FooterSection>
-              <FooterSection>
-                <h4>Community</h4>
-                <ul>
-                  <li><a href="/blog">Blog</a></li>
-                  <li><a href="/stories">Stories</a></li>
-                  <li><a href="/help">Get Help</a></li>
-                </ul>
-              </FooterSection>
-            </FooterContent>
-            <CreatorMessage>
-              <FromCreators>From the Creators</FromCreators>
-              <Message>
-                Created with ❤️ at HackAI. Our mission is to help create safer, healthier relationships through technology and community support.
-              </Message>
-            </CreatorMessage>
-          </Footer>
         </Content>
       </MainContent>
     </Container>

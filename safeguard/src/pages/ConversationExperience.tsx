@@ -25,7 +25,7 @@ const Title = styled.h1`
 
 const EmotionGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   width: 100%;
   max-width: 1200px;
@@ -141,16 +141,15 @@ const BackButton = styled.button`
 `;
 
 const emotions = [
+  'Distressed',
   'Neutral',
-  'Concerned',
-  'Anxious',
   'Fearful',
   'Manipulated',
-  'Distressed',
+  'Happy',
+  'Anxious',
   'On edge',
-  'Powerless',
-  'Hopeless',
-  'Scared'
+  'Concerned',
+  'Powerless'
 ];
 
 const ConversationExperience: React.FC = () => {
@@ -177,7 +176,7 @@ const ConversationExperience: React.FC = () => {
         timestamp: new Date().toISOString()
       }));
 
-      navigate('/analysis');
+      navigate('/emotional-evaluation');
     } catch (error) {
       console.error('Error saving emotions:', error);
     } finally {
