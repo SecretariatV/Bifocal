@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Navigation from '../components/Navigation'
+import { contacts } from '../data/contacts'
 
 const Container = styled.div`
   display: flex;
@@ -212,12 +214,15 @@ const tiles = [
   }
 ];
 
-const mockContacts = [
-  { id: 1, name: 'John', risk: 'high', relationship: 'Ex-partner' },
-  { id: 2, name: 'Sally', risk: 'high', relationship: 'Colleague' },
-  { id: 3, name: 'Matt', risk: 'low', relationship: 'Friend' },
-  { id: 4, name: 'Rob', risk: 'low', relationship: 'Acquaintance' },
-]
+const mockData = [
+  { name: 'Mon', frequency: 24 },
+  { name: 'Tue', frequency: 18 },
+  { name: 'Wed', frequency: 30 },
+  { name: 'Thu', frequency: 15 },
+  { name: 'Fri', frequency: 28 },
+  { name: 'Sat', frequency: 12 },
+  { name: 'Sun', frequency: 20 },
+];
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -264,11 +269,11 @@ const Dashboard = () => {
               <RelationshipLabel>Relationship</RelationshipLabel>
               <RiskLabel>Risk</RiskLabel>
             </ContactsHeader>
-            {mockContacts.map(contact => (
+            {contacts.map(contact => (
               <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
                 <ContactName>{contact.name}</ContactName>
-                <RelationshipText>{contact.relationship}</RelationshipText>
-                <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+                <RelationshipText>{contact.email || contact.phone}</RelationshipText>
+                <RiskIndicator risk={contact.risk} />
               </ContactRow>
             ))}
           </ContactsContainer>

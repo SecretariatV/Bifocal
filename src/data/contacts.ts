@@ -1,10 +1,39 @@
+// Import the real messages from the JSON file
+import messagesData from './messages.json';
+
 export interface Contact {
-  id: number;
+  id: string;
   name: string;
-  risk: 'low' | 'medium' | 'high';
-  phone?: string;
-  email?: string;
+  relationship: string;
+  riskLevel: 'low' | 'medium' | 'high';
+  imageUrl?: string;
 }
+
+export const contacts: Contact[] = [
+  {
+    id: 'mounikasaka7@gmail.com',
+    name: 'Mouni',
+    relationship: 'Hackathon Partner',
+    riskLevel: 'low',
+    imageUrl: 'https://avatars.githubusercontent.com/u/123456789'
+  },
+  {
+    id: 'sanyahegde7@gmail.com',
+    name: 'Sanya',
+    relationship: 'Hackathon Partner',
+    riskLevel: 'low',
+    imageUrl: 'https://avatars.githubusercontent.com/u/987654321'
+  },
+  {
+    id: '+14802078487',
+    name: 'Shreya',
+    relationship: 'Hackathon Partner',
+    riskLevel: 'low',
+    imageUrl: 'https://avatars.githubusercontent.com/u/543216789'
+  }
+];
+
+export default contacts;
 
 export interface Message {
   id: number;
@@ -23,32 +52,6 @@ export interface Pattern {
   frequency: string;
   severity: string;
 }
-
-export const contacts: Contact[] = [
-  {
-    id: 1,
-    name: 'Mouni',
-    risk: 'low',
-    phone: '+1 (848) 260-7842',
-    email: 'mounikasaka7@gmail.com'
-  },
-  {
-    id: 2,
-    name: 'Shreya',
-    risk: 'medium',
-    phone: '+1 (480) 207-8487'
-  },
-  {
-    id: 3,
-    name: 'Sanya',
-    risk: 'high',
-    phone: '(469) 247-7056',
-    email: 'sanyahegde7@gmail.com'
-  }
-];
-
-// Import the real messages from the JSON file
-import messagesData from './messages.json';
 
 interface ImportedMessage {
   id: number;
