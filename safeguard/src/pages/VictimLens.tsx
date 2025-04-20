@@ -230,6 +230,28 @@ const TypeButton = styled.button<{ selected?: boolean }>`
   }
 `
 
+const SubmitButton = styled.button`
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  margin-top: 24px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+`
+
 const mockUserMessages = {
   '1': [
     { 
@@ -302,6 +324,12 @@ const VictimLens = () => {
       ...prev,
       [messageId]: { intensity, type }
     }))
+  }
+
+  const handleSubmit = () => {
+    // Clear responses
+    setMessageResponses({})
+    localStorage.removeItem('conversationEmotions')
   }
 
   const filteredMessages = useMemo(() => {
@@ -379,36 +407,9 @@ const VictimLens = () => {
                 </MessageWrapper>
               ))}
             </MessageContainer>
-          </Section>
-
-          <Section>
-            <SectionTitle>Filter by Response Type</SectionTitle>
-            <ResponseContainer>
-              {emotionalTypes.map(type => (
-                <ResponseIndicator 
-                  key={type.type}
-                  active={selectedResponse === type.type}
-                  onClick={() => setSelectedResponse(
-                    selectedResponse === type.type ? null : type.type
-                  )}
-                >
-                  <ResponseTitle>{type.label}</ResponseTitle>
-                </ResponseIndicator>
-              ))}
-            </ResponseContainer>
-          </Section>
-
-          <Section>
-            <SectionTitle>Your Communication Evolution</SectionTitle>
-            <ResponseDescription>
-              Based on your selected responses, we can see:
-              <ul>
-                <li>How you're feeling about different types of messages</li>
-                <li>Patterns in your emotional responses</li>
-                <li>Your boundary-setting attempts</li>
-                <li>Areas where you might need more support</li>
-              </ul>
-            </ResponseDescription>
+            <SubmitButton onClick={handleSubmit}>
+              Submit & Clear Responses
+            </SubmitButton>
           </Section>
         </Content>
       </MainContent>
