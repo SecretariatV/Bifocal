@@ -1,0 +1,161 @@
+[
+  {
+    "name": "Mouni",
+    "messages": [
+      {
+        "id": 222934,
+        "contactId": "+18482607842",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-19T19:48:23.533Z",
+        "highlighted": false
+      },
+      {
+        "id": 222933,
+        "contactId": "+18482607842",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-19T19:47:30.659Z",
+        "highlighted": false
+      },
+      {
+        "id": 222927,
+        "contactId": "+18482607842",
+        "type": "received",
+        "text": "https://github.com/mounikasaka1/hackai",
+        "timestamp": "2025-04-19T17:53:07.208Z",
+        "highlighted": false
+      },
+      {
+        "id": 222888,
+        "contactId": "+18482607842",
+        "type": "received",
+        "text": "gimme like 10",
+        "timestamp": "2025-04-19T13:24:53.179Z",
+        "highlighted": false
+      },
+      {
+        "id": 222887,
+        "contactId": "+18482607842",
+        "type": "received",
+        "text": "same!!!",
+        "timestamp": "2025-04-19T13:24:44.946Z",
+        "highlighted": false
+      },
+      {
+        "id": 222877,
+        "contactId": "+18482607842",
+        "type": "received",
+        "text": "good morning!!!!",
+        "timestamp": "2025-04-19T13:02:47.555Z",
+        "highlighted": false
+      },
+      {
+        "id": 222863,
+        "contactId": "+18482607842",
+        "type": "received",
+        "text": "what time should we walk in for hackathon tmr ",
+        "timestamp": "2025-04-19T03:19:20.754Z",
+        "highlighted": false
+      }
+    ]
+  },
+  {
+    "name": "Shreya",
+    "messages": [
+      {
+        "id": 222937,
+        "contactId": "+14802078487",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-19T22:57:27.481Z",
+        "highlighted": false
+      },
+      {
+        "id": 222936,
+        "contactId": "+14802078487",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-19T22:45:06.480Z",
+        "highlighted": false
+      },
+      {
+        "id": 222935,
+        "contactId": "+14802078487",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-19T22:36:19.964Z",
+        "highlighted": false
+      },
+      {
+        "id": 222932,
+        "contactId": "+14802078487",
+        "type": "received",
+        "text": "ShreyaAkula",
+        "timestamp": "2025-04-19T19:13:23.058Z",
+        "highlighted": false
+      },
+      {
+        "id": 222928,
+        "contactId": "+14802078487",
+        "type": "received",
+        "text": "https://api.utdnebula.com/swagger/index.html",
+        "timestamp": "2025-04-19T18:17:06.615Z",
+        "highlighted": false
+      }
+    ]
+  },
+  {
+    "name": "Sanya",
+    "messages": [
+      {
+        "id": 222942,
+        "contactId": "+14692477056",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-20T00:35:34.982Z",
+        "highlighted": false
+      },
+      {
+        "id": 222925,
+        "contactId": "+14692477056",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-19T16:38:37.982Z",
+        "highlighted": false
+      },
+      {
+        "id": 222901,
+        "contactId": "+14692477056",
+        "type": "received",
+        "text": "￼",
+        "timestamp": "2025-04-19T14:11:17.155Z",
+        "highlighted": false
+      },
+      {
+        "id": 222900,
+        "contactId": "+14692477056",
+        "type": "received",
+        "text": "near the bathrooms like that hall ",
+        "timestamp": "2025-04-19T14:11:04.175Z",
+        "highlighted": false
+      },
+      {
+        "id": 222898,
+        "contactId": "+14692477056",
+        "type": "received",
+        "text": "lmk when yall r in! ",
+        "timestamp": "2025-04-19T14:09:34.955Z",
+        "highlighted": false
+      },
+      {
+        "id": 222897,
+        "contactId": "+14692477056",
+        "type": "received",
+        "text": "i acc don't know what to do in here ",
+        "timestamp": "2025-04-19T14:09:15.930Z",
+        "highlighted": false
+      }
+    ]
+  }
+] 

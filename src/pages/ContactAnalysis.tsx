@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useParams } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { contacts, messages } from '../data/contacts'
 
 const Container = styled.div`
   display: flex;
@@ -71,14 +72,15 @@ const mockTimelineData = [
   { date: '2024-04', messages: 75, risk: 0.6 },
 ]
 
-const mockMessages = [
-  { id: 1, type: 'received', text: 'Hey, can we talk?' },
-  { id: 2, type: 'sent', text: 'Sure, what\'s up?' },
-  { id: 3, type: 'received', text: 'I need to discuss something important.' },
-]
-
 const ContactAnalysis = () => {
   const { id } = useParams()
+  const contactId = id ? parseInt(id) : 0
+  const contact = contacts.find(c => c.id === contactId)
+  const contactMessages = messages.filter(m => m.contactId === contactId)
+
+  if (!contact) {
+    return <div>Contact not found</div>
+  }
 
   return (
     <Container>
@@ -86,8 +88,8 @@ const ContactAnalysis = () => {
         <Header>
           <ContactPhoto />
           <div>
-            <h1>Contact Analysis</h1>
-            <p>ID: {id}</p>
+            <h1>{contact.name}</h1>
+            <p>ID: {contact.id}</p>
           </div>
         </Header>
 
@@ -101,8 +103,8 @@ const ContactAnalysis = () => {
         </LineChart>
 
         <div style={{ marginTop: '2rem' }}>
-          {mockMessages.map(message => (
-            <MessageBubble key={message.id} type={message.type as 'sent' | 'received'}>
+          {contactMessages.map(message => (
+            <MessageBubble key={message.id} type={message.type}>
               {message.text}
             </MessageBubble>
           ))}
@@ -112,7 +114,7 @@ const ContactAnalysis = () => {
       <MetricsPanel>
         <Metric>
           <MetricLabel>Communication Frequency</MetricLabel>
-          <MetricValue>75 msgs/week</MetricValue>
+          <MetricValue>{contactMessages.length} msgs</MetricValue>
         </Metric>
         <Metric>
           <MetricLabel>Concerning Language</MetricLabel>
@@ -120,7 +122,7 @@ const ContactAnalysis = () => {
         </Metric>
         <Metric>
           <MetricLabel>Risk Assessment</MetricLabel>
-          <MetricValue>Medium</MetricValue>
+          <MetricValue>{contact.risk}</MetricValue>
         </Metric>
       </MetricsPanel>
     </Container>

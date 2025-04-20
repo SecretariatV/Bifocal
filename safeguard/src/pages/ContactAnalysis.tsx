@@ -2,6 +2,7 @@ import styled from '@emotion/styled'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import { useRef, useState, useEffect } from 'react'
+import { contacts, messages } from '../data/contacts'
 
 const Container = styled.div`
   display: flex;
@@ -100,32 +101,44 @@ const ChartContainer = styled.div`
 `
 
 const MessagesContainer = styled.div`
-  width: 100%;
-  max-width: 800px;
-  margin: 0 auto;
-  background-color: white;
-  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
   padding: 24px;
-  border: 1px solid #e2e8f0;
+  background-color: rgba(20, 22, 31, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `
 
 const MessageBubble = styled.div<{ type: 'sent' | 'received' }>`
   padding: 12px 16px;
   border-radius: 16px;
-  margin-bottom: 12px;
   max-width: 70%;
-  font-size: 14px;
-  line-height: 1.5;
-  ${props => props.type === 'sent' ? `
-    background-color: #3b82f6;
-    color: white;
-    margin-left: auto;
-    border-bottom-right-radius: 4px;
-  ` : `
-    background-color: #f1f5f9;
-    color: #1e293b;
-    border-bottom-left-radius: 4px;
-  `}
+  align-self: ${props => props.type === 'sent' ? 'flex-end' : 'flex-start'};
+  background-color: ${props => props.type === 'sent' ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${props => props.type === 'sent' ? 'white' : 'rgba(255, 255, 255, 0.9)'};
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    ${props => props.type === 'sent' ? 'right: -8px' : 'left: -8px'};
+    width: 16px;
+    height: 16px;
+    background-color: ${props => props.type === 'sent' ? '#3b82f6' : 'rgba(255, 255, 255, 0.1)'};
+    clip-path: ${props => props.type === 'sent' 
+      ? 'polygon(0 0, 0 100%, 100% 100%)' 
+      : 'polygon(100% 0, 0 100%, 100% 100%)'};
+  }
+`
+
+const MessageTime = styled.div<{ messageType: 'sent' | 'received' }>`
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+  ${props => props.messageType === 'sent' ? 'text-align: right;' : 'text-align: left;'}
 `
 
 const NavItem = styled.div<{ active?: boolean }>`
@@ -245,6 +258,14 @@ const ContactAnalysis = () => {
     navigate(`/${patternId}/${id}`)
   }
 
+  const contactId = id ? parseInt(id) : 0
+  const contact = contacts.find(c => c.id === contactId)
+  const contactMessages = messages.filter(m => m.contactId === contact?.phone)
+
+  if (!contact) {
+    return <div>Contact not found</div>
+  }
+
   return (
     <Container>
       <Sidebar>
@@ -266,8 +287,9 @@ const ContactAnalysis = () => {
           <Header>
             <ContactPhoto />
             <ContactInfo>
-              <h1>Contact Analysis</h1>
-              <p>ID: {id}</p>
+              <h1>{contact.name}</h1>
+              <p>{contact.phone}</p>
+              {contact.email && <p>{contact.email}</p>}
             </ContactInfo>
           </Header>
 
@@ -332,6 +354,19 @@ const ContactAnalysis = () => {
               </PatternSquare>
             ))}
           </PatternSquaresContainer>
+
+          <MessagesContainer>
+            {contactMessages.map(message => (
+              <div key={message.id}>
+                <MessageBubble type={message.type}>
+                  {message.text === '￼' ? '📎 Media attachment' : message.text}
+                </MessageBubble>
+                <MessageTime messageType={message.type}>
+                  {new Date(message.timestamp).toLocaleString()}
+                </MessageTime>
+              </div>
+            ))}
+          </MessagesContainer>
         </Content>
       </MainContent>
     </Container>

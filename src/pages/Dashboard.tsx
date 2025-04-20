@@ -1,6 +1,7 @@
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
+import { contacts } from '../data/contacts'
 
 const Container = styled.div`
   display: flex;
@@ -69,12 +70,6 @@ const mockData = [
   { name: 'Sun', frequency: 20 },
 ]
 
-const mockContacts = [
-  { id: 1, name: 'John Doe', risk: 'low' },
-  { id: 2, name: 'Jane Smith', risk: 'medium' },
-  { id: 3, name: 'Alice Johnson', risk: 'high' },
-]
-
 const Dashboard = () => {
   const navigate = useNavigate()
 
@@ -98,12 +93,12 @@ const Dashboard = () => {
         
         <ContactList>
           <h2>Contacts</h2>
-          {mockContacts.map(contact => (
+          {contacts.map(contact => (
             <Contact 
               key={contact.id} 
               onClick={() => navigate(`/contact/${contact.id}`)}
             >
-              <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+              <RiskIndicator risk={contact.risk} />
               {contact.name}
             </Contact>
           ))}

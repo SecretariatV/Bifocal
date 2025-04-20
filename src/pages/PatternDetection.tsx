@@ -1,5 +1,6 @@
 import styled from '@emotion/styled'
 import { useParams } from 'react-router-dom'
+import { messages, patterns } from '../data/contacts'
 
 const Container = styled.div`
   display: flex;
@@ -53,51 +54,16 @@ const RiskMeter = styled.div`
   }
 `
 
-const mockMessages = [
-  {
-    id: 1,
-    text: "I need to know where you are right now.",
-    highlighted: true,
-    pattern: "Control/Surveillance"
-  },
-  {
-    id: 2,
-    text: "I'm just worried about you, that's all.",
-    highlighted: true,
-    pattern: "Emotional Manipulation"
-  },
-  {
-    id: 3,
-    text: "Can we meet up to talk?",
-    highlighted: false
-  }
-]
-
-const mockPatterns = [
-  {
-    id: 1,
-    name: "Control/Surveillance",
-    description: "Attempts to monitor or control location and activities",
-    frequency: "High",
-    severity: "Medium"
-  },
-  {
-    id: 2,
-    name: "Emotional Manipulation",
-    description: "Using emotions to influence behavior",
-    frequency: "Medium",
-    severity: "High"
-  }
-]
-
 const PatternDetection = () => {
   const { id } = useParams()
+  const contactId = id ? parseInt(id) : 0
+  const contactMessages = messages.filter(m => m.contactId === contactId)
 
   return (
     <Container>
       <Panel>
         <h2>Recent Messages</h2>
-        {mockMessages.map(message => (
+        {contactMessages.map(message => (
           <Message key={message.id} highlighted={message.highlighted}>
             {message.text}
           </Message>
@@ -106,7 +72,7 @@ const PatternDetection = () => {
 
       <Panel>
         <h2>Detected Patterns</h2>
-        {mockPatterns.map(pattern => (
+        {patterns.map(pattern => (
           <Pattern key={pattern.id}>
             <h3>{pattern.name}</h3>
             <p>{pattern.description}</p>

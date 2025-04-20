@@ -1,0 +1,9 @@
+{
+  "name": "imessage-extractor",
+  "version": "1.0.0",
+  "description": "Script to extract iMessages for specific contacts",
+  "main": "extract_messages.js",
+  "dependencies": {
+    "sqlite3": "^5.1.6"
+  }
+} 

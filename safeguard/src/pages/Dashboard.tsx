@@ -1,5 +1,7 @@
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { contacts } from '../data/contacts'
+import type { Contact } from '../data/contacts'
 
 const Container = styled.div`
   display: flex;
@@ -188,13 +190,13 @@ const Dashboard = () => {
             <ContactsTitle>Accessed Contacts</ContactsTitle>
             <RiskLabel>Risk</RiskLabel>
           </ContactsHeader>
-          {mockContacts.map(contact => (
+          {contacts.map((contact: Contact) => (
             <ContactRow 
               key={contact.id}
               onClick={() => navigate(`/contact/${contact.id}`)}
             >
               <ContactName>{contact.name}</ContactName>
-              <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+              <RiskIndicator risk={contact.risk} />
             </ContactRow>
           ))}
         </ContactsContainer>
