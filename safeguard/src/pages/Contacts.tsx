@@ -1,6 +1,8 @@
 import styled from '@emotion/styled'
 import { useState } from 'react'
 import Navigation from '../components/Navigation'
+import { useNavigate } from 'react-router-dom'
+import { contacts } from '../data/contacts'
 
 const Container = styled.div`
   display: flex;
@@ -36,7 +38,126 @@ const Title = styled.h1`
   letter-spacing: 0.05em;
 `
 
+const ContactsContainer = styled.div`
+  background-color: rgba(20, 22, 31, 0.95);
+  border-radius: 1rem;
+  overflow: hidden;
+  margin: 2rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+`
+
+const ContactsHeader = styled.div`
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+`
+
+const ContactsTitle = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+`
+
+const ContactsMainTitle = styled.h2`
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #fff;
+`
+
+const ContactsSubtitle = styled.p`
+  color: #94a3b8;
+  font-size: 0.95rem;
+`
+
+const RelationshipLabel = styled.div`
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  align-self: center;
+`
+
+const RiskLabel = styled.div`
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  align-self: center;
+`
+
+const ContactRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+  }
+`
+
+const ContactName = styled.div`
+  font-size: 16px;
+  color: #fff;
+  font-weight: 500;
+`
+
+const RelationshipText = styled.div`
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+`
+
+const RiskIndicatorContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+
+  &:hover::after {
+    content: attr(data-risk);
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+    white-space: nowrap;
+  }
+`
+
+const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: ${props => 
+    props.risk === 'low' ? '#22c55e' : 
+    props.risk === 'medium' ? '#eab308' : 
+    '#ef4444'
+  };
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+`
+
 const Contacts = () => {
+  const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
@@ -49,7 +170,25 @@ const Contacts = () => {
       <MainContent sidebarOpen={isSidebarOpen}>
         <Content>
           <Title>Contacts</Title>
-          {/* Add your contacts content here */}
+          <ContactsContainer>
+            <ContactsHeader>
+              <ContactsTitle>
+                <ContactsMainTitle>Recently Reviewed Contacts</ContactsMainTitle>
+                <ContactsSubtitle>Your previously analyzed conversations and interactions</ContactsSubtitle>
+              </ContactsTitle>
+              <RelationshipLabel>Relationship</RelationshipLabel>
+              <RiskLabel>Risk Level</RiskLabel>
+            </ContactsHeader>
+            {contacts.map(contact => (
+              <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
+                <ContactName>{contact.name}</ContactName>
+                <RelationshipText>{contact.email || contact.phone}</RelationshipText>
+                <RiskIndicatorContainer data-risk={`${contact.risk.charAt(0).toUpperCase() + contact.risk.slice(1)} Risk`}>
+                  <RiskIndicator risk={contact.risk} />
+                </RiskIndicatorContainer>
+              </ContactRow>
+            ))}
+          </ContactsContainer>
         </Content>
       </MainContent>
     </Container>

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Navigation from '../components/Navigation'
-import { contacts } from '../data/contacts'
 import { keyframes } from '@emotion/react';
 
 const fadeIn = keyframes`
@@ -62,17 +60,9 @@ const Content = styled.div`
   position: relative;
 `
 
-const Title = styled.h1`
-  font-size: 42px;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 40px;
-  letter-spacing: 0.05em;
-`
-
 const ProfileSection = styled.div`
   position: absolute;
-  top: 40px;
+  top: 20px;
   right: 40px;
   z-index: 10;
 `
@@ -156,124 +146,6 @@ const TileButton = styled.button`
   }
 `
 
-const ContactsContainer = styled.div`
-  background-color: rgba(20, 22, 31, 0.95);
-  border-radius: 1rem;
-  overflow: hidden;
-  margin: 4rem 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-`
-
-const ContactsHeader = styled.div`
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-`
-
-const ContactsTitle = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`
-
-const ContactsMainTitle = styled.h2`
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #fff;
-`
-
-const ContactsSubtitle = styled.p`
-  color: #94a3b8;
-  font-size: 0.95rem;
-`
-
-const RelationshipLabel = styled.div`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  font-weight: 500;
-  align-self: center;
-`
-
-const RiskLabel = styled.div`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 14px;
-  font-weight: 500;
-  align-self: center;
-`
-
-const ContactRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 1rem;
-  align-items: center;
-  padding: 1.25rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    transform: translateX(5px);
-  }
-`
-
-const ContactName = styled.div`
-  font-size: 16px;
-  color: #fff;
-  font-weight: 500;
-`
-
-const RelationshipText = styled.div`
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-`
-
-const RiskIndicatorContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  position: relative;
-
-  &:hover::after {
-    content: attr(data-risk);
-    position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    margin-right: 0.5rem;
-    white-space: nowrap;
-  }
-`
-
-const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: ${props => 
-    props.risk === 'low' ? '#22c55e' : 
-    props.risk === 'medium' ? '#eab308' : 
-    '#ef4444'
-  };
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.2);
-  }
-`
-
 const Footer = styled.footer`
   text-align: center;
   padding: 2rem;
@@ -319,42 +191,9 @@ const Message = styled.p`
   margin: 0;
 `;
 
-const tiles = [
-  {
-    icon: '🎙️',
-    title: "Analyze a Voice Message",
-    description: "Share a voice recording or voicemail. We'll help you identify patterns and behaviors that might be concerning.",
-    cta: "Upload Audio",
-    path: '/audio-upload'
-  },
-  {
-    icon: '💬',
-    title: "Describe your experience",
-    description: "Tell us about what's happening in your own words. We're here to listen and help you understand the patterns.",
-    cta: "Start Conversation",
-    path: '/conversation'
-  },
-  {
-    icon: '📚',
-    title: "Explore Warning Signs",
-    description: "Learn about different types of concerning behaviors and how to recognize them in your relationships.",
-    cta: "Browse Signs",
-    path: '/browse-signs'
-  }
-];
-
-const mockData = [
-  { name: 'Mon', frequency: 24 },
-  { name: 'Tue', frequency: 18 },
-  { name: 'Wed', frequency: 30 },
-  { name: 'Thu', frequency: 15 },
-  { name: 'Fri', frequency: 28 },
-  { name: 'Sat', frequency: 12 },
-  { name: 'Sun', frequency: 20 },
-];
-
 const MainTitle = styled.div`
   text-align: left;
+  margin-top: 7rem;
   margin-bottom: 3rem;
   animation: ${slideInFromLeft} 1.5s ease-out;
 `;
@@ -375,15 +214,8 @@ const Subtitle = styled.p`
   font-family: 'Inter', sans-serif;
   color: #94a3b8;
   font-size: 1.25rem;
-  margin-top: 0.5rem;
+  margin-top: 1rem;
   opacity: 0.8;
-`;
-
-const DashboardTitle = styled.h2`
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 2rem;
-  color: #f8fafc;
 `;
 
 const ThoughtBubble = styled.div<{ isVisible: boolean }>`
@@ -427,6 +259,30 @@ const CloseButton = styled.button`
   }
 `;
 
+const tiles = [
+  {
+    icon: '🎙️',
+    title: "Analyze a Voice Message",
+    description: "Share a voice recording or voicemail. We'll help you identify patterns and behaviors that might be concerning.",
+    cta: "Upload Audio",
+    path: '/audio-upload'
+  },
+  {
+    icon: '💬',
+    title: "Describe your experience",
+    description: "Tell us about what's happening in your own words. We're here to listen and help you understand the patterns.",
+    cta: "Start Conversation",
+    path: '/conversation'
+  },
+  {
+    icon: '📚',
+    title: "Explore Warning Signs",
+    description: "Learn about different types of concerning behaviors and how to recognize them in your relationships.",
+    cta: "Browse Signs",
+    path: '/browse-signs'
+  }
+];
+
 const thoughtMessages = [
   "We're here to help you make sense of the patterns.",
   "You're not alone. Let's take a closer look together.",
@@ -444,14 +300,13 @@ const Dashboard = () => {
   const [isThoughtVisible, setIsThoughtVisible] = useState(true)
 
   useEffect(() => {
-    // Rotate through messages every 8 seconds
     const messageInterval = setInterval(() => {
       if (showThought) {
         setIsThoughtVisible(false)
         setTimeout(() => {
           setCurrentThought((prev) => (prev + 1) % thoughtMessages.length)
           setIsThoughtVisible(true)
-        }, 800) // Wait for fade out before changing message
+        }, 800)
       }
     }, 8000)
 
@@ -501,26 +356,6 @@ const Dashboard = () => {
               </Tile>
             ))}
           </TileGrid>
-
-          <ContactsContainer>
-            <ContactsHeader>
-              <ContactsTitle>
-                <ContactsMainTitle>Recently Reviewed Contacts</ContactsMainTitle>
-                <ContactsSubtitle>Your previously analyzed conversations and interactions</ContactsSubtitle>
-              </ContactsTitle>
-              <RelationshipLabel>Relationship</RelationshipLabel>
-              <RiskLabel>Risk Level</RiskLabel>
-            </ContactsHeader>
-            {contacts.map(contact => (
-              <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
-                <ContactName>{contact.name}</ContactName>
-                <RelationshipText>{contact.email || contact.phone}</RelationshipText>
-                <RiskIndicatorContainer data-risk={`${contact.risk.charAt(0).toUpperCase() + contact.risk.slice(1)} Risk`}>
-                  <RiskIndicator risk={contact.risk} />
-                </RiskIndicatorContainer>
-              </ContactRow>
-            ))}
-          </ContactsContainer>
 
           {showThought && (
             <ThoughtBubble isVisible={isThoughtVisible}>

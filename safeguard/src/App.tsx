@@ -16,6 +16,7 @@ import ConversationExperience from './pages/ConversationExperience'
 import Justification from './pages/Justification'
 import BrowseSigns from './pages/BrowseSigns'
 import AudioUpload from './pages/AudioUpload'
+import Contacts from './pages/Contacts'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -32,7 +33,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/contacts" element={<Dashboard />} />
+          <Route path="/contacts" element={<Contacts />} />
           <Route path="/analysis" element={<VictimLens />} />
           <Route path="/profile" element={<EditProfile />} />
           <Route path="/contact/:id" element={<ContactAnalysis />} />
