@@ -278,17 +278,36 @@ const ContactAnalysis = () => {
               data={mockTimelineData}
               margin={{ top: 5, right: 20, bottom: 5, left: 10 }}
             >
-              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-              <XAxis dataKey="date" stroke="#64748b" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
+              <XAxis 
+                dataKey="date" 
+                stroke="rgba(255, 255, 255, 0.6)" 
+                tick={{ fill: '#FFFFFF' }}
+              />
               <YAxis 
-                stroke="#64748b"
+                stroke="rgba(255, 255, 255, 0.6)"
                 domain={[0, 1]}
                 tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-                label={{ value: 'Risk Level', angle: -90, position: 'insideLeft', offset: 0, fill: '#64748b' }}
+                tick={{ fill: '#FFFFFF' }}
+                label={{ 
+                  value: 'Risk Level', 
+                  angle: -90, 
+                  position: 'insideLeft', 
+                  offset: 0, 
+                  fill: '#FFFFFF',
+                  style: { textAnchor: 'middle' }
+                }}
               />
               <Tooltip 
                 formatter={(value: number) => [`${(value * 100).toFixed(1)}%`, 'Risk Level']}
                 labelFormatter={(label) => `Date: ${label}`}
+                contentStyle={{
+                  backgroundColor: 'rgba(20, 22, 31, 0.95)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  color: '#FFFFFF'
+                }}
+                itemStyle={{ color: '#FFFFFF' }}
+                labelStyle={{ color: '#FFFFFF' }}
               />
               <Line 
                 type="monotone" 
