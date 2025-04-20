@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useContext } from 'react'
 import styled from '@emotion/styled'
 import { useParams, useNavigate } from 'react-router-dom'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Navigation from '../components/Navigation'
+import { SafetyContext } from '../App'
 
 const Container = styled.div`
   display: flex;
@@ -142,42 +143,50 @@ const AnalysisText = styled.p`
   margin: 0;
 `
 
-const messages = {
+interface Message {
+  id: number;
+  text: string;
+  timestamp: string;
+  isSent: boolean;
+}
+
+const mockMessages: { [key: string]: Message[] } = {
   mouni: [
-    { text: "Hey! How's the ML model coming along?", isSent: false, timestamp: "Yesterday 3:45 PM" },
-    { text: "Making progress! The accuracy is improving", isSent: true, timestamp: "Yesterday 3:47 PM" },
-    { text: "That's great! Any challenges you're facing?", isSent: false, timestamp: "Yesterday 3:50 PM" },
-    { text: "The data preprocessing is a bit tricky", isSent: true, timestamp: "Yesterday 3:52 PM" },
-    { text: "Need any help with that?", isSent: false, timestamp: "Yesterday 3:55 PM" },
-    { text: "Actually yes, could use your expertise!", isSent: true, timestamp: "Yesterday 3:56 PM" },
-    { text: "Let's look at it together tomorrow?", isSent: false, timestamp: "Yesterday 4:00 PM" },
-    { text: "Perfect! Thanks Mouni!", isSent: true, timestamp: "Yesterday 4:01 PM" }
+    { id: 1, text: "Hey! How's the ML model coming along?", isSent: false, timestamp: "Yesterday 3:45 PM" },
+    { id: 2, text: "Making progress! The accuracy is improving", isSent: true, timestamp: "Yesterday 3:47 PM" },
+    { id: 3, text: "That's great! Any challenges you're facing?", isSent: false, timestamp: "Yesterday 3:50 PM" },
+    { id: 4, text: "The data preprocessing is a bit tricky", isSent: true, timestamp: "Yesterday 3:52 PM" },
+    { id: 5, text: "Need any help with that?", isSent: false, timestamp: "Yesterday 3:55 PM" },
+    { id: 6, text: "Actually yes, could use your expertise!", isSent: true, timestamp: "Yesterday 3:56 PM" },
+    { id: 7, text: "Let's look at it together tomorrow?", isSent: false, timestamp: "Yesterday 4:00 PM" },
+    { id: 8, text: "Perfect! Thanks Mouni!", isSent: true, timestamp: "Yesterday 4:01 PM" }
   ],
   shreya: [
-    { text: "Hey, how's the frontend looking?", isSent: false, timestamp: "Yesterday 2:15 PM" },
-    { text: "Coming along nicely! Just finished the dashboard", isSent: true, timestamp: "Yesterday 2:20 PM" },
-    { text: "Can I see the designs?", isSent: false, timestamp: "Yesterday 2:22 PM" },
-    { text: "Sure, I'll share the Figma link", isSent: true, timestamp: "Yesterday 2:25 PM" },
-    { text: "Love the color scheme!", isSent: false, timestamp: "Yesterday 2:40 PM" },
-    { text: "Thanks! Wanted it to feel modern but calming", isSent: true, timestamp: "Yesterday 2:42 PM" },
-    { text: "Mission accomplished 😊", isSent: false, timestamp: "Yesterday 2:45 PM" }
+    { id: 9, text: "Hey, how's the frontend looking?", isSent: false, timestamp: "Yesterday 2:15 PM" },
+    { id: 10, text: "Coming along nicely! Just finished the dashboard", isSent: true, timestamp: "Yesterday 2:20 PM" },
+    { id: 11, text: "Can I see the designs?", isSent: false, timestamp: "Yesterday 2:22 PM" },
+    { id: 12, text: "Sure, I'll share the Figma link", isSent: true, timestamp: "Yesterday 2:25 PM" },
+    { id: 13, text: "Love the color scheme!", isSent: false, timestamp: "Yesterday 2:40 PM" },
+    { id: 14, text: "Thanks! Wanted it to feel modern but calming", isSent: true, timestamp: "Yesterday 2:42 PM" },
+    { id: 15, text: "Mission accomplished 😊", isSent: false, timestamp: "Yesterday 2:45 PM" }
   ],
   sanya: [
-    { text: "How's the backend integration going?", isSent: false, timestamp: "Yesterday 1:15 PM" },
-    { text: "Just finished the authentication endpoints", isSent: true, timestamp: "Yesterday 1:20 PM" },
-    { text: "Nice! Did you add rate limiting?", isSent: false, timestamp: "Yesterday 1:25 PM" },
-    { text: "Yep, and added request validation too", isSent: true, timestamp: "Yesterday 1:30 PM" },
-    { text: "Perfect! What about error handling?", isSent: false, timestamp: "Yesterday 1:35 PM" },
-    { text: "All covered with proper status codes", isSent: true, timestamp: "Yesterday 1:40 PM" },
-    { text: "You're on fire! 🔥", isSent: false, timestamp: "Yesterday 1:45 PM" }
+    { id: 16, text: "How's the backend integration going?", isSent: false, timestamp: "Yesterday 1:15 PM" },
+    { id: 17, text: "Just finished the authentication endpoints", isSent: true, timestamp: "Yesterday 1:20 PM" },
+    { id: 18, text: "Nice! Did you add rate limiting?", isSent: false, timestamp: "Yesterday 1:25 PM" },
+    { id: 19, text: "Yep, and added request validation too", isSent: true, timestamp: "Yesterday 1:30 PM" },
+    { id: 20, text: "Perfect! What about error handling?", isSent: false, timestamp: "Yesterday 1:35 PM" },
+    { id: 21, text: "All covered with proper status codes", isSent: true, timestamp: "Yesterday 1:40 PM" },
+    { id: 22, text: "You're on fire! 🔥", isSent: false, timestamp: "Yesterday 1:45 PM" }
   ]
-};
+}
 
 const ContactAnalysis = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [activeTab, setActiveTab] = useState('messages')
+  const { isHidden } = useContext(SafetyContext)
 
   const getContactName = (id: string) => {
     switch (id) {
@@ -188,33 +197,28 @@ const ContactAnalysis = () => {
     }
   }
 
-  const getContactMessages = (id: string) => {
-    switch (id) {
-      case '1': return messages.mouni;
-      case '2': return messages.shreya;
-      case '3': return messages.sanya;
-      default: return [];
-    }
-  }
-
   const contactName = getContactName(id || '')
-  const contactMessages = getContactMessages(id || '')
+  const messages = id ? mockMessages[getContactName(id).toLowerCase()] || [] : []
+
+  const renderMessages = () => {
+    return messages.map((message: Message) => (
+      <div key={message.id}>
+        <Message isSent={message.isSent}>
+          {message.text}
+        </Message>
+        <Timestamp isSent={message.isSent}>
+          {message.timestamp}
+        </Timestamp>
+      </div>
+    ))
+  }
 
   const renderContent = () => {
     switch (activeTab) {
       case 'messages':
         return (
           <MessageList>
-            {contactMessages.map((message, index) => (
-              <React.Fragment key={index}>
-                <Message isSent={message.isSent}>
-                  {message.text}
-                </Message>
-                <Timestamp isSent={message.isSent}>
-                  {message.timestamp}
-                </Timestamp>
-              </React.Fragment>
-            ))}
+            {renderMessages()}
           </MessageList>
         )
       case 'obsession':
@@ -254,18 +258,19 @@ const ContactAnalysis = () => {
 
   return (
     <Container>
-      <Navigation 
-        isSidebarOpen={isSidebarOpen}
-        onSidebarOpenChange={setIsSidebarOpen}
-      />
-
-      <MainContent sidebarOpen={isSidebarOpen}>
+      {!isHidden && (
+        <Navigation 
+          isSidebarOpen={isSidebarOpen}
+          onSidebarOpenChange={setIsSidebarOpen}
+        />
+      )}
+      <MainContent sidebarOpen={!isHidden && isSidebarOpen}>
         <Content>
           <Header>
             <ContactPhoto>{contactName[0]}</ContactPhoto>
             <ContactInfo>
               <h1>{contactName}</h1>
-              <p>ID: {id}</p>
+              <p>Online</p>
             </ContactInfo>
           </Header>
 
