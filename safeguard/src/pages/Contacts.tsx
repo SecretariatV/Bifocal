@@ -149,17 +149,27 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
     props.risk === 'medium' ? '#eab308' : 
     '#ef4444'
   };
-  transition: transform 0.2s ease;
+  box-shadow: 0 0 8px ${props => 
+    props.risk === 'low' ? 'rgba(34, 197, 94, 0.4)' : 
+    props.risk === 'medium' ? 'rgba(234, 179, 8, 0.4)' : 
+    'rgba(239, 68, 68, 0.4)'
+  };
+  transition: all 0.2s ease;
 
   &:hover {
     transform: scale(1.2);
+    box-shadow: 0 0 12px ${props => 
+      props.risk === 'low' ? 'rgba(34, 197, 94, 0.6)' : 
+      props.risk === 'medium' ? 'rgba(234, 179, 8, 0.6)' : 
+      'rgba(239, 68, 68, 0.6)'
+    };
   }
 `
 
 const Contacts = () => {
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const contacts = useContactsStore(state => state.contacts)
+  const selectedContacts = useContactsStore(state => state.selectedContacts)
 
   return (
     <Container>
@@ -175,16 +185,16 @@ const Contacts = () => {
             <ContactsHeader>
               <ContactsTitle>
                 <ContactsMainTitle>Recently Reviewed Contacts</ContactsMainTitle>
-                <ContactsSubtitle>Your previously analyzed conversations and interactions</ContactsSubtitle>
+                <ContactsSubtitle>Review and manage your contact relationships</ContactsSubtitle>
               </ContactsTitle>
               <RelationshipLabel>Relationship</RelationshipLabel>
               <RiskLabel>Risk Level</RiskLabel>
             </ContactsHeader>
-            {contacts.map(contact => (
+            {selectedContacts.map(contact => (
               <ContactRow key={contact.id} onClick={() => navigate(`/contact/${contact.id}`)}>
                 <ContactName>{contact.name}</ContactName>
                 <RelationshipText>
-                  {contact.relationship || contact.customRelationship || (contact.email || contact.phone)}
+                  {contact.relationship || (contact.email || contact.phone)}
                 </RelationshipText>
                 <RiskIndicatorContainer data-risk={`${contact.risk.charAt(0).toUpperCase() + contact.risk.slice(1)} Risk`}>
                   <RiskIndicator risk={contact.risk} />

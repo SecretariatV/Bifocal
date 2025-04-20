@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate, Link } from 'react-router-dom'
 import { Global, css, keyframes } from '@emotion/react'
+import useUserStore from '../store/userStore'
 
 const fadeInUp = keyframes`
   from {
@@ -176,87 +177,125 @@ const GlobalStyles = () => (
   />
 )
 
+const Checkbox = styled.input`
+  margin-right: 0.5rem;
+  cursor: pointer;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  &:hover {
+    color: rgba(255, 255, 255, 1);
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+`;
+
 const SignUp: React.FC = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [consent, setConsent] = useState(false)
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { setUser, login } = useUserStore()
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (password !== confirmPassword) {
-      alert('Passwords do not match')
+    setError('')
+
+    if (!consent) {
+      setError('Please agree to the terms and conditions')
       return
     }
-    // Here you would typically handle the sign-up logic
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    
+    // Save user data to store
+    setUser(name, email, phone)
+    login()
+    
+    // Navigate to dashboard
     navigate('/dashboard')
   }
 
   return (
-    <>
+    <Container>
       <GlobalStyles />
-      {/* Background blobs */}
-      <Blob
-        size={700}
-        gradient="radial-gradient(circle at 30% 30%, #7367f0 0%, rgba(115,103,240,0) 70%)"
-        animation={float1}
-        style={{ top: '-250px', left: '-200px' }}
-      />
-      <Blob
-        size={800}
-        gradient="radial-gradient(circle at 70% 30%, #f472b6 0%, rgba(244,114,182,0) 75%)"
-        animation={float2}
-        style={{ bottom: '-300px', left: '20%' }}
-      />
-      <Blob
-        size={650}
-        gradient="radial-gradient(circle at 50% 50%, #22d3ee 0%, rgba(34,211,238,0) 70%)"
-        animation={float3}
-        style={{ top: '-200px', right: '-200px' }}
-      />
-      
-      <Container>
-        <FormBox>
-          <Title>bifocal</Title>
-          <Subtitle>begin your journey</Subtitle>
-          <form onSubmit={handleSubmit}>
-            <Input
-              type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
+      <FormBox>
+        <Title>SafeScreen</Title>
+        <Subtitle>Create your account</Subtitle>
+        <form onSubmit={handleSubmit}>
+          <Input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <Input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <Input
+            type="tel"
+            placeholder="Phone Number"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <Input
+            type="password"
+            placeholder="Confirm Password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+          <CheckboxLabel>
+            <Checkbox
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
             />
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <Input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-            <Button type="submit">Sign Up</Button>
-          </form>
-          <BottomLink>
-            Already have an account?<Link to="/signin">Sign in</Link>
-          </BottomLink>
-        </FormBox>
-      </Container>
-    </>
+            I agree to allow BiFocal to access my contacts and analyze my messages for safety purposes
+          </CheckboxLabel>
+          {error && <ErrorMessage>{error}</ErrorMessage>}
+          <Button type="submit">Sign Up</Button>
+        </form>
+        <BottomLink>
+          Already have an account?<Link to="/login">Sign In</Link>
+        </BottomLink>
+      </FormBox>
+
+      <Blob size={600} gradient="linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)" animation={float1} />
+      <Blob size={500} gradient="linear-gradient(135deg, #34d399 0%, #059669 100%)" animation={float2} />
+      <Blob size={550} gradient="linear-gradient(135deg, #f472b6 0%, #db2777 100%)" animation={float3} />
+    </Container>
   )
 }
 

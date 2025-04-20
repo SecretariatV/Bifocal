@@ -4,6 +4,7 @@ export interface Contact {
   risk: 'low' | 'medium' | 'high';
   phone?: string;
   email?: string;
+  relationship?: string;
 }
 
 export interface Message {
@@ -28,22 +29,25 @@ export const contacts: Contact[] = [
   {
     id: 1,
     name: 'Mouni',
-    risk: 'low',
+    risk: 'high',
     phone: '+18482607842',
-    email: 'mounikasaka7@gmail.com'
+    email: 'mounikasaka7@gmail.com',
+    relationship: 'Ex-Partner'
   },
   {
     id: 2,
     name: 'Shreya',
-    risk: 'medium',
-    phone: '+14802078487'
+    risk: 'high',
+    phone: '+14802078487',
+    relationship: 'Former Classmate'
   },
   {
     id: 3,
     name: 'Sanya',
-    risk: 'high',
+    risk: 'low',
     phone: '+14692477056',
-    email: 'sanyahegde7@gmail.com'
+    email: 'sanyahegde7@gmail.com',
+    relationship: 'Friend'
   }
 ];
 

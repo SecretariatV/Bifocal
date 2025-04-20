@@ -1,4 +1,5 @@
-import { create, StateCreator } from 'zustand'
+import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 import { contacts as initialContacts } from '../data/contacts'
 
 export interface Contact {
@@ -8,42 +9,47 @@ export interface Contact {
   phone?: string;
   email?: string;
   relationship?: string;
-  customRelationship?: string;
+  isSelected?: boolean;
 }
 
-interface ContactsStore {
+interface ContactsState {
   contacts: Contact[];
+  selectedContacts: Contact[];
   updateContactRelationship: (contactId: number, relationship: string) => void;
-  updateCustomRelationship: (contactId: number, customRelationship: string) => void;
+  setSelectedContacts: (contacts: Contact[]) => void;
+  clearSelectedContacts: () => void;
 }
 
-type ContactsState = {
-  contacts: Contact[];
-}
-
-type ContactsActions = {
-  updateContactRelationship: (contactId: number, relationship: string) => void;
-  updateCustomRelationship: (contactId: number, customRelationship: string) => void;
-}
-
-const useContactsStore = create<ContactsStore>((set: StateCreator<ContactsStore>) => ({
-  contacts: initialContacts,
-  updateContactRelationship: (contactId: number, relationship: string) =>
-    set((state: ContactsStore) => ({
-      contacts: state.contacts.map((contact: Contact) =>
-        contact.id === contactId
-          ? { ...contact, relationship }
-          : contact
-      ),
-    })),
-  updateCustomRelationship: (contactId: number, customRelationship: string) =>
-    set((state: ContactsStore) => ({
-      contacts: state.contacts.map((contact: Contact) =>
-        contact.id === contactId
-          ? { ...contact, customRelationship }
-          : contact
-      ),
-    })),
-}))
+const useContactsStore = create<ContactsState>()(
+  persist(
+    (set) => ({
+      contacts: initialContacts,
+      selectedContacts: [],
+      updateContactRelationship: (contactId: number, relationship: string) => {
+        set((state) => ({
+          contacts: state.contacts.map((contact) =>
+            contact.id === contactId
+              ? { ...contact, relationship }
+              : contact
+          ),
+          selectedContacts: state.selectedContacts.map((contact) =>
+            contact.id === contactId
+              ? { ...contact, relationship }
+              : contact
+          )
+        }));
+      },
+      setSelectedContacts: (contacts: Contact[]) => {
+        set({ selectedContacts: contacts });
+      },
+      clearSelectedContacts: () => {
+        set({ selectedContacts: [] });
+      }
+    }),
+    {
+      name: 'contacts-storage',
+    }
+  )
+)
 
 export default useContactsStore 

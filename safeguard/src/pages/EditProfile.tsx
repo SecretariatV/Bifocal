@@ -1,14 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
 import { Global, css, keyframes } from '@emotion/react'
-import useContactsStore from '../store/contactsStore'
+import useContactsStore, { Contact } from '../store/contactsStore'
+import useUserStore from '../store/userStore'
+import ContactSelector from '../components/ContactSelector'
+import { RelationshipSelector } from '../components/RelationshipSelector'
 
-// Add these interfaces before the styled components
-interface Contact {
-  id: number;
+interface FormData {
   name: string;
-  currentRelationship: string;
+  email: string;
+  phone: string;
+  bio: string;
 }
 
 interface ContactRelationship {
@@ -18,6 +21,18 @@ interface ContactRelationship {
 
 interface ContactRelationships {
   [key: number]: ContactRelationship;
+}
+
+interface UserState {
+  name?: string;
+  email?: string;
+  phone?: string;
+  bio?: string;
+}
+
+interface User extends UserState {
+  name: string;
+  email: string;
 }
 
 const Container = styled.div`
@@ -299,16 +314,23 @@ const CustomRelationshipInput = styled(Input)`
 
 const EditProfile = () => {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     phone: '',
     bio: ''
   })
+  const { contacts, selectedContacts, setSelectedContacts, updateContactRelationship } = useContactsStore()
+  const { name: userName, email: userEmail, phone: userPhone, setUser } = useUserStore()
 
-  const contacts = useContactsStore(state => state.contacts)
-  const updateContactRelationship = useContactsStore(state => state.updateContactRelationship)
-  const updateCustomRelationship = useContactsStore(state => state.updateCustomRelationship)
+  useEffect(() => {
+    setFormData(prev => ({
+      ...prev,
+      name: userName || '',
+      email: userEmail || '',
+      phone: userPhone || ''
+    }))
+  }, [userName, userEmail, userPhone])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -318,18 +340,23 @@ const EditProfile = () => {
     }))
   }
 
-  const handleRelationshipChange = (contactId: number, value: string) => {
-    updateContactRelationship(contactId, value)
+  const handleContactSelect = (contact: Contact) => {
+    setSelectedContacts([...selectedContacts, contact])
   }
 
-  const handleCustomRelationshipChange = (contactId: number, value: string) => {
-    updateCustomRelationship(contactId, value)
+  const handleContactRemove = (contactId: number) => {
+    setSelectedContacts(selectedContacts.filter(c => c.id !== contactId))
+  }
+
+  const handleRelationshipChange = (contactId: number, relationship: string) => {
+    updateContactRelationship(contactId, relationship)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log('Form submitted:', formData)
+    // Save form data to user store
+    setUser(formData.name, formData.email, formData.phone)
+    console.log('Form submitted:', { formData, selectedContacts })
     navigate('/dashboard')
   }
 
@@ -337,10 +364,7 @@ const EditProfile = () => {
     <Container>
       <GlobalStyles />
       <BackButton onClick={() => navigate('/dashboard')}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
-        </svg>
-        Back to Dashboard
+        ← Back to Dashboard
       </BackButton>
 
       <MainContent>
@@ -349,10 +373,9 @@ const EditProfile = () => {
           <FormSection>
             <SectionTitle>Personal Information</SectionTitle>
             <InputGroup>
-              <Label htmlFor="name">Name</Label>
+              <Label>Name</Label>
               <Input
                 type="text"
-                id="name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
@@ -360,10 +383,9 @@ const EditProfile = () => {
               />
             </InputGroup>
             <InputGroup>
-              <Label htmlFor="email">Email</Label>
+              <Label>Email</Label>
               <Input
                 type="email"
-                id="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
@@ -371,10 +393,9 @@ const EditProfile = () => {
               />
             </InputGroup>
             <InputGroup>
-              <Label htmlFor="phone">Phone</Label>
+              <Label>Phone</Label>
               <Input
                 type="tel"
-                id="phone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
@@ -382,9 +403,8 @@ const EditProfile = () => {
               />
             </InputGroup>
             <InputGroup>
-              <Label htmlFor="bio">Bio</Label>
+              <Label>Bio</Label>
               <TextArea
-                id="bio"
                 name="bio"
                 value={formData.bio}
                 onChange={handleChange}
@@ -394,42 +414,33 @@ const EditProfile = () => {
           </FormSection>
 
           <FormSection>
-            <SectionTitle>Contact Relationships</SectionTitle>
-            {contacts.map(contact => (
-              <InputGroup key={contact.id}>
-                <Label>{contact.name}</Label>
-                <select
-                  value={contact.relationship || ''}
-                  onChange={(e) => handleRelationshipChange(contact.id, e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    color: 'white',
-                    fontSize: '16px',
-                    marginBottom: '8px'
-                  }}
-                >
-                  <option value="">Select relationship</option>
-                  <option value="family">Family</option>
-                  <option value="friend">Friend</option>
-                  <option value="colleague">Colleague</option>
-                  <option value="acquaintance">Acquaintance</option>
-                  <option value="other">Other</option>
-                </select>
-                {contact.relationship === 'other' && (
-                  <Input
-                    type="text"
-                    value={contact.customRelationship || ''}
-                    onChange={(e) => handleCustomRelationshipChange(contact.id, e.target.value)}
-                    placeholder="Specify relationship"
-                  />
-                )}
-              </InputGroup>
-            ))}
+            <SectionTitle>Contact Access</SectionTitle>
+            <InputGroup>
+              <Label>Select contacts to give BiFocal access to</Label>
+              <ContactSelector
+                contacts={contacts}
+                selectedContacts={selectedContacts}
+                onSelectContact={handleContactSelect}
+                onRemoveContact={handleContactRemove}
+              />
+            </InputGroup>
           </FormSection>
+
+          {selectedContacts.length > 0 && (
+            <FormSection>
+              <SectionTitle>Contact Relationships</SectionTitle>
+              {selectedContacts.map(contact => (
+                <InputGroup key={contact.id}>
+                  <Label>{contact.name}</Label>
+                  <RelationshipSelector
+                    value={contact.relationship || ''}
+                    onChange={(value) => handleRelationshipChange(contact.id, value)}
+                    contactName={contact.name}
+                  />
+                </InputGroup>
+              ))}
+            </FormSection>
+          )}
 
           <Button type="submit">Save Changes</Button>
         </ProfileForm>
