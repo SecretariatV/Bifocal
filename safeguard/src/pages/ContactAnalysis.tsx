@@ -435,8 +435,9 @@ const PatternList = styled.ul`
 const MessagePreviewContainer = styled.div`
   width: 380px;
   height: 100%;
-  background: #FFFFFF;
-  border-right: 1px solid #E5E7EB;
+  background: rgba(20, 22, 31, 0.95);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   flex-direction: column;
 `;
@@ -444,78 +445,45 @@ const MessagePreviewContainer = styled.div`
 const MessageListPreview = styled.div`
   flex: 1;
   overflow-y: auto;
-  padding: 16px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 24px;
 
-  /* Custom scrollbar styling */
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
   }
 
   &::-webkit-scrollbar-track {
-    background: #F3F4F6;
-    border-radius: 4px;
+    background: transparent;
   }
 
   &::-webkit-scrollbar-thumb {
-    background: #D1D5DB;
-    border-radius: 4px;
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background: #9CA3AF;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
   }
 `;
 
-const MessagePreview = styled.div<{ isHighSeverity?: boolean }>`
-  padding: 16px;
-  background: ${props => props.isHighSeverity ? '#FEF2F2' : '#F9FAFB'};
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: ${props => props.isHighSeverity ? '#FEE2E2' : '#F3F4F6'};
-    transform: translateY(-1px);
-  }
-`;
-
-const MessageHeader = styled.div`
+const MessagePreview = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
+  flex-direction: column;
+  gap: 8px;
 `;
 
-const MessageTimestamp = styled.span`
-  font-size: 12px;
-  color: #6B7280;
+const MessageTimestamp = styled.div`
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 4px;
 `;
 
-const MessageText = styled.p`
+const MessageBubble = styled.div`
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 12px 16px;
+  border-radius: 16px 16px 16px 4px;
   font-size: 14px;
-  color: #111827;
-  margin: 0;
   line-height: 1.5;
-`;
-
-const SeverityBadge = styled.span<{ severity: number }>`
-  padding: 4px 8px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 500;
-  background: ${props => {
-    if (props.severity >= 4) return '#FEE2E2';
-    if (props.severity >= 3) return '#FEF3C7';
-    return '#DBEAFE';
-  }};
-  color: ${props => {
-    if (props.severity >= 4) return '#991B1B';
-    if (props.severity >= 3) return '#92400E';
-    return '#1E40AF';
-  }};
+  max-width: 85%;
 `;
 
 const ContactAnalysis = () => {
@@ -556,27 +524,27 @@ const ContactAnalysis = () => {
         </Header>
 
         <ContentContainer>
-          <MessagePreviewContainer>
-            <MessageListPreview>
+          <MessageContainer>
+            <MessageList>
               {messages
                 .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-                .map((message, index) => (
-                  <MessagePreview 
-                    key={index}
-                    isHighSeverity={message.severity_score >= 4}
-                    onClick={() => setSelectedMessage(message)}
-                  >
-                    <MessageHeader>
-                      <SeverityBadge severity={message.severity_score}>
-                        Severity {message.severity_score}
-                      </SeverityBadge>
-                      <MessageTimestamp>{message.timestamp}</MessageTimestamp>
-                    </MessageHeader>
-                    <MessageText>{message.text}</MessageText>
-                  </MessagePreview>
-                ))}
-            </MessageListPreview>
-          </MessagePreviewContainer>
+                .map((message, index, arr) => {
+                  const showTimestamp = index === 0 || 
+                    arr[index - 1].timestamp !== message.timestamp;
+                  
+                  return (
+                    <React.Fragment key={index}>
+                      {showTimestamp && (
+                        <MessageTime>{message.timestamp}</MessageTime>
+                      )}
+                      <Message isSent={false}>
+                        {message.text}
+                      </Message>
+                    </React.Fragment>
+                  );
+                })}
+            </MessageList>
+          </MessageContainer>
           <AnalysisPanel>
             {patterns.map((pattern, index) => (
               <PatternItem key={index}>
