@@ -432,11 +432,98 @@ const PatternList = styled.ul`
   }
 `
 
+const MessagePreviewContainer = styled.div`
+  width: 380px;
+  height: 100%;
+  background: #FFFFFF;
+  border-right: 1px solid #E5E7EB;
+  display: flex;
+  flex-direction: column;
+`;
+
+const MessageListPreview = styled.div`
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #F3F4F6;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #D1D5DB;
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #9CA3AF;
+  }
+`;
+
+const MessagePreview = styled.div<{ isHighSeverity?: boolean }>`
+  padding: 16px;
+  background: ${props => props.isHighSeverity ? '#FEF2F2' : '#F9FAFB'};
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: ${props => props.isHighSeverity ? '#FEE2E2' : '#F3F4F6'};
+    transform: translateY(-1px);
+  }
+`;
+
+const MessageHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+const MessageTimestamp = styled.span`
+  font-size: 12px;
+  color: #6B7280;
+`;
+
+const MessageText = styled.p`
+  font-size: 14px;
+  color: #111827;
+  margin: 0;
+  line-height: 1.5;
+`;
+
+const SeverityBadge = styled.span<{ severity: number }>`
+  padding: 4px 8px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  background: ${props => {
+    if (props.severity >= 4) return '#FEE2E2';
+    if (props.severity >= 3) return '#FEF3C7';
+    return '#DBEAFE';
+  }};
+  color: ${props => {
+    if (props.severity >= 4) return '#991B1B';
+    if (props.severity >= 3) return '#92400E';
+    return '#1E40AF';
+  }};
+`;
+
 const ContactAnalysis = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const { isHidden } = useContext(SafetyContext)
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null)
 
   const getContactName = (id: string) => {
     switch (id) {
@@ -469,37 +556,28 @@ const ContactAnalysis = () => {
         </Header>
 
         <ContentContainer>
-          <MessageContainer>
-            <MessageList>
-              {messages.map((message, index) => {
-                const showTimestamp = index === 0 || 
-                  messages[index - 1].timestamp !== message.timestamp;
-                
-                return (
-                  <React.Fragment key={message.id}>
-                    {showTimestamp && (
-                      <MessageTime>{message.timestamp}</MessageTime>
-                    )}
-                    <Message 
-                      isSent={message.type === 'sent'}
-                    >
-                      {message.text}
-                    </Message>
-                  </React.Fragment>
-                );
-              })}
-            </MessageList>
-          </MessageContainer>
-
+          <MessagePreviewContainer>
+            <MessageListPreview>
+              {messages
+                .sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+                .map((message, index) => (
+                  <MessagePreview 
+                    key={index}
+                    isHighSeverity={message.severity_score >= 4}
+                    onClick={() => setSelectedMessage(message)}
+                  >
+                    <MessageHeader>
+                      <SeverityBadge severity={message.severity_score}>
+                        Severity {message.severity_score}
+                      </SeverityBadge>
+                      <MessageTimestamp>{message.timestamp}</MessageTimestamp>
+                    </MessageHeader>
+                    <MessageText>{message.text}</MessageText>
+                  </MessagePreview>
+                ))}
+            </MessageListPreview>
+          </MessagePreviewContainer>
           <AnalysisPanel>
-            <h2 style={{ 
-              color: '#fff', 
-              fontSize: '16px', 
-              fontWeight: '600',
-              margin: '0 0 20px' 
-            }}>
-              Behavioral Analysis
-            </h2>
             {patterns.map((pattern, index) => (
               <PatternItem key={index}>
                 <PatternTitle>
@@ -528,41 +606,6 @@ const ContactAnalysis = () => {
                 </EmotionalIndicators>
               </PatternItem>
             ))}
-
-            <DSMAnalysisPanel>
-              <DSMSectionTitle>DSM-Based Analysis</DSMSectionTitle>
-              
-              <div>
-                <DSMSubTitle>Primary Traits</DSMSubTitle>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  <DSMTraitTag>Narcissistic Tendencies</DSMTraitTag>
-                  <DSMTraitTag>Manipulative Behavior</DSMTraitTag>
-                  <DSMTraitTag>Control Patterns</DSMTraitTag>
-                </div>
-              </div>
-
-              <div>
-                <DSMSubTitle>Risk Assessment</DSMSubTitle>
-                <RiskIndicator level="high">
-                  <span>⚠️</span>
-                  <span>High Risk of Emotional Abuse</span>
-                </RiskIndicator>
-                <RiskIndicator level="medium">
-                  <span>⚠️</span>
-                  <span>Moderate Risk of Escalation</span>
-                </RiskIndicator>
-              </div>
-
-              <div>
-                <DSMSubTitle>Behavioral Patterns</DSMSubTitle>
-                <PatternList>
-                  <li>Consistent use of reality distortion tactics</li>
-                  <li>Emotional manipulation through guilt and blame</li>
-                  <li>Repeated boundary violations</li>
-                  <li>Escalating controlling behavior</li>
-                </PatternList>
-              </div>
-            </DSMAnalysisPanel>
           </AnalysisPanel>
         </ContentContainer>
       </MainContent>

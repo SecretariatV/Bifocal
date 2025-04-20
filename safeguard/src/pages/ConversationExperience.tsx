@@ -141,21 +141,16 @@ const BackButton = styled.button`
 `;
 
 const emotions = [
+  'Neutral',
+  'Concerned',
   'Anxious',
-  'Lonely',
-  'Confused',
-  'Scared',
-  'Overwhelmed',
-  'Isolated',
-  'Doubtful',
-  'Trapped',
-  'Exhausted',
-  'Numb',
-  'Angry',
-  'Sad',
+  'Fearful',
+  'Manipulated',
+  'Distressed',
+  'On edge',
+  'Powerless',
   'Hopeless',
-  'Stressed',
-  'Insecure'
+  'Scared'
 ];
 
 const ConversationExperience: React.FC = () => {
