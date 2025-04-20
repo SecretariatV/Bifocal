@@ -13,6 +13,9 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
-    host: true // This enables the server to be accessible from any IP
-  }
+    host: true,
+    strictPort: true,
+    open: true
+  },
+  base: '/'
 })

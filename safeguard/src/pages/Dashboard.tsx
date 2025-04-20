@@ -1,157 +1,113 @@
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useState } from 'react'
 
 const Container = styled.div`
   display: flex;
   min-height: 100vh;
   width: 100%;
-  background-color: #f8fafc;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
+  background-color: #14161f;
 `
 
 const Sidebar = styled.nav`
   width: 250px;
   min-width: 250px;
-  background-color: white;
-  border-right: 1px solid #e2e8f0;
+  background-color: rgba(20, 22, 31, 0.95);
   padding: 24px 16px;
-  height: 100%;
-  overflow-y: auto;
+  height: 100vh;
 `
 
 const MainContent = styled.main`
   flex: 1;
-  background-color: white;
-  padding: 24px 32px;
-  overflow-y: auto;
-  overflow-x: hidden;
-  height: 100%;
-  min-width: 0;
+  padding: 40px;
+  background-color: #14161f;
 `
 
 const PageTitle = styled.h1`
-  font-size: 36px;
-  font-weight: 600;
-  color: #1e293b;
-  margin-bottom: 32px;
-  text-transform: uppercase;
+  font-size: 42px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 40px;
   letter-spacing: 0.05em;
-  font-family: 'Special Elite', cursive;
 `
 
 const ProfileSection = styled.div`
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center;
   margin-bottom: 40px;
 `
 
-const ProfileImageContainer = styled.div`
+const ProfileCircle = styled.div`
   width: 120px;
   height: 120px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  border: 2px solid #e2e8f0;
-  overflow: hidden;
-  margin-bottom: 16px;
-  cursor: pointer;
-  position: relative;
-  
-  &:hover {
-    .upload-overlay {
-      opacity: 1;
-    }
-  }
-`
-
-const ProfileImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`
-
-const UploadOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
-  color: white;
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-weight: 500;
 `
 
-const ContactsSection = styled.div`
-  margin-top: 32px;
+const ContactsContainer = styled.div`
+  background-color: rgba(20, 22, 31, 0.95);
+  border-radius: 8px;
+  overflow: hidden;
+`
+
+const ContactsHeader = styled.div`
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  grid-template-columns: 1fr auto;
 `
 
 const ContactsTitle = styled.h2`
   font-size: 24px;
-  font-weight: 500;
-  color: #1e293b;
-  margin-bottom: 16px;
-  font-family: 'Special Elite', cursive;
+  font-weight: 600;
+  color: #fff;
 `
 
-const ContactsTable = styled.div`
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  overflow: hidden;
+const RiskLabel = styled.div`
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  align-self: center;
 `
 
 const ContactRow = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  padding: 16px;
-  border-bottom: 1px solid #e2e8f0;
-  background: white;
-  
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:hover {
-    background-color: #f8fafc;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  &:first-of-type {
+    border-top: none;
   }
 `
 
 const ContactName = styled.div`
   font-size: 16px;
-  color: #1e293b;
-  font-family: 'Special Elite', cursive;
+  color: #fff;
+  font-weight: 500;
 `
 
 const NavItem = styled.div<{ active?: boolean }>`
   padding: 12px 16px;
   margin-bottom: 8px;
   cursor: pointer;
-  border-radius: 8px;
   font-weight: 500;
-  font-family: 'Special Elite', cursive;
-  color: ${props => props.active ? '#3b82f6' : '#64748b'};
-  background-color: ${props => props.active ? '#f1f5f9' : 'transparent'};
+  color: ${props => props.active ? '#7367f0' : 'rgba(255, 255, 255, 0.6)'};
   transition: all 0.2s ease;
 
   &:hover {
-    background-color: #f1f5f9;
-    color: #3b82f6;
+    color: #7367f0;
   }
 `
 
 const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
-  width: 24px;
-  height: 24px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background-color: ${props => 
     props.risk === 'low' ? '#22c55e' : 
@@ -171,18 +127,6 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const currentPath = location.pathname
-  const [profileImage, setProfileImage] = useState<string | null>(null)
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
 
   return (
     <Container>
@@ -213,40 +157,27 @@ const Dashboard = () => {
         </NavItem>
       </Sidebar>
       <MainContent>
-        <PageTitle>Dashboard</PageTitle>
-        
+        <PageTitle>DASHBOARD</PageTitle>
         <ProfileSection>
-          <ProfileImageContainer>
-            <ProfileImage src={profileImage || '/default-avatar.png'} alt="Profile" />
-            <UploadOverlay className="upload-overlay">
-              <label htmlFor="profile-upload" style={{ cursor: 'pointer' }}>
-                Upload Photo
-                <input
-                  id="profile-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  style={{ display: 'none' }}
-                />
-              </label>
-            </UploadOverlay>
-          </ProfileImageContainer>
+          <ProfileCircle>
+            Profile
+          </ProfileCircle>
         </ProfileSection>
-
-        <ContactsSection>
-          <ContactsTitle>Accessed Contacts</ContactsTitle>
-          <ContactsTable>
-            {mockContacts.map(contact => (
-              <ContactRow 
-                key={contact.id}
-                onClick={() => navigate(`/contact/${contact.id}`)}
-              >
-                <ContactName>{contact.name}</ContactName>
-                <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
-              </ContactRow>
-            ))}
-          </ContactsTable>
-        </ContactsSection>
+        <ContactsContainer>
+          <ContactsHeader>
+            <ContactsTitle>Accessed Contacts</ContactsTitle>
+            <RiskLabel>Risk</RiskLabel>
+          </ContactsHeader>
+          {mockContacts.map(contact => (
+            <ContactRow 
+              key={contact.id}
+              onClick={() => navigate(`/contact/${contact.id}`)}
+            >
+              <ContactName>{contact.name}</ContactName>
+              <RiskIndicator risk={contact.risk as 'low' | 'medium' | 'high'} />
+            </ContactRow>
+          ))}
+        </ContactsContainer>
       </MainContent>
     </Container>
   )
