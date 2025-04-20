@@ -11,6 +11,9 @@ import Stalking from './pages/Stalking'
 import Obsession from './pages/Obsession'
 import VictimLens from './pages/VictimLens'
 import EditProfile from './pages/EditProfile'
+import UploadAudio from './pages/UploadAudio'
+import ConversationExperience from './pages/ConversationExperience'
+import BrowseSigns from './pages/BrowseSigns'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -36,6 +39,9 @@ function App() {
           <Route path="/stalking/:id" element={<Stalking />} />
           <Route path="/obsession/:id" element={<Obsession />} />
           <Route path="/victim-lens/:id" element={<VictimLens />} />
+          <Route path="/upload" element={<UploadAudio />} />
+          <Route path="/conversation" element={<ConversationExperience />} />
+          <Route path="/browse-signs" element={<BrowseSigns />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AppContainer>

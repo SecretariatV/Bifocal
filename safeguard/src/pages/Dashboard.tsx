@@ -1,3 +1,4 @@
+import React from 'react';
 import styled from '@emotion/styled'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -23,6 +24,7 @@ const MainContent = styled.main`
   flex: 1;
   padding: 40px;
   background-color: #14161f;
+  overflow-y: auto;
 `
 
 const PageTitle = styled.h1`
@@ -50,6 +52,63 @@ const ProfileCircle = styled.div`
   color: rgba(255, 255, 255, 0.7);
   font-size: 16px;
   font-weight: 500;
+`
+
+const TileGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 40px;
+`
+
+const Tile = styled.div`
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 1rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  
+  &:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  }
+`
+
+const TileIcon = styled.div`
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+`
+
+const TileTitle = styled.h3`
+  font-size: 1.5rem;
+  color: #60a5fa;
+  margin-bottom: 1rem;
+`
+
+const TileDescription = styled.p`
+  color: #94a3b8;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+`
+
+const TileButton = styled.button`
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+  }
 `
 
 const ContactsContainer = styled.div`
@@ -153,12 +212,6 @@ const NavItem = styled.div<{ active?: boolean }>`
       opacity: 1;
     }
   }
-
-  @media (max-width: 768px) {
-    gap: 8px;
-    padding: 10px 12px;
-    font-size: 14px;
-  }
 `
 
 const NavIcon = styled.span`
@@ -183,37 +236,29 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
   };
 `
 
-const Contact = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  margin-bottom: 1rem;
-  cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-`
-
-const ContactActions = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  margin-left: auto;
-`
-
-const ActionButton = styled.button`
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border: none;
-  background-color: #3b82f6;
-  color: white;
-
-  &:hover {
-    background-color: #2563eb;
+const tiles = [
+  {
+    icon: '🎙️',
+    title: "Let's analyze what was said",
+    description: "Upload a voice recording or voicemail. We'll transcribe and analyze it for behavioral patterns like manipulation, gaslighting, or obsessive speech.",
+    cta: "Upload Audio",
+    path: '/upload'
+  },
+  {
+    icon: '💬',
+    title: "Let's talk about you",
+    description: "Not sure where to begin? Describe your experience in your own words and let our system help you uncover patterns and offer support resources.",
+    cta: "Start Conversation",
+    path: '/conversation'
+  },
+  {
+    icon: '📚',
+    title: "Understand the patterns",
+    description: "Learn about signs of emotional abuse, obsessive messaging, and how our AI classifies severity levels using clinical indicators.",
+    cta: "Browse Signs",
+    path: '/learn'
   }
-`
+];
 
 const mockContacts = [
   { id: 1, name: 'John', risk: 'high', relationship: 'Ex-partner' },
@@ -222,7 +267,7 @@ const mockContacts = [
   { id: 4, name: 'Rob', risk: 'low', relationship: 'Acquaintance' },
 ]
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const currentPath = location.pathname
@@ -255,18 +300,34 @@ const Dashboard = () => {
             {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
           </NavItem>
         ))}
-        <NavItem active={currentPath === '/profile'} onClick={() => navigate('/profile')}>
-          Profile
-        </NavItem>
-        <NavItem active={currentPath === '/analysis'} onClick={() => navigate('/analysis')}>
-          Analysis
-        </NavItem>
       </Sidebar>
       <MainContent>
         <PageTitle>DASHBOARD</PageTitle>
         <ProfileSection>
           <ProfileCircle onClick={() => navigate('/profile')}>Profile</ProfileCircle>
         </ProfileSection>
+
+        <TileGrid>
+          {tiles.map((tile, index) => (
+            <Tile 
+              key={index}
+              onClick={() => navigate(tile.path)}
+              role="button"
+              tabIndex={0}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  navigate(tile.path);
+                }
+              }}
+            >
+              <TileIcon>{tile.icon}</TileIcon>
+              <TileTitle>{tile.title}</TileTitle>
+              <TileDescription>{tile.description}</TileDescription>
+              <TileButton>{tile.cta}</TileButton>
+            </Tile>
+          ))}
+        </TileGrid>
+
         <ContactsContainer>
           <ContactsHeader>
             <ContactsTitle>Accessed Contacts</ContactsTitle>
