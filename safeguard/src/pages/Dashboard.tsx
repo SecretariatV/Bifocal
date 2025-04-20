@@ -116,6 +116,38 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
   };
 `
 
+const Contact = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`
+
+const ContactActions = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+`
+
+const ActionButton = styled.button`
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  background-color: #3b82f6;
+  color: white;
+
+  &:hover {
+    background-color: #2563eb;
+  }
+`
+
 const mockContacts = [
   { id: 1, name: 'John', risk: 'high' },
   { id: 2, name: 'Sally', risk: 'high' },

@@ -8,6 +8,7 @@ import PatternDetection from './pages/PatternDetection'
 import Gaslighting from './pages/Gaslighting'
 import Stalking from './pages/Stalking'
 import Obsession from './pages/Obsession'
+import VictimLens from './pages/VictimLens'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -24,12 +25,13 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contacts" element={<Dashboard />} />
-          <Route path="/analysis" element={<Dashboard />} />
+          <Route path="/analysis" element={<VictimLens />} />
           <Route path="/contact/:id" element={<ContactAnalysis />} />
           <Route path="/patterns/:id" element={<PatternDetection />} />
           <Route path="/gaslighting/:id" element={<Gaslighting />} />
           <Route path="/stalking/:id" element={<Stalking />} />
           <Route path="/obsession/:id" element={<Obsession />} />
+          <Route path="/victim-lens/:id" element={<VictimLens />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </AppContainer>
