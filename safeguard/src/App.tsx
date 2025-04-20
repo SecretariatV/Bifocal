@@ -21,6 +21,7 @@ import Contacts from './pages/Contacts'
 import Resources from './pages/Resources'
 import Journal from './pages/Journal'
 import Home from './pages/Home'
+import EmotionalEvaluation from './pages/EmotionalEvaluation'
 
 interface SafetyContextType {
   isHidden: boolean;
@@ -175,6 +176,7 @@ function App() {
             <Route path="/audio-upload" element={<AudioUpload />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/journal" element={<Journal />} />
+            <Route path="/emotional-evaluation" element={<EmotionalEvaluation />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </AppContainer>

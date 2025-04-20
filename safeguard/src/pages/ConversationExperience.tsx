@@ -176,7 +176,7 @@ const ConversationExperience: React.FC = () => {
         timestamp: new Date().toISOString()
       }));
 
-      navigate('/analysis');
+      navigate('/emotional-evaluation');
     } catch (error) {
       console.error('Error saving emotions:', error);
     } finally {

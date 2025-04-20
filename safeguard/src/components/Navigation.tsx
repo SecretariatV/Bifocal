@@ -133,6 +133,13 @@ const Navigation = ({ onSidebarOpenChange, isSidebarOpen }: NavigationProps) => 
           <span role="img" aria-label="analysis">📊</span>
           Analysis
         </NavItem>
+        <NavItem 
+          active={currentPath === '/emotional-evaluation'} 
+          onClick={() => handleNavigation('/emotional-evaluation')}
+        >
+          <span role="img" aria-label="emotional-evaluation">🤗</span>
+          Emotional Evaluation
+        </NavItem>
       </Sidebar>
     </>
   )
