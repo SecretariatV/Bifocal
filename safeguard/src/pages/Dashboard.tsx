@@ -90,7 +90,7 @@ const TopDeck = styled.div`
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   padding: 0 2rem;
   z-index: 100;
 `
@@ -407,12 +407,12 @@ const Subtitle = styled.p`
 `
 
 const thoughtMessages = [
+  "You don't have to face this alone — we're here to help",
+  "Your voice matters. Let's listen together.",
+  "Sometimes all it takes is a closer look.",
   "We're here to help you make sense of the patterns.",
   "You're not alone. Let's take a closer look together.",
-  "Sometimes all it takes is a closer look.",
-  "Patterns reveal more than we think.",
-  "We help connect the dots — safely and privately.",
-  "Your voice matters. Let's listen together."
+  "We help connect the dots — safely and privately."
 ]
 
 const tiles = [
@@ -449,6 +449,9 @@ const tiles = [
 const Dashboard = () => {
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [randomMessage] = useState(() => 
+    thoughtMessages[Math.floor(Math.random() * thoughtMessages.length)]
+  );
   
   return (
     <Container>
@@ -458,6 +461,7 @@ const Dashboard = () => {
       />
 
       <TopDeck>
+        <EmpathyStatement>{randomMessage}</EmpathyStatement>
         <ProfileButton onClick={() => navigate('/profile')}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>

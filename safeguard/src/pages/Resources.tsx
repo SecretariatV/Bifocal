@@ -107,6 +107,22 @@ const SearchSection = styled.div`
   margin: 0 auto 2rem;
 `;
 
+const EmpathyStatement = styled.div`
+  color: #94a3b8;
+  font-size: 1.1rem;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 2rem;
+  opacity: 0;
+  animation: ${fadeInSlowly} 2s ease-out forwards;
+  animation-delay: 0.5s;
+  
+  span {
+    color: #60a5fa;
+    font-weight: 500;
+  }
+`;
+
 const SearchInput = styled.input`
   width: 100%;
   padding: 1rem;
@@ -169,6 +185,16 @@ const Resources = () => {
   const [zipCode, setZipCode] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [supportMessage] = useState(() => {
+    const messages = [
+      "You're taking an important step by reaching out",
+      "Support is available whenever you need it",
+      "You don't have to figure this out alone",
+      "We're here to connect you with people who can help",
+      "Your safety and well-being matter"
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
+  });
 
   const hotlines = [
     {
@@ -509,6 +535,7 @@ const Resources = () => {
       </Header>
 
       <SearchSection>
+        <EmpathyStatement>{supportMessage}</EmpathyStatement>
         <LocationButton onClick={handleFindMe} disabled={isLocating}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>

@@ -1,5 +1,5 @@
 import styled from '@emotion/styled'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Navigation from '../components/Navigation'
 
 const Container = styled.div`
@@ -274,8 +274,27 @@ const VictimLens = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
-    const allMessages = Object.values(mockUserMessages).flat()
-    setUserMessages(allMessages)
+    // Read messages and emotions from localStorage
+    const storedEmotions = localStorage.getItem('conversationEmotions')
+    const storedMessages = localStorage.getItem('conversationMessages')
+    
+    if (storedEmotions && storedMessages) {
+      const emotions = JSON.parse(storedEmotions)
+      const messages = JSON.parse(storedMessages)
+      
+      // Combine messages with their emotional responses
+      const messagesWithEmotions = messages.map((msg: any) => ({
+        ...msg,
+        emotionalResponse: emotions[msg.id] || {}
+      }))
+      
+      setUserMessages(messagesWithEmotions)
+      setMessageResponses(emotions)
+    } else {
+      // Fallback to mock data if no stored data exists
+      const allMessages = Object.values(mockUserMessages).flat()
+      setUserMessages(allMessages)
+    }
   }, [])
 
   const handleResponseSelect = (messageId: number, intensity: string, type: string) => {
@@ -285,9 +304,35 @@ const VictimLens = () => {
     }))
   }
 
-  const filteredMessages = selectedResponse 
-    ? userMessages.filter(msg => messageResponses[msg.id]?.type === selectedResponse)
-    : userMessages
+  const filteredMessages = useMemo(() => {
+    return userMessages.filter((message) => {
+      if (!selectedResponse) return true
+      const messageResponse = message.emotionalResponse || {}
+      return messageResponse.intensity === selectedResponse || messageResponse.type === selectedResponse
+    })
+  }, [userMessages, selectedResponse])
+
+  const getEmotionalPatterns = () => {
+    const patterns: Record<string, number> = {}
+    userMessages.forEach((message) => {
+      const response = message.emotionalResponse
+      if (response?.type) {
+        patterns[response.type] = (patterns[response.type] || 0) + 1
+      }
+    })
+    return patterns
+  }
+
+  const getIntensityDistribution = () => {
+    const distribution: Record<string, number> = {}
+    userMessages.forEach((message) => {
+      const response = message.emotionalResponse
+      if (response?.intensity) {
+        distribution[response.intensity] = (distribution[response.intensity] || 0) + 1
+      }
+    })
+    return distribution
+  }
 
   return (
     <Container>

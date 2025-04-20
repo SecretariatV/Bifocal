@@ -20,6 +20,7 @@ const Title = styled.h1`
   -webkit-text-fill-color: transparent;
   margin-bottom: 3rem;
   text-align: center;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
 `;
 
 const EmotionGrid = styled.div`
@@ -175,17 +176,13 @@ const ConversationExperience: React.FC = () => {
 
     setIsSubmitting(true);
     try {
-      // Here you would typically save the emotions to your backend
-      // For now, we'll just simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
       // Store in localStorage for persistence
       localStorage.setItem('userEmotions', JSON.stringify({
         emotions: selectedEmotions,
         timestamp: new Date().toISOString()
       }));
 
-      navigate('/justification');
+      navigate('/analysis');
     } catch (error) {
       console.error('Error saving emotions:', error);
     } finally {
