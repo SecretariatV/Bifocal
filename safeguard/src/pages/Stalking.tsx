@@ -277,12 +277,6 @@ const Stalking = () => {
           Dashboard
         </NavItem>
         <NavItem 
-          active={currentPath === '/contacts'} 
-          onClick={() => navigate('/contacts')}
-        >
-          Contacts
-        </NavItem>
-        <NavItem 
           active={currentPath === '/analysis'} 
           onClick={() => navigate('/analysis')}
         >
