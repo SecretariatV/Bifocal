@@ -1,8 +1,8 @@
-import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import Navigation from '../components/Navigation'
 import {
   Container,
-  Sidebar,
   MainContent,
   Content,
   Title,
@@ -22,8 +22,6 @@ import {
   SeverityTitle,
   SeverityDescription,
   ExplanationText,
-  NavItem,
-  NavIcon,
   Divider
 } from '../styles/theme'
 
@@ -63,11 +61,10 @@ const severityLevels = [
 const Gaslighting = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const location = useLocation()
-  const currentPath = location.pathname
   const [selectedSeverity, setSelectedSeverity] = useState<string | null>(null)
   const [userMessages, setUserMessages] = useState<any[]>([])
   const [selectedMessageId, setSelectedMessageId] = useState<number | null>(null)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   useEffect(() => {
     if (id && mockUserMessages[id as keyof typeof mockUserMessages]) {
@@ -94,36 +91,14 @@ const Gaslighting = () => {
     setSelectedMessageId(messageId === selectedMessageId ? null : messageId)
   }
 
-  const getNavIcon = (path: string) => {
-    switch (path) {
-      case '/dashboard':
-        return '🏠';
-      case '/contacts':
-        return '👥';
-      case '/analysis':
-        return '📊';
-      case '/settings':
-        return '⚙️';
-      default:
-        return '';
-    }
-  };
-
   return (
     <Container>
-      <Sidebar>
-        {['/dashboard', '/contacts', '/analysis', '/settings'].map(path => (
-          <NavItem 
-            key={path}
-            active={currentPath === path} 
-            onClick={() => navigate(path)}
-          >
-            <NavIcon>{getNavIcon(path)}</NavIcon>
-            {path.slice(1).charAt(0).toUpperCase() + path.slice(2)}
-          </NavItem>
-        ))}
-      </Sidebar>
-      <MainContent>
+      <Navigation 
+        isSidebarOpen={isSidebarOpen}
+        onSidebarOpenChange={setIsSidebarOpen}
+      />
+
+      <MainContent sidebarOpen={isSidebarOpen}>
         <Content>
           <Title>Gaslighting Analysis for Contact #{id}</Title>
 
@@ -191,7 +166,7 @@ const Gaslighting = () => {
           <Section>
             <SectionTitle>What is Gaslighting?</SectionTitle>
             <ExplanationText>
-              Gaslighting is a form of psychological manipulation where a person or group causes someone to question their own sanity, perception, or understanding of reality. This can include denying past events, trivializing emotions, shifting blame, and using confusion tactics to maintain control over the victim.
+              Gaslighting is a form of psychological manipulation where a person or a group makes someone question their sanity, perception, or memories. Common tactics include denial, misdirection, trivializing, and countering. This can lead to confusion, self-doubt, and emotional distress in the victim.
             </ExplanationText>
           </Section>
         </Content>

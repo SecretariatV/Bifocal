@@ -42,52 +42,39 @@ export const colors = {
 // Base Layout Components
 export const Container = styled.div`
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
-  background: ${colors.background.primary};
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  color: ${colors.text.primary};
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #14161f;
+  position: relative;
 `
 
-export const Sidebar = styled.nav`
-  width: 280px;
-  min-width: 280px;
-  background: ${colors.background.card};
-  backdrop-filter: blur(10px);
-  border-right: 1px solid ${colors.border.primary};
-  padding: 32px 20px;
-  height: 100%;
-  overflow-y: auto;
-`
+interface MainContentProps {
+  sidebarOpen: boolean;
+}
 
-export const MainContent = styled.main`
+export const MainContent = styled.main<MainContentProps>`
   flex: 1;
-  background: transparent;
-  padding: 32px;
+  padding: 40px;
+  padding-left: ${props => props.sidebarOpen ? '290px' : '40px'};
+  background-color: #14161f;
   overflow-y: auto;
   overflow-x: hidden;
   height: 100%;
   min-width: 0;
+  transition: padding-left 0.3s ease;
 `
 
 export const Content = styled.div`
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  overflow: hidden;
 `
 
 // Typography Components
 export const Title = styled.h1`
   font-size: 42px;
   font-weight: 700;
-  background: ${colors.accent.title};
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 40px;
@@ -108,7 +95,7 @@ export const SectionTitle = styled.h2`
     content: '';
     width: 4px;
     height: 24px;
-    background: ${colors.accent.primary};
+    background: linear-gradient(to bottom, #3b82f6, #2563eb);
     border-radius: 2px;
     margin-right: 8px;
   }
@@ -116,16 +103,16 @@ export const SectionTitle = styled.h2`
 
 // Card Components
 export const Section = styled.div`
-  background: ${colors.background.card};
+  background: rgba(255, 255, 255, 0.03);
   border-radius: 16px;
   padding: 32px;
-  border: 1px solid ${colors.border.primary};
+  border: 1px solid rgba(255, 255, 255, 0.1);
   margin-bottom: 32px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   
   &:hover {
-    border-color: ${colors.border.hover};
+    border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
     transition: all 0.3s ease;
   }
@@ -320,15 +307,15 @@ export const StatsContainer = styled.div`
 `
 
 export const StatCard = styled.div`
-  background: ${colors.background.card};
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
   padding: 24px;
   text-align: center;
-  border: 1px solid ${colors.border.primary};
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   
   &:hover {
-    background: ${colors.background.hover};
+    background: rgba(255, 255, 255, 0.08);
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   }
@@ -339,87 +326,15 @@ export const StatValue = styled.div`
   font-weight: 700;
   color: #fff;
   margin-bottom: 8px;
-  background: ${colors.accent.title};
+  background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `
 
 export const StatLabel = styled.div`
   font-size: 14px;
-  color: ${colors.text.secondary};
+  color: #94a3b8;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.5px;
 `
-
-// Navigation Components
-export const NavItem = styled.div<{ active?: boolean }>`
-  padding: 12px 16px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 8px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: ${props => props.active ? colors.text.primary : colors.text.secondary};
-  background: ${props => props.active ? colors.background.active : 'transparent'};
-  transition: all 0.2s ease;
-  position: relative;
-
-  &:before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 0;
-    background: ${colors.accent.primary};
-    border-radius: 0 2px 2px 0;
-    transition: all 0.2s ease;
-    opacity: ${props => props.active ? 1 : 0};
-  }
-
-  &:hover {
-    background: ${colors.background.hover};
-    color: ${colors.text.primary};
-    
-    &:before {
-      height: 70%;
-      opacity: 1;
-    }
-  }
-
-  @media (max-width: 768px) {
-    gap: 8px;
-    padding: 10px 12px;
-    font-size: 14px;
-  }
-`
-
-export const NavIcon = styled.span`
-  font-size: 18px;
-  opacity: 0.8;
-  transition: all 0.2s ease;
-  
-  ${NavItem}:hover & {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-`
-
-export const Divider = styled.hr`
-  border: none;
-  height: 1px;
-  background: linear-gradient(to right, transparent, ${colors.border.primary}, transparent);
-  margin: 32px 0;
-`
-
-// Text Components
-export const ExplanationText = styled.p`
-  color: ${colors.text.secondary};
-  font-size: 16px;
-  line-height: 1.8;
-  margin-bottom: 16px;
-` 
