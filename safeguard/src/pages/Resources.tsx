@@ -34,23 +34,6 @@ const Title = styled.h1`
   -webkit-text-fill-color: transparent;
 `;
 
-const EmpathyStatement = styled.div`
-  color: #94a3b8;
-  font-size: 1.1rem;
-  font-style: italic;
-  text-align: center;
-  margin-bottom: 2rem;
-  opacity: 0;
-  animation: ${fadeInSlowly} 2s ease-out forwards;
-  animation-delay: 0.5s;
-  font-family: 'Inter', sans-serif;
-  
-  span {
-    color: #60a5fa;
-    font-weight: 500;
-  }
-`;
-
 const Section = styled.div`
   max-width: 1200px;
   margin: 0 auto 3rem;
@@ -524,6 +507,42 @@ const Resources = () => {
       <Header>
         <Title>Support Resources</Title>
       </Header>
+
+      <SearchSection>
+        <LocationButton onClick={handleFindMe} disabled={isLocating}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          {isLocating ? 'Finding location...' : 'Find My Location'}
+        </LocationButton>
+        <SearchInput
+          type="text"
+          placeholder="Enter ZIP code"
+          value={zipCode}
+          onChange={(e) => setZipCode(e.target.value)}
+        />
+        <SearchButton onClick={handleSearch}>
+          Find Local Resources
+        </SearchButton>
+      </SearchSection>
+
+      {showResults && (
+        <Section>
+          <SectionTitle>Resources in {getCityName()}</SectionTitle>
+          <ResourceGrid>
+            {getResourcesForZip().map((resource, index) => (
+              <ResourceCard key={index}>
+                <ResourceName>{resource.name}</ResourceName>
+                <ResourceType>{resource.type}</ResourceType>
+                <ResourceDescription>{resource.description}</ResourceDescription>
+                <ResourceContact href={`tel:${resource.phone.replace(/\D/g, '')}`}>
+                  {resource.phone}
+                </ResourceContact>
+              </ResourceCard>
+            ))}
+          </ResourceGrid>
+        </Section>
+      )}
 
       <Section>
         <SectionTitle>24/7 Crisis Support</SectionTitle>
