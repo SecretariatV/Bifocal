@@ -98,22 +98,6 @@ const TopDeck = styled.div`
 const HeaderLeft = styled.div`
   display: flex;
   align-items: center;
-  gap: 1rem;
-`
-
-const BinocularsIcon = styled.svg`
-  width: 36px;
-  height: 36px;
-  fill: none;
-  stroke: #60a5fa;
-  stroke-width: 1.5;
-  opacity: 0.9;
-  animation: ${fadeInSlowly} 1s ease-out forwards;
-  transition: transform 0.3s ease;
-
-  &:hover {
-    transform: scale(1.1);
-  }
 `
 
 const EmpathyStatement = styled.div`
@@ -124,7 +108,6 @@ const EmpathyStatement = styled.div`
   animation: ${fadeInSlowly} 2s ease-out forwards;
   animation-delay: 1s;
   font-family: 'Inter', sans-serif;
-  margin-left: 0.5rem;
   
   span {
     color: #60a5fa;
@@ -397,12 +380,6 @@ const Dashboard = () => {
 
       <TopDeck>
         <HeaderLeft>
-          <BinocularsIcon viewBox="0 0 24 24">
-            <path d="M5 3h1v7H5zM18 3h1v7h-1z" />
-            <circle cx="7.5" cy="14" r="3" />
-            <circle cx="16.5" cy="14" r="3" />
-            <path d="M10.5 14h3" strokeLinecap="round" />
-          </BinocularsIcon>
           <EmpathyStatement>{randomMessage}</EmpathyStatement>
         </HeaderLeft>
         <ProfileButton onClick={() => navigate('/profile')}>
