@@ -7,9 +7,11 @@ import { keyframes } from '@emotion/react';
 const fadeIn = keyframes`
   from {
     opacity: 0;
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 `;
 
@@ -33,18 +35,87 @@ const fadeOut = keyframes`
   }
 `;
 
+const fadeInSlowly = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const backgroundWave = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
+
 const Container = styled.div`
   display: flex;
   height: 100vh;
   width: 100%;
   background-color: #14161f;
   position: relative;
+  overflow-x: hidden;
+
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(96, 165, 250, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+`
+
+const TopDeck = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 100;
+`
+
+const EmpathyStatement = styled.div`
+  color: #94a3b8;
+  font-size: 1.1rem;
+  font-style: italic;
+  margin-left: 2rem;
+  opacity: 0;
+  animation: ${fadeInSlowly} 2s ease-out forwards;
+  animation-delay: 1s;
+  font-family: 'Inter', sans-serif;
+  
+  span {
+    color: #60a5fa;
+    font-weight: 500;
+  }
 `
 
 const MainContent = styled.main<{ sidebarOpen: boolean }>`
   flex: 1;
   padding: 3rem;
   padding-left: ${props => props.sidebarOpen ? '290px' : '3rem'};
+  padding-top: calc(3rem + 60px);
   background-color: #14161f;
   overflow-y: auto;
   overflow-x: hidden;
@@ -60,108 +131,224 @@ const Content = styled.div`
   position: relative;
 `
 
-const ProfileSection = styled.div`
-  position: absolute;
-  top: 20px;
-  right: 40px;
-  z-index: 10;
-`
-
-const ProfileCircle = styled.div`
-  width: 120px;
-  height: 120px;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
+const ProfileButton = styled.button`
   display: flex;
   align-items: center;
-  justify-content: center;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 16px;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1.25rem;
+  border-radius: 2rem;
+  color: #fff;
   font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `
 
 const TileGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2.5rem;
-  margin: 2rem 0 4rem 0;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+  margin: 3rem auto;
+  max-width: 1400px;
+  padding: 0 4rem;
+  position: relative;
+  z-index: 1;
+
+  @media (max-width: 1200px) {
+    gap: 2.5rem;
+    padding: 0 3rem;
+  }
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
+    padding: 0 2rem;
     gap: 2rem;
   }
 `
 
-const Tile = styled.div`
-  background: rgba(255, 255, 255, 0.05);
-  padding: 2.5rem;
-  border-radius: 1rem;
+const Tile = styled.div<{ index: number }>`
+  background: ${props => 
+    `linear-gradient(135deg, 
+      rgba(255, 255, 255, ${props.index % 2 === 0 ? '0.08' : '0.06'}) 0%, 
+      rgba(255, 255, 255, ${props.index % 2 === 0 ? '0.06' : '0.04'}) 100%)`
+  };
+  padding: 3.5rem;
+  border-radius: 2rem;
   backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  min-height: 400px;
+  
+  &:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+      rgba(96, 165, 250, 0.15) 0%, 
+      rgba(59, 130, 246, 0.08) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
   
   &:hover {
-    transform: translateY(-5px) scale(1.02);
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transform: translateY(-8px);
+    border-color: rgba(96, 165, 250, 0.3);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.3),
+      0 0 30px rgba(96, 165, 250, 0.2);
+
+    &:before {
+      opacity: 1;
+    }
   }
 `
 
-const TileIcon = styled.div`
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
+const TileIcon = styled.div<{ index: number }>`
+  font-size: 4rem;
+  margin-bottom: 2.5rem;
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 1;
+
+  ${Tile}:hover & {
+    transform: scale(1.1) translateY(-5px);
+  }
 `
 
 const TileTitle = styled.h3`
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #60a5fa;
-  margin-bottom: 1rem;
-  font-family: 'Inter', sans-serif;
+  font-size: 2.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #e2e8f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.75rem;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  position: relative;
+  z-index: 1;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
 `
 
 const TileDescription = styled.p`
   color: #94a3b8;
-  line-height: 1.7;
-  margin-bottom: 1.5rem;
-  font-size: 1.1rem;
+  line-height: 1.8;
+  font-size: 1.2rem;
+  opacity: 0.9;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 2.5rem;
+  flex-grow: 1;
 `
 
 const TileButton = styled.button`
   background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
   color: white;
   border: none;
-  padding: 1rem 1.75rem;
-  border-radius: 0.5rem;
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  font-size: 1.15rem;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   
   &:hover {
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 4px 12px rgba(59, 130, 246, 0.3),
+      0 0 0 2px rgba(96, 165, 250, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    padding: 1.25rem 2rem;
   }
 `
 
 const Footer = styled.footer`
   text-align: center;
-  padding: 2rem;
-  max-width: 600px;
+  padding: 3rem 2rem;
+  max-width: 800px;
   margin: 3rem auto 2rem;
   position: relative;
+  animation: ${fadeIn} 1s ease-out;
+`;
+
+const FooterContent = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
+  text-align: left;
+`;
+
+const FooterSection = styled.div`
+  h4 {
+    color: #60a5fa;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin-bottom: 0.5rem;
+  }
+
+  a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    font-size: 0.95rem;
+
+    &:hover {
+      color: #60a5fa;
+    }
+  }
 `;
 
 const CreatorMessage = styled.div`
   border: 1px solid rgba(255, 255, 255, 0.15);
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(8px);
-  border-radius: 1rem;
+  border-radius: 1.5rem;
   padding: 2rem;
   position: relative;
   transition: all 0.2s ease;
+  margin-top: 3rem;
 
   &:hover {
     border-color: rgba(255, 255, 255, 0.25);
@@ -180,13 +367,14 @@ const FromCreators = styled.div`
   font-size: 0.9rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+  font-weight: 600;
 `;
 
 const Message = styled.p`
   font-style: italic;
   color: #94a3b8;
-  line-height: 1.7;
-  font-size: 0.95rem;
+  line-height: 1.8;
+  font-size: 1rem;
   opacity: 0.9;
   margin: 0;
 `;
@@ -196,7 +384,7 @@ const MainTitle = styled.div`
   margin-top: 7rem;
   margin-bottom: 3rem;
   animation: ${slideInFromLeft} 1.5s ease-out;
-`;
+`
 
 const BifocalText = styled.h1`
   font-family: 'Space Grotesk', 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -208,7 +396,7 @@ const BifocalText = styled.h1`
   margin: 0;
   letter-spacing: -0.03em;
   text-transform: lowercase;
-`;
+`
 
 const Subtitle = styled.p`
   font-family: 'Inter', sans-serif;
@@ -216,31 +404,32 @@ const Subtitle = styled.p`
   font-size: 1.25rem;
   margin-top: 1rem;
   opacity: 0.8;
-`;
+`
 
 const ThoughtBubble = styled.div<{ isVisible: boolean }>`
   position: fixed;
-  left: 2rem;
-  bottom: 2rem;
-  background: rgba(255, 255, 255, 0.08);
+  right: ${props => props.isVisible ? '2rem' : '-100%'};
+  top: 5rem;
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 1.25rem 1.75rem;
+  padding: 1.5rem 2rem;
   border-radius: 1rem;
   max-width: 320px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   z-index: 100;
-  animation: ${props => props.isVisible ? slideInFromLeft : fadeOut} 0.8s ease-out;
-  animation-fill-mode: forwards;
-`;
+  opacity: ${props => props.isVisible ? 1 : 0};
+  transform: ${props => props.isVisible ? 'translateX(0)' : 'translateX(20px)'};
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+`
 
 const ThoughtText = styled.p`
   color: #f8fafc;
   font-size: 1.1rem;
   line-height: 1.6;
   font-style: italic;
-  margin-right: 2rem;
-`;
+  margin-right: 2.5rem;
+`
 
 const CloseButton = styled.button`
   position: absolute;
@@ -257,29 +446,45 @@ const CloseButton = styled.button`
   &:hover {
     color: #f8fafc;
   }
-`;
+`
+
+const empathyStatements = [
+  "We understand that opening up can be difficult",
+  "Your feelings are valid and important",
+  "You're taking a brave step forward",
+  "We're here to listen without judgment",
+  "Your story matters to us",
+  "You don't have to face this alone"
+];
 
 const tiles = [
   {
-    icon: '🎙️',
+    icon: '🔊',
     title: "Analyze a Voice Message",
-    description: "Share a voice recording or voicemail. We'll help you identify patterns and behaviors that might be concerning.",
+    description: "Share verbal interactions for our model to detect tone and trauma language using survivor-focused, DSM-aligned analysis.",
     cta: "Upload Audio",
     path: '/audio-upload'
   },
   {
     icon: '💬',
-    title: "Describe your experience",
-    description: "Tell us about what's happening in your own words. We're here to listen and help you understand the patterns.",
+    title: "Describe Your Experience",
+    description: "Share your story in your own words. Our system helps identify patterns of confusion, fear, and dissociation through a survivor-focused lens.",
     cta: "Start Conversation",
     path: '/conversation'
   },
   {
-    icon: '📚',
-    title: "Explore Warning Signs",
-    description: "Learn about different types of concerning behaviors and how to recognize them in your relationships.",
-    cta: "Browse Signs",
-    path: '/browse-signs'
+    icon: '📍',
+    title: "Find Local Resources",
+    description: "Connect with nearby support services and crisis centers. Get actionable help based on your specific situation and location.",
+    cta: "Find Support",
+    path: '/resources'
+  },
+  {
+    icon: '📓',
+    title: "Interactive Journal",
+    description: "Track changes in symptoms like hypervigilance or isolation over time. Helps identify patterns and document your journey.",
+    cta: "Start Writing",
+    path: '/journal'
   }
 ];
 
@@ -290,7 +495,7 @@ const thoughtMessages = [
   "Patterns reveal more than we think.",
   "We help connect the dots — safely and privately.",
   "Your voice matters. Let's listen together."
-];
+]
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -298,6 +503,9 @@ const Dashboard = () => {
   const [showThought, setShowThought] = useState(true)
   const [currentThought, setCurrentThought] = useState(0)
   const [isThoughtVisible, setIsThoughtVisible] = useState(true)
+  const [empathyIndex, setEmpathyIndex] = useState(
+    Math.floor(Math.random() * empathyStatements.length)
+  )
 
   useEffect(() => {
     const messageInterval = setInterval(() => {
@@ -306,9 +514,9 @@ const Dashboard = () => {
         setTimeout(() => {
           setCurrentThought((prev) => (prev + 1) % thoughtMessages.length)
           setIsThoughtVisible(true)
-        }, 800)
+        }, 1000)
       }
-    }, 8000)
+    }, 12000)
 
     return () => clearInterval(messageInterval)
   }, [showThought])
@@ -325,12 +533,21 @@ const Dashboard = () => {
         onSidebarOpenChange={setIsSidebarOpen}
       />
 
+      <TopDeck>
+        <EmpathyStatement>
+          {empathyStatements[empathyIndex]}
+          <span> — we're here to help</span>
+        </EmpathyStatement>
+        <ProfileButton onClick={() => navigate('/profile')}>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+          </svg>
+          Profile
+        </ProfileButton>
+      </TopDeck>
+
       <MainContent sidebarOpen={isSidebarOpen}>
         <Content>
-          <ProfileSection>
-            <ProfileCircle onClick={() => navigate('/profile')}>Profile</ProfileCircle>
-          </ProfileSection>
-          
           <MainTitle>
             <BifocalText>bifocal.</BifocalText>
             <Subtitle>Making the invisible visible, one message at a time</Subtitle>
@@ -340,6 +557,7 @@ const Dashboard = () => {
             {tiles.map((tile, index) => (
               <Tile 
                 key={index}
+                index={index}
                 onClick={() => navigate(tile.path)}
                 role="button"
                 tabIndex={0}
@@ -349,7 +567,7 @@ const Dashboard = () => {
                   }
                 }}
               >
-                <TileIcon>{tile.icon}</TileIcon>
+                <TileIcon index={index}>{tile.icon}</TileIcon>
                 <TileTitle>{tile.title}</TileTitle>
                 <TileDescription>{tile.description}</TileDescription>
                 <TileButton>{tile.cta}</TileButton>
@@ -357,24 +575,48 @@ const Dashboard = () => {
             ))}
           </TileGrid>
 
-          {showThought && (
-            <ThoughtBubble isVisible={isThoughtVisible}>
-              <ThoughtText>{thoughtMessages[currentThought]}</ThoughtText>
-              <CloseButton onClick={handleCloseThought}>&times;</CloseButton>
-            </ThoughtBubble>
-          )}
-
           <Footer>
+            <FooterContent>
+              <FooterSection>
+                <h4>Quick Links</h4>
+                <ul>
+                  <li><a href="/about">About Us</a></li>
+                  <li><a href="/resources">Resources</a></li>
+                  <li><a href="/faq">FAQ</a></li>
+                </ul>
+              </FooterSection>
+              <FooterSection>
+                <h4>Support</h4>
+                <ul>
+                  <li><a href="/contact">Contact</a></li>
+                  <li><a href="/privacy">Privacy Policy</a></li>
+                  <li><a href="/terms">Terms of Use</a></li>
+                </ul>
+              </FooterSection>
+              <FooterSection>
+                <h4>Community</h4>
+                <ul>
+                  <li><a href="/blog">Blog</a></li>
+                  <li><a href="/stories">Stories</a></li>
+                  <li><a href="/help">Get Help</a></li>
+                </ul>
+              </FooterSection>
+            </FooterContent>
             <CreatorMessage>
-              <FromCreators>from the creators</FromCreators>
+              <FromCreators>From the Creators</FromCreators>
               <Message>
-                you deserve clarity. with your permission, we help detect patterns over time, 
-                so we can support your safety and peace of mind. you can opt out of anything, 
-                whenever you choose.
+                Created with ❤️ at HackAI. Our mission is to help create safer, healthier relationships through technology and community support.
               </Message>
             </CreatorMessage>
           </Footer>
         </Content>
+
+        {showThought && (
+          <ThoughtBubble isVisible={isThoughtVisible}>
+            <ThoughtText>{thoughtMessages[currentThought]}</ThoughtText>
+            <CloseButton onClick={handleCloseThought}>&times;</CloseButton>
+          </ThoughtBubble>
+        )}
       </MainContent>
     </Container>
   )

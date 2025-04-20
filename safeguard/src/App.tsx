@@ -17,6 +17,8 @@ import Justification from './pages/Justification'
 import BrowseSigns from './pages/BrowseSigns'
 import AudioUpload from './pages/AudioUpload'
 import Contacts from './pages/Contacts'
+import Resources from './pages/Resources'
+import Home from './pages/Home'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -30,7 +32,8 @@ function App() {
     <Router>
       <AppContainer>
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contacts" element={<Contacts />} />
@@ -47,7 +50,8 @@ function App() {
           <Route path="/justification" element={<Justification />} />
           <Route path="/browse-signs" element={<BrowseSigns />} />
           <Route path="/audio-upload" element={<AudioUpload />} />
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="/resources" element={<Resources />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AppContainer>
     </Router>
