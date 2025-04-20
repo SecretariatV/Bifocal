@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
-import { Global, css, keyframes } from '@emotion/react'
+import { Global, css } from '@emotion/react'
 import useContactsStore, { Contact } from '../store/contactsStore'
 import useUserStore from '../store/userStore'
 import ContactSelector from '../components/ContactSelector'
@@ -208,52 +208,12 @@ const NavItem = styled.div<{ active?: boolean }>`
   }
 `
 
-// Animation keyframes
-const float1 = keyframes`
-  0%   { transform: translate(-15%, -10%) scale(1); }
-  50%  { transform: translate(20%,  15%) scale(1.15); }
-  100% { transform: translate(-15%, -10%) scale(1); }
-`
-
-const float2 = keyframes`
-  0%   { transform: translate(10%, 60%)  scale(1); }
-  50%  { transform: translate(-25%, 50%) scale(1.25); }
-  100% { transform: translate(10%, 60%)  scale(1); }
-`
-
-const float3 = keyframes`
-  0%   { transform: translate(70%, -30%) scale(1); }
-  50%  { transform: translate(50%, 10%)  scale(1.1); }
-  100% { transform: translate(70%, -30%) scale(1); }
-`
-
-const Blob = styled.div<{
-  size: number
-  gradient: string
-  animation: ReturnType<typeof keyframes>
-}>`
-  position: fixed;
-  width: ${p => p.size}px;
-  height: ${p => p.size}px;
-  background: ${p => p.gradient};
-  opacity: 0.35;
-  filter: blur(180px);
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  animation: ${p => p.animation} 45s ease-in-out infinite;
-`
-
 const GlobalStyles = () => (
   <Global
     styles={css`
       html, body, #root {
         height: 100%;
         background-color: #14161f;
-        background-image: 
-          radial-gradient(circle at 0% 0%, rgba(115, 103, 240, 0.1) 0%, rgba(115, 103, 240, 0) 50%),
-          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 50%),
-          radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0) 50%);
       }
     `}
   />
@@ -314,23 +274,15 @@ const CustomRelationshipInput = styled(Input)`
 
 const EditProfile = () => {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    phone: '',
-    bio: ''
-  })
-  const { contacts, selectedContacts, setSelectedContacts, updateContactRelationship } = useContactsStore()
+  const { contacts, selectedContacts, setSelectedContacts, updateContactRelationship, resetStore } = useContactsStore()
   const { name: userName, email: userEmail, phone: userPhone, setUser } = useUserStore()
-
-  useEffect(() => {
-    setFormData(prev => ({
-      ...prev,
-      name: userName || '',
-      email: userEmail || '',
-      phone: userPhone || ''
-    }))
-  }, [userName, userEmail, userPhone])
+  const [formData, setFormData] = useState<FormData>({
+    name: userName || '',
+    email: userEmail || '',
+    phone: userPhone || '',
+    bio: '',
+  })
+  const [contactRelationships, setContactRelationships] = useState<ContactRelationships>({})
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -356,17 +308,19 @@ const EditProfile = () => {
     e.preventDefault()
     // Save form data to user store
     setUser(formData.name, formData.email, formData.phone)
-    console.log('Form submitted:', { formData, selectedContacts })
-    navigate('/dashboard')
+    // Navigate to contacts page to see the changes
+    navigate('/contacts')
   }
 
   return (
     <Container>
       <GlobalStyles />
-      <BackButton onClick={() => navigate('/dashboard')}>
-        ← Back to Dashboard
+      <BackButton onClick={() => navigate(-1)}>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back
       </BackButton>
-
       <MainContent>
         <PageTitle>Edit Profile</PageTitle>
         <ProfileForm onSubmit={handleSubmit}>
@@ -379,7 +333,7 @@ const EditProfile = () => {
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="Your name"
+                placeholder="Enter your name"
               />
             </InputGroup>
             <InputGroup>
@@ -389,7 +343,7 @@ const EditProfile = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="Your email"
+                placeholder="Enter your email"
               />
             </InputGroup>
             <InputGroup>
@@ -399,7 +353,7 @@ const EditProfile = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                placeholder="Your phone number"
+                placeholder="Enter your phone number"
               />
             </InputGroup>
             <InputGroup>
@@ -414,41 +368,30 @@ const EditProfile = () => {
           </FormSection>
 
           <FormSection>
-            <SectionTitle>Contact Access</SectionTitle>
-            <InputGroup>
-              <Label>Select contacts to give BiFocal access to</Label>
-              <ContactSelector
-                contacts={contacts}
-                selectedContacts={selectedContacts}
-                onSelectContact={handleContactSelect}
-                onRemoveContact={handleContactRemove}
-              />
-            </InputGroup>
+            <SectionTitle>Contacts</SectionTitle>
+            <Button type="button" onClick={resetStore} style={{ marginBottom: '20px', background: '#4b5563' }}>
+              Reset Contacts
+            </Button>
+            <ContactSelector
+              contacts={contacts}
+              selectedContacts={selectedContacts}
+              onSelectContact={handleContactSelect}
+              onRemoveContact={handleContactRemove}
+            />
+            {selectedContacts.map(contact => (
+              <div key={contact.id} style={{ marginTop: '20px' }}>
+                <RelationshipSelector
+                  value={contact.relationship || ''}
+                  onChange={(relationship) => handleRelationshipChange(contact.id, relationship)}
+                  contactName={contact.name}
+                />
+              </div>
+            ))}
           </FormSection>
-
-          {selectedContacts.length > 0 && (
-            <FormSection>
-              <SectionTitle>Contact Relationships</SectionTitle>
-              {selectedContacts.map(contact => (
-                <InputGroup key={contact.id}>
-                  <Label>{contact.name}</Label>
-                  <RelationshipSelector
-                    value={contact.relationship || ''}
-                    onChange={(value) => handleRelationshipChange(contact.id, value)}
-                    contactName={contact.name}
-                  />
-                </InputGroup>
-              ))}
-            </FormSection>
-          )}
 
           <Button type="submit">Save Changes</Button>
         </ProfileForm>
       </MainContent>
-
-      <Blob size={600} gradient="linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)" animation={float1} />
-      <Blob size={500} gradient="linear-gradient(135deg, #34d399 0%, #059669 100%)" animation={float2} />
-      <Blob size={550} gradient="linear-gradient(135deg, #f472b6 0%, #db2777 100%)" animation={float3} />
     </Container>
   )
 }

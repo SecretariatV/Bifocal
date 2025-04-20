@@ -293,92 +293,6 @@ const TileButton = styled.button`
   }
 `
 
-const Footer = styled.footer`
-  text-align: center;
-  padding: 3rem 2rem;
-  max-width: 800px;
-  margin: 3rem auto 2rem;
-  position: relative;
-  animation: ${fadeIn} 1s ease-out;
-`;
-
-const FooterContent = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-bottom: 2rem;
-  text-align: left;
-`;
-
-const FooterSection = styled.div`
-  h4 {
-    color: #60a5fa;
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  li {
-    margin-bottom: 0.5rem;
-  }
-
-  a {
-    color: #94a3b8;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    font-size: 0.95rem;
-
-    &:hover {
-      color: #60a5fa;
-    }
-  }
-`;
-
-const CreatorMessage = styled.div`
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  border-radius: 1.5rem;
-  padding: 2rem;
-  position: relative;
-  transition: all 0.2s ease;
-  margin-top: 3rem;
-
-  &:hover {
-    border-color: rgba(255, 255, 255, 0.25);
-    background: rgba(255, 255, 255, 0.05);
-  }
-`;
-
-const FromCreators = styled.div`
-  position: absolute;
-  top: -0.8rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #14161f;
-  padding: 0 1rem;
-  color: #60a5fa;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-weight: 600;
-`;
-
-const Message = styled.p`
-  font-style: italic;
-  color: #94a3b8;
-  line-height: 1.8;
-  font-size: 1rem;
-  opacity: 0.9;
-  margin: 0;
-`;
-
 const MainTitle = styled.div`
   text-align: left;
   margin-top: 7rem;
@@ -498,41 +412,6 @@ const Dashboard = () => {
               </Tile>
             ))}
           </TileGrid>
-
-          <Footer>
-            <FooterContent>
-              <FooterSection>
-                <h4>Quick Links</h4>
-                <ul>
-                  <li><a href="/about">About Us</a></li>
-                  <li><a href="/resources">Resources</a></li>
-                  <li><a href="/faq">FAQ</a></li>
-                </ul>
-              </FooterSection>
-              <FooterSection>
-                <h4>Support</h4>
-                <ul>
-                  <li><a href="/contact">Contact</a></li>
-                  <li><a href="/privacy">Privacy Policy</a></li>
-                  <li><a href="/terms">Terms of Use</a></li>
-                </ul>
-              </FooterSection>
-              <FooterSection>
-                <h4>Community</h4>
-                <ul>
-                  <li><a href="/blog">Blog</a></li>
-                  <li><a href="/stories">Stories</a></li>
-                  <li><a href="/help">Get Help</a></li>
-                </ul>
-              </FooterSection>
-            </FooterContent>
-            <CreatorMessage>
-              <FromCreators>From the Creators</FromCreators>
-              <Message>
-                Created with ❤️ at HackAI. Our mission is to help create safer, healthier relationships through technology and community support.
-              </Message>
-            </CreatorMessage>
-          </Footer>
         </Content>
       </MainContent>
     </Container>

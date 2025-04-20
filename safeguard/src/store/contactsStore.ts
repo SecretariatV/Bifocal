@@ -18,6 +18,7 @@ interface ContactsState {
   updateContactRelationship: (contactId: number, relationship: string) => void;
   setSelectedContacts: (contacts: Contact[]) => void;
   clearSelectedContacts: () => void;
+  resetStore: () => void;
 }
 
 const useContactsStore = create<ContactsState>()(
@@ -44,6 +45,9 @@ const useContactsStore = create<ContactsState>()(
       },
       clearSelectedContacts: () => {
         set({ selectedContacts: [] });
+      },
+      resetStore: () => {
+        set({ contacts: initialContacts, selectedContacts: [] });
       }
     }),
     {

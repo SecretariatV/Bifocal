@@ -145,23 +145,23 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
   height: 12px;
   border-radius: 50%;
   background-color: ${props => 
-    props.risk === 'low' ? '#22c55e' : 
-    props.risk === 'medium' ? '#eab308' : 
+    props.risk === 'low' ? '#10b981' : 
+    props.risk === 'medium' ? '#f59e0b' : 
     '#ef4444'
   };
   box-shadow: 0 0 8px ${props => 
-    props.risk === 'low' ? 'rgba(34, 197, 94, 0.4)' : 
-    props.risk === 'medium' ? 'rgba(234, 179, 8, 0.4)' : 
-    'rgba(239, 68, 68, 0.4)'
+    props.risk === 'low' ? 'rgba(16, 185, 129, 0.5)' : 
+    props.risk === 'medium' ? 'rgba(245, 158, 11, 0.5)' : 
+    'rgba(239, 68, 68, 0.5)'
   };
   transition: all 0.2s ease;
 
   &:hover {
     transform: scale(1.2);
     box-shadow: 0 0 12px ${props => 
-      props.risk === 'low' ? 'rgba(34, 197, 94, 0.6)' : 
-      props.risk === 'medium' ? 'rgba(234, 179, 8, 0.6)' : 
-      'rgba(239, 68, 68, 0.6)'
+      props.risk === 'low' ? 'rgba(16, 185, 129, 0.7)' : 
+      props.risk === 'medium' ? 'rgba(245, 158, 11, 0.7)' : 
+      'rgba(239, 68, 68, 0.7)'
     };
   }
 `
@@ -169,7 +169,7 @@ const RiskIndicator = styled.div<{ risk: 'low' | 'medium' | 'high' }>`
 const Contacts = () => {
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const selectedContacts = useContactsStore(state => state.selectedContacts)
+  const { selectedContacts } = useContactsStore()
 
   return (
     <Container>
