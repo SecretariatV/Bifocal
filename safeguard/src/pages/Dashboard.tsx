@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled'
 import { useNavigate } from 'react-router-dom'
 import Navigation from '../components/Navigation'
@@ -90,7 +90,7 @@ const TopDeck = styled.div`
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 0 2rem;
   z-index: 100;
 `
@@ -406,56 +406,14 @@ const Subtitle = styled.p`
   opacity: 0.8;
 `
 
-const ThoughtBubble = styled.div<{ isVisible: boolean }>`
-  position: fixed;
-  right: ${props => props.isVisible ? '2rem' : '-100%'};
-  top: 5rem;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 1.5rem 2rem;
-  border-radius: 1rem;
-  max-width: 320px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  z-index: 100;
-  opacity: ${props => props.isVisible ? 1 : 0};
-  transform: ${props => props.isVisible ? 'translateX(0)' : 'translateX(20px)'};
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-`
-
-const ThoughtText = styled.p`
-  color: #f8fafc;
-  font-size: 1.1rem;
-  line-height: 1.6;
-  font-style: italic;
-  margin-right: 2.5rem;
-`
-
-const CloseButton = styled.button`
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  color: #94a3b8;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  font-size: 1.25rem;
-  transition: color 0.2s ease;
-
-  &:hover {
-    color: #f8fafc;
-  }
-`
-
-const empathyStatements = [
-  "We understand that opening up can be difficult",
-  "Your feelings are valid and important",
-  "You're taking a brave step forward",
-  "We're here to listen without judgment",
-  "Your story matters to us",
-  "You don't have to face this alone"
-];
+const thoughtMessages = [
+  "We're here to help you make sense of the patterns.",
+  "You're not alone. Let's take a closer look together.",
+  "Sometimes all it takes is a closer look.",
+  "Patterns reveal more than we think.",
+  "We help connect the dots — safely and privately.",
+  "Your voice matters. Let's listen together."
+]
 
 const tiles = [
   {
@@ -488,44 +446,10 @@ const tiles = [
   }
 ];
 
-const thoughtMessages = [
-  "We're here to help you make sense of the patterns.",
-  "You're not alone. Let's take a closer look together.",
-  "Sometimes all it takes is a closer look.",
-  "Patterns reveal more than we think.",
-  "We help connect the dots — safely and privately.",
-  "Your voice matters. Let's listen together."
-]
-
 const Dashboard = () => {
   const navigate = useNavigate()
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const [showThought, setShowThought] = useState(true)
-  const [currentThought, setCurrentThought] = useState(0)
-  const [isThoughtVisible, setIsThoughtVisible] = useState(true)
-  const [empathyIndex, setEmpathyIndex] = useState(
-    Math.floor(Math.random() * empathyStatements.length)
-  )
-
-  useEffect(() => {
-    const messageInterval = setInterval(() => {
-      if (showThought) {
-        setIsThoughtVisible(false)
-        setTimeout(() => {
-          setCurrentThought((prev) => (prev + 1) % thoughtMessages.length)
-          setIsThoughtVisible(true)
-        }, 1000)
-      }
-    }, 12000)
-
-    return () => clearInterval(messageInterval)
-  }, [showThought])
-
-  const handleCloseThought = () => {
-    setIsThoughtVisible(false)
-    setTimeout(() => setShowThought(false), 800)
-  }
-
+  
   return (
     <Container>
       <Navigation 
@@ -534,10 +458,6 @@ const Dashboard = () => {
       />
 
       <TopDeck>
-        <EmpathyStatement>
-          {empathyStatements[empathyIndex]}
-          <span> — we're here to help</span>
-        </EmpathyStatement>
         <ProfileButton onClick={() => navigate('/profile')}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -610,13 +530,6 @@ const Dashboard = () => {
             </CreatorMessage>
           </Footer>
         </Content>
-
-        {showThought && (
-          <ThoughtBubble isVisible={isThoughtVisible}>
-            <ThoughtText>{thoughtMessages[currentThought]}</ThoughtText>
-            <CloseButton onClick={handleCloseThought}>&times;</CloseButton>
-          </ThoughtBubble>
-        )}
       </MainContent>
     </Container>
   )

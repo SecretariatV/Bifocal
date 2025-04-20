@@ -18,6 +18,7 @@ import BrowseSigns from './pages/BrowseSigns'
 import AudioUpload from './pages/AudioUpload'
 import Contacts from './pages/Contacts'
 import Resources from './pages/Resources'
+import Journal from './pages/Journal'
 import Home from './pages/Home'
 
 const AppContainer = styled.div`
@@ -51,6 +52,7 @@ function App() {
           <Route path="/browse-signs" element={<BrowseSigns />} />
           <Route path="/audio-upload" element={<AudioUpload />} />
           <Route path="/resources" element={<Resources />} />
+          <Route path="/journal" element={<Journal />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </AppContainer>

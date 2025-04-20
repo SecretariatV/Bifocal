@@ -182,22 +182,10 @@ const LocationButton = styled.button`
   }
 `;
 
-const empathyStatements = [
-  "You're not alone in this journey",
-  "Every step toward help is an act of courage",
-  "Your safety and well-being matter",
-  "There's always someone ready to listen",
-  "Support is available whenever you need it",
-  "Reaching out shows incredible strength"
-];
-
 const Resources = () => {
   const [zipCode, setZipCode] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
-  const [empathyIndex] = useState(
-    Math.floor(Math.random() * empathyStatements.length)
-  );
 
   const hotlines = [
     {
@@ -533,14 +521,12 @@ const Resources = () => {
 
   return (
     <Container>
-      <Title>Local Resources & Support</Title>
-      <EmpathyStatement>
-        {empathyStatements[empathyIndex]}
-        <span> — we're here 24/7</span>
-      </EmpathyStatement>
+      <Header>
+        <Title>Support Resources</Title>
+      </Header>
 
       <Section>
-        <SectionTitle>24/7 Crisis Hotlines</SectionTitle>
+        <SectionTitle>24/7 Crisis Support</SectionTitle>
         <ResourceGrid>
           {hotlines.map((hotline, index) => (
             <ResourceCard key={index}>
@@ -552,51 +538,6 @@ const Resources = () => {
             </ResourceCard>
           ))}
         </ResourceGrid>
-      </Section>
-
-      <Section>
-        <SectionTitle>Find Support Near You</SectionTitle>
-        <SearchSection>
-          <LocationButton 
-            onClick={handleFindMe}
-            disabled={isLocating}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-            </svg>
-            {isLocating ? 'Finding location...' : 'Find resources near me'}
-          </LocationButton>
-          <form onSubmit={handleSearch}>
-            <SearchInput
-              type="text"
-              placeholder="Enter ZIP code (try 75071, 75080, 75078, 75075, or 90703)"
-              value={zipCode}
-              onChange={(e) => setZipCode(e.target.value)}
-              pattern="[0-9]*"
-              maxLength={5}
-            />
-            <SearchButton type="submit">Search</SearchButton>
-          </form>
-        </SearchSection>
-
-        {showResults && (
-          <>
-            <SectionTitle>Resources in {getCityName()}</SectionTitle>
-            <ResourceGrid>
-              {getResourcesForZip().map((resource, index) => (
-                <ResourceCard key={index}>
-                  <ResourceName>{resource.name}</ResourceName>
-                  <ResourceType>{resource.type}</ResourceType>
-                  <ResourceDescription>{resource.description}</ResourceDescription>
-                  <ResourceDescription>{resource.address}</ResourceDescription>
-                  <ResourceContact href={`tel:${resource.phone.replace(/\D/g, '')}`}>
-                    {resource.phone}
-                  </ResourceContact>
-                </ResourceCard>
-              ))}
-            </ResourceGrid>
-          </>
-        )}
       </Section>
     </Container>
   );
