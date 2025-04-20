@@ -14,6 +14,69 @@ const fadeInUp = keyframes`
   }
 `;
 
+const float = keyframes`
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+`;
+
+const shimmer = keyframes`
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.6;
+  }
+`;
+
+const BinocularsWrapper = styled.div`
+  position: relative;
+  text-align: center;
+  margin-bottom: 3rem;
+  z-index: 1;
+`;
+
+const Spotlight = styled.div`
+  position: absolute;
+  top: 90%;
+  left: 50%;
+  width: 300px;
+  height: 400px;
+  background: radial-gradient(
+    ellipse at top,
+    rgba(96, 165, 250, 0.15),
+    rgba(96, 165, 250, 0)
+  );
+  transform: translateX(-100%) rotate(30deg);
+  z-index: -1;
+  filter: blur(8px);
+  animation: ${shimmer} 3s ease-in-out infinite;
+  pointer-events: none;
+
+  &.right {
+    transform: translateX(0%) rotate(-30deg);
+  }
+`;
+
+const BinocularsIcon = styled.svg`
+  width: 120px;
+  height: 120px;
+  fill: none;
+  stroke: #60a5fa;
+  stroke-width: 1.5;
+  opacity: 0;
+  animation: ${fadeInUp} 0.8s ease-out forwards,
+             ${float} 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.3));
+
+  &:hover {
+    stroke: #3b82f6;
+  }
+`;
+
 const Container = styled.div`
   min-height: 100vh;
   width: 100%;
@@ -59,9 +122,13 @@ const Title = styled.h1`
   font-family: 'Inter', sans-serif;
   letter-spacing: -5px;
   line-height: 1;
-  text-shadow: 0 0 30px rgba(97, 153, 255, 0.2);
+  text-shadow: 
+    0 0 30px rgba(97, 153, 255, 0.2),
+    0 0 60px rgba(97, 153, 255, 0.1);
   opacity: 0;
   animation: ${fadeInUp} 0.8s ease-out forwards;
+  position: relative;
+  z-index: 2;
   
   &::after {
     content: '.';
@@ -82,13 +149,15 @@ const Title = styled.h1`
 
 const Subtitle = styled.p`
   font-size: 1.25rem;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.7);
   margin-bottom: 4rem;
   font-weight: 300;
   letter-spacing: 4px;
   opacity: 0;
   animation: ${fadeInUp} 0.8s ease-out 0.2s forwards;
   text-transform: lowercase;
+  position: relative;
+  z-index: 2;
 
   @media (max-width: 768px) {
     font-size: 1rem;
@@ -125,14 +194,30 @@ const Button = styled.button`
   }
 `;
 
+const IconContainer = styled.div`
+  opacity: 0;
+  animation: ${fadeInUp} 0.8s ease-out forwards;
+  margin-bottom: 1rem;
+`;
+
 const Home: React.FC = () => {
   const navigate = useNavigate();
 
   return (
     <Container>
       <Content>
+        <BinocularsWrapper>
+          <BinocularsIcon viewBox="0 0 24 24">
+            <path d="M5 3h1v7H5zM18 3h1v7h-1z" />
+            <circle cx="7.5" cy="14" r="3" />
+            <circle cx="16.5" cy="14" r="3" />
+            <path d="M10.5 14h3" strokeLinecap="round" />
+          </BinocularsIcon>
+          <Spotlight />
+          <Spotlight className="right" />
+        </BinocularsWrapper>
         <Title>bifocal</Title>
-        <Subtitle>clarity, through dual lens</Subtitle>
+        <Subtitle>bringing patterns to light through dual lens clarity</Subtitle>
         <ButtonContainer>
           <Button onClick={() => navigate('/signup')}>
             Get Started

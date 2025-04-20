@@ -3,6 +3,7 @@ import styled from '@emotion/styled'
 import { useNavigate, Link } from 'react-router-dom'
 import { Global, css, keyframes } from '@emotion/react'
 import useUserStore from '../store/userStore'
+import Logo from '../components/Logo'
 
 const fadeInUp = keyframes`
   from {
@@ -35,24 +36,6 @@ const FormBox = styled.div`
   width: 100%;
   max-width: 400px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-`
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: -1px;
-  
-  &::after {
-    content: '.';
-    color: #60a5fa;
-    -webkit-text-fill-color: #60a5fa;
-  }
 `
 
 const Subtitle = styled.p`
@@ -237,60 +220,82 @@ const SignUp: React.FC = () => {
   return (
     <Container>
       <GlobalStyles />
-      <FormBox>
-        <Title>SafeScreen</Title>
-        <Subtitle>Create your account</Subtitle>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <Input
-            type="tel"
-            placeholder="Phone Number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            placeholder="Confirm Password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required
-          />
-          <CheckboxLabel>
-            <Checkbox
-              type="checkbox"
-              checked={consent}
-              onChange={(e) => setConsent(e.target.checked)}
+      {/* Background blobs */}
+      <Blob
+        size={700}
+        gradient="radial-gradient(circle at 30% 30%, #7367f0 0%, rgba(115,103,240,0) 70%)"
+        animation={float1}
+        style={{ top: '-250px', left: '-200px' }}
+      />
+      <Blob
+        size={800}
+        gradient="radial-gradient(circle at 70% 30%, #f472b6 0%, rgba(244,114,182,0) 75%)"
+        animation={float2}
+        style={{ bottom: '-300px', left: '20%' }}
+      />
+      <Blob
+        size={650}
+        gradient="radial-gradient(circle at 50% 50%, #22d3ee 0%, rgba(34,211,238,0) 70%)"
+        animation={float3}
+        style={{ top: '-200px', right: '-200px' }}
+      />
+      
+      <Container>
+        <FormBox>
+          <Logo />
+          <Subtitle>begin your journey</Subtitle>
+          <form onSubmit={handleSubmit}>
+            <Input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
             />
-            I agree to allow BiFocal to access my contacts and analyze my messages for safety purposes
-          </CheckboxLabel>
-          {error && <ErrorMessage>{error}</ErrorMessage>}
-          <Button type="submit">Sign Up</Button>
-        </form>
-        <BottomLink>
-          Already have an account?<Link to="/login">Sign In</Link>
-        </BottomLink>
-      </FormBox>
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="tel"
+              placeholder="Phone Number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <Input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+            <CheckboxLabel>
+              <Checkbox
+                type="checkbox"
+                checked={consent}
+                onChange={(e) => setConsent(e.target.checked)}
+              />
+              I agree to allow BiFocal to access my contacts and analyze my messages for safety purposes
+            </CheckboxLabel>
+            {error && <ErrorMessage>{error}</ErrorMessage>}
+            <Button type="submit">Sign Up</Button>
+          </form>
+          <BottomLink>
+            Already have an account?<Link to="/login">Sign In</Link>
+          </BottomLink>
+        </FormBox>
+      </Container>
 
       <Blob size={600} gradient="linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%)" animation={float1} />
       <Blob size={500} gradient="linear-gradient(135deg, #34d399 0%, #059669 100%)" animation={float2} />

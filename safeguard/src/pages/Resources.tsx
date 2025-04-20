@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { keyframes } from '@emotion/react';
+import { css } from '@emotion/react';
+import { Global } from '@emotion/react';
 
 const fadeInSlowly = keyframes`
   from {
@@ -18,11 +20,44 @@ const Container = styled.div`
   background-color: #14161f;
   color: white;
   padding: 2rem;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow-y: scroll;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(96, 165, 250, 0.3);
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(96, 165, 250, 0.5);
+    }
+  }
+`;
+
+const ContentWrapper = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 `;
 
 const Header = styled.div`
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
+  padding-top: 1rem;
 `;
 
 const Title = styled.h1`
@@ -180,6 +215,24 @@ const LocationButton = styled.button`
     height: 16px;
   }
 `;
+
+const GlobalStyles = () => (
+  <Global
+    styles={css`
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #14161f;
+        background-image: 
+          radial-gradient(circle at 0% 0%, rgba(115, 103, 240, 0.1) 0%, rgba(115, 103, 240, 0) 50%),
+          radial-gradient(circle at 100% 0%, rgba(34, 211, 238, 0.1) 0%, rgba(34, 211, 238, 0) 50%),
+          radial-gradient(circle at 50% 100%, rgba(244, 114, 182, 0.1) 0%, rgba(244, 114, 182, 0) 50%);
+      }
+    `}
+  />
+);
 
 const Resources = () => {
   const [zipCode, setZipCode] = useState('');
@@ -529,63 +582,70 @@ const Resources = () => {
   };
 
   return (
-    <Container>
-      <Header>
-        <Title>Support Resources</Title>
-      </Header>
+    <>
+      <GlobalStyles />
+      <Container>
+        <ContentWrapper>
+          <Header>
+            <Title>Support Resources</Title>
+            <EmpathyStatement>{supportMessage}</EmpathyStatement>
+          </Header>
+          
+          <SearchSection>
+            <LocationButton onClick={handleFindMe}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C7.58 0 4 3.58 4 8c0 5.25 8 13 8 13s8-7.75 8-13c0-4.42-3.58-8-8-8zm0 11c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/>
+              </svg>
+              Find My Location
+            </LocationButton>
+            <SearchInput
+              type="text"
+              placeholder="Enter ZIP code"
+              value={zipCode}
+              onChange={(e) => setZipCode(e.target.value)}
+            />
+            <SearchButton onClick={handleSearch}>
+              Find Local Resources
+            </SearchButton>
+          </SearchSection>
 
-      <SearchSection>
-        <EmpathyStatement>{supportMessage}</EmpathyStatement>
-        <LocationButton onClick={handleFindMe} disabled={isLocating}>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-          </svg>
-          {isLocating ? 'Finding location...' : 'Find My Location'}
-        </LocationButton>
-        <SearchInput
-          type="text"
-          placeholder="Enter ZIP code"
-          value={zipCode}
-          onChange={(e) => setZipCode(e.target.value)}
-        />
-        <SearchButton onClick={handleSearch}>
-          Find Local Resources
-        </SearchButton>
-      </SearchSection>
+          {showResults && (
+            <>
+              <Section>
+                <SectionTitle>Resources in {getCityName()}</SectionTitle>
+                <ResourceGrid>
+                  {getResourcesForZip().map((resource, index) => (
+                    <ResourceCard key={index}>
+                      <ResourceName>{resource.name}</ResourceName>
+                      <ResourceType>{resource.type}</ResourceType>
+                      <ResourceDescription>{resource.description}</ResourceDescription>
+                      <ResourceContact href={`tel:${resource.phone.replace(/\D/g, '')}`}>
+                        {resource.phone}
+                      </ResourceContact>
+                    </ResourceCard>
+                  ))}
+                </ResourceGrid>
+              </Section>
+            </>
+          )}
 
-      {showResults && (
-        <Section>
-          <SectionTitle>Resources in {getCityName()}</SectionTitle>
-          <ResourceGrid>
-            {getResourcesForZip().map((resource, index) => (
-              <ResourceCard key={index}>
-                <ResourceName>{resource.name}</ResourceName>
-                <ResourceType>{resource.type}</ResourceType>
-                <ResourceDescription>{resource.description}</ResourceDescription>
-                <ResourceContact href={`tel:${resource.phone.replace(/\D/g, '')}`}>
-                  {resource.phone}
-                </ResourceContact>
-              </ResourceCard>
-            ))}
-          </ResourceGrid>
-        </Section>
-      )}
-
-      <Section>
-        <SectionTitle>24/7 Crisis Support</SectionTitle>
-        <ResourceGrid>
-          {hotlines.map((hotline, index) => (
-            <ResourceCard key={index}>
-              <ResourceName>{hotline.name}</ResourceName>
-              <ResourceDescription>{hotline.description}</ResourceDescription>
-              <ResourceContact href={`tel:${hotline.phone.replace(/\D/g, '')}`}>
-                {hotline.phone}
-              </ResourceContact>
-            </ResourceCard>
-          ))}
-        </ResourceGrid>
-      </Section>
-    </Container>
+          <Section>
+            <SectionTitle>24/7 Crisis Support</SectionTitle>
+            <ResourceGrid>
+              {hotlines.map((hotline, index) => (
+                <ResourceCard key={index}>
+                  <ResourceName>{hotline.name}</ResourceName>
+                  <ResourceDescription>{hotline.description}</ResourceDescription>
+                  <ResourceContact href={`tel:${hotline.phone.replace(/\D/g, '')}`}>
+                    {hotline.phone}
+                  </ResourceContact>
+                </ResourceCard>
+              ))}
+            </ResourceGrid>
+          </Section>
+        </ContentWrapper>
+      </Container>
+    </>
   );
 };
 

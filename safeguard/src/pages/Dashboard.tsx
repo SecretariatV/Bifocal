@@ -95,15 +95,36 @@ const TopDeck = styled.div`
   z-index: 100;
 `
 
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`
+
+const BinocularsIcon = styled.svg`
+  width: 36px;
+  height: 36px;
+  fill: none;
+  stroke: #60a5fa;
+  stroke-width: 1.5;
+  opacity: 0.9;
+  animation: ${fadeInSlowly} 1s ease-out forwards;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+`
+
 const EmpathyStatement = styled.div`
   color: #94a3b8;
   font-size: 1.1rem;
   font-style: italic;
-  margin-left: 2rem;
   opacity: 0;
   animation: ${fadeInSlowly} 2s ease-out forwards;
   animation-delay: 1s;
   font-family: 'Inter', sans-serif;
+  margin-left: 0.5rem;
   
   span {
     color: #60a5fa;
@@ -375,7 +396,15 @@ const Dashboard = () => {
       />
 
       <TopDeck>
-        <EmpathyStatement>{randomMessage}</EmpathyStatement>
+        <HeaderLeft>
+          <BinocularsIcon viewBox="0 0 24 24">
+            <path d="M5 3h1v7H5zM18 3h1v7h-1z" />
+            <circle cx="7.5" cy="14" r="3" />
+            <circle cx="16.5" cy="14" r="3" />
+            <path d="M10.5 14h3" strokeLinecap="round" />
+          </BinocularsIcon>
+          <EmpathyStatement>{randomMessage}</EmpathyStatement>
+        </HeaderLeft>
         <ProfileButton onClick={() => navigate('/profile')}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>

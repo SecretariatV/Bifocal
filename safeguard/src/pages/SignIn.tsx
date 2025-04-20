@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { useNavigate, Link } from 'react-router-dom';
 import { keyframes } from '@emotion/react';
+import Logo from '../components/Logo';
 
 const fadeInUp = keyframes`
   from {
@@ -34,24 +35,6 @@ const FormBox = styled.div`
   width: 100%;
   max-width: 400px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-`;
-
-const Title = styled.h1`
-  font-size: 2.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  text-align: center;
-  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-family: 'Inter', sans-serif;
-  letter-spacing: -1px;
-  
-  &::after {
-    content: '.';
-    color: #60a5fa;
-    -webkit-text-fill-color: #60a5fa;
-  }
 `;
 
 const Subtitle = styled.p`
@@ -196,8 +179,8 @@ const SignIn: React.FC = () => {
       
       <Container>
         <FormBox>
-          <Title>bifocal</Title>
-          <Subtitle>begin your journey</Subtitle>
+          <Logo />
+          <Subtitle>welcome back</Subtitle>
           <form onSubmit={handleSubmit}>
             <Input
               type="email"
